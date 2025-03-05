@@ -157,7 +157,9 @@ class UserResource extends Resource
                 ImageColumn::make('image')
                     ->label('Imagen')
                     ->size(50) // Tamaño de la imagen en píxeles
-                    ->circular(),
+                    ->circular() // Hace la imagen circular
+                    ->disk('public'), // Especifica el disco 'public'
+                // ->location(fn($record) => 'storage/' . $record->image),
                 Tables\Columns\TextColumn::make('name')
                     ->label("Nombre")
                     ->searchable(),
