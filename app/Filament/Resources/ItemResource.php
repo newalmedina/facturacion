@@ -7,10 +7,14 @@ use App\Filament\Resources\ItemResource\RelationManagers;
 use App\Models\Item;
 use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,113 +41,129 @@ class ItemResource extends Resource
     {
         return $form
             ->schema([
-                // Campo Tipo
-                Forms\Components\Select::make('type')
-                    ->label("Tipo")
-                    ->required()
-                    ->options([
-                        'product' => 'Producto',
-                        'service' => 'Servicio',
-                    ])
-                    // ->afterStateUpdated(function ($state, $get, $set) {
-                    //     // Si 'type' es 'service', establece los campos a null
-                    //     if ($state === 'service') {
-                    //         // Actualiza los campos a null cuando el 'type' es 'service'
-                    //         $set('brand_id', null);
-                    //         $set('supplier_id', null);
-                    //         $set('unit_of_measure_id', null);
-                    //         $set('amount', null);
-                    //     }
-                    // })
-                    ->reactive(),
+                Grid::make(12) // Definimos un Grid con 12 columnas en total
+                    ->schema([
+                        Section::make()
+                            ->columnSpan(3) // Ocupa 2 columnas de las 12 disponibles
+                            ->schema([
+                                FileUpload::make('image')
+                                    ->image()
+                                    ->directory('items')
+                                    ->visibility('public')
+                                    ->label('Imagen'),
+                            ]),
+
+                        Section::make('Información general')
+                            ->columnSpan(9) // Ocupa 10 columnas de las 12 disponibles
+                            ->schema([
+                                // Campo Tipo
+                                Forms\Components\Select::make('type')
+                                    ->label("Tipo")
+                                    ->required()
+                                    ->options([
+                                        'product' => 'Producto',
+                                        'service' => 'Servicio',
+                                    ])
+                                    // ->afterStateUpdated(function ($state, $get, $set) {
+                                    //     // Si 'type' es 'service', establece los campos a null
+                                    //     if ($state === 'service') {
+                                    //         // Actualiza los campos a null cuando el 'type' es 'service'
+                                    //         $set('brand_id', null);
+                                    //         $set('supplier_id', null);
+                                    //         $set('unit_of_measure_id', null);
+                                    //         $set('amount', null);
+                                    //     }
+                                    // })
+                                    ->reactive(),
 
 
-                // Campo Nombre
-                Forms\Components\TextInput::make('name')
-                    ->label("Nombre")
-                    ->required()
-                    ->hidden(fn($get) => empty($get('type')))
-                    ->maxLength(255),
+                                // Campo Nombre
+                                Forms\Components\TextInput::make('name')
+                                    ->label("Nombre")
+                                    ->required()
+                                    ->hidden(fn($get) => empty($get('type')))
+                                    ->maxLength(255),
 
-                // Campo Descripción
-                Forms\Components\Textarea::make('description')
-                    ->label("Descripción")
-                    ->hidden(fn($get) => empty($get('type')))
-                    ->columnSpanFull(),
+                                // Campo Descripción
+                                Forms\Components\Textarea::make('description')
+                                    ->label("Descripción")
+                                    ->hidden(fn($get) => empty($get('type')))
+                                    ->columnSpanFull(),
 
-                // Campo Activo
-                Forms\Components\Toggle::make('active')
-                    ->label("Activo")
-                    ->hidden(fn($get) => empty($get('type')))
-                    ->required(),
+                                // Campo Activo
+                                Forms\Components\Toggle::make('active')
+                                    ->label("Activo")
+                                    ->hidden(fn($get) => empty($get('type')))
+                                    ->required(),
 
-                // Campo Categoría (Solo visible cuando 'type' es 'service')
-                Forms\Components\Select::make('category_id')
-                    ->relationship('category', 'name', function ($query) {
-                        $query->where('active', true);
-                    })
-                    ->searchable()
-                    ->hidden(fn($get) => empty($get('type')))
-                    ->label("Categoría")
-                    ->preload(),
+                                // Campo Categoría (Solo visible cuando 'type' es 'service')
+                                Forms\Components\Select::make('category_id')
+                                    ->relationship('category', 'name', function ($query) {
+                                        $query->where('active', true);
+                                    })
+                                    ->searchable()
+                                    ->hidden(fn($get) => empty($get('type')))
+                                    ->label("Categoría")
+                                    ->preload(),
 
-                // Campo Precio (Solo visible cuando 'type' es 'service')
-                Forms\Components\TextInput::make('price')
-                    ->label("Precio")
-                    ->numeric()
-                    ->hidden(fn($get) => empty($get('type')))
-                    ->prefix('€'),
+                                // Campo Precio (Solo visible cuando 'type' es 'service')
+                                Forms\Components\TextInput::make('price')
+                                    ->label("Precio")
+                                    ->numeric()
+                                    ->hidden(fn($get) => empty($get('type')))
+                                    ->prefix('€'),
 
-                // Campo IVA (Solo visible cuando 'type' es 'service')
-                Forms\Components\TextInput::make('taxes')
-                    ->label("IVA")
-                    ->prefix('%')
-                    ->hidden(fn($get) => empty($get('type')))
-                    ->numeric(),
-
-
+                                // Campo IVA (Solo visible cuando 'type' es 'service')
+                                Forms\Components\TextInput::make('taxes')
+                                    ->label("IVA")
+                                    ->prefix('%')
+                                    ->hidden(fn($get) => empty($get('type')))
+                                    ->numeric(),
 
 
-                // Campo Marca (Solo visible cuando 'type' es 'product')
-                Forms\Components\Select::make('brand_id')
-                    ->relationship('brand', 'name', function ($query) {
-                        $query->where('active', true);
-                    })
-                    ->searchable()
-                    ->label("Marca")
-                    ->preload()
-                    ->reactive()
-                    ->hidden(fn($get) => $get('type') === 'service' || empty($get('type'))), // Solo visible para 'product'
 
-                // Campo Suplidor (Solo visible cuando 'type' es 'product')
-                Forms\Components\Select::make('supplier_id')
-                    ->relationship('supplier', 'name', function ($query) {
-                        $query->where('active', true);
-                    })
-                    ->searchable()
-                    ->label("Suplidor")
-                    ->preload()
-                    ->reactive()
-                    ->hidden(fn($get) => $get('type') === 'service' || empty($get('type'))), // Solo visible para 'product'
 
-                // Campo Unidad de medida (Solo visible cuando 'type' es 'product')
-                Forms\Components\Select::make('unit_of_measure_id')
-                    ->relationship('unitOfMeasure', 'name', function ($query) {
-                        $query->where('active', true);
-                    })
-                    ->searchable()
-                    ->label("Unidad de medida")
-                    ->preload()
-                    ->reactive()
-                    ->hidden(fn($get) => $get('type') === 'service' || empty($get('type'))), // Solo visible para 'product'
+                                // Campo Marca (Solo visible cuando 'type' es 'product')
+                                Forms\Components\Select::make('brand_id')
+                                    ->relationship('brand', 'name', function ($query) {
+                                        $query->where('active', true);
+                                    })
+                                    ->searchable()
+                                    ->label("Marca")
+                                    ->preload()
+                                    ->reactive()
+                                    ->hidden(fn($get) => $get('type') === 'service' || empty($get('type'))), // Solo visible para 'product'
 
-                // Campo Cantidad (Solo visible cuando 'type' es 'product')
-                Forms\Components\TextInput::make('amount')
-                    ->label("Cantidad")
-                    ->numeric()
-                    ->reactive()
-                    ->hidden(fn($get) => $get('type') === 'service' || empty($get('type'))), // Solo visible para 'product'
+                                // Campo Suplidor (Solo visible cuando 'type' es 'product')
+                                Forms\Components\Select::make('supplier_id')
+                                    ->relationship('supplier', 'name', function ($query) {
+                                        $query->where('active', true);
+                                    })
+                                    ->searchable()
+                                    ->label("Suplidor")
+                                    ->preload()
+                                    ->reactive()
+                                    ->hidden(fn($get) => $get('type') === 'service' || empty($get('type'))), // Solo visible para 'product'
 
+                                // Campo Unidad de medida (Solo visible cuando 'type' es 'product')
+                                Forms\Components\Select::make('unit_of_measure_id')
+                                    ->relationship('unitOfMeasure', 'name', function ($query) {
+                                        $query->where('active', true);
+                                    })
+                                    ->searchable()
+                                    ->label("Unidad de medida")
+                                    ->preload()
+                                    ->reactive()
+                                    ->hidden(fn($get) => $get('type') === 'service' || empty($get('type'))), // Solo visible para 'product'
+
+                                // Campo Cantidad (Solo visible cuando 'type' es 'product')
+                                Forms\Components\TextInput::make('amount')
+                                    ->label("Cantidad")
+                                    ->numeric()
+                                    ->reactive()
+                                    ->hidden(fn($get) => $get('type') === 'service' || empty($get('type'))), // Solo visible para 'product'
+                            ]),
+                    ]),
             ]);
     }
 
@@ -151,6 +171,11 @@ class ItemResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('image')
+                    ->label('Imagen')
+                    ->size(50) // Tamaño de la imagen en píxeles
+                    ->circular() // Hace la imagen circular
+                    ->disk('public'), // Especifica el disco 'public'
                 Tables\Columns\TextColumn::make('type')
                     ->label("Tipo"),
                 Tables\Columns\TextColumn::make('name')
