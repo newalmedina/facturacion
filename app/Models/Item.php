@@ -35,23 +35,18 @@ class Item extends Model
         return $this->belongsTo(Supplier::class);  // An item belongs to one supplier
     }
 
-    public function getTaxesAmountAttribute()
-    {
-        if ($this->price !== null && $this->taxes !== null) {
-            $taxRate = $this->taxes / 100;  // Convert tax percentage to decimal
-            $taxAmount = $this->price * $taxRate;  // Calculate the tax amount
-            return $taxAmount;  // Devolver el valor como float, sin formatear
-        }
-        return 0.0;  // Return 0.0 if no price or taxes are set
-    }
+    public function getTaxesAmountAttribute(): float
+{
+    $price = round((float) $this->price, 2);
+    $taxes = round((float) $this->taxes, 2);
 
-    public function getTotalPriceAttribute()
+    return round(($price * $taxes) / 100, 2);
+}
+
+    
+    public function getTotalPriceAttribute(): float
     {
-        if ($this->price !== null) {
-            $taxAmount = $this->taxes_amount ?? 0.0;  // Ensure it's a float
-            $totalPrice = $this->price + $taxAmount;  // Add tax amount to base price
-            return $totalPrice;  // Return the total price as a float
-        }
-        return 0.0;  // Return 0.0 if price is not set
+        return round((float) $this->price + $this->taxes_amount,2);
     }
+    
 }

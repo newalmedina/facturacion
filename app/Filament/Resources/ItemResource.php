@@ -111,16 +111,52 @@ class ItemResource extends Resource
                                     ->label("Precio")
                                     ->numeric()
                                     ->hidden(fn($get) => empty($get('type')))
-                                    ->prefix('€'),
+                                    ->prefix('€')
+                                    ->reactive()
+                                    ->debounce(500)
+                                    ->afterStateUpdated(fn($state, $get, $set) => self::updateCalculatedFields($get, $set)),
+                                    
+
 
                                 // Campo IVA (Solo visible cuando 'type' es 'service')
                                 Forms\Components\TextInput::make('taxes')
                                     ->label("IVA")
                                     ->prefix('%')
                                     ->hidden(fn($get) => empty($get('type')))
-                                    ->numeric(),
+                                    ->numeric()
+                                    ->reactive()
+                                    ->debounce(500)
+                                    ->afterStateUpdated(fn($state, $get, $set) => self::updateCalculatedFields($get, $set)),                                
 
+                                    // 🔹 Campo calculado: Monto de impuestos
+                                // 🔹 Campo calculado: Monto de impuestos
+                                Forms\Components\TextInput::make('taxes_amount')
+                                    ->label("Monto de Impuestos")
+                                    ->disabled()
+                                    ->hidden(fn($get) => empty($get('type')))
+                                    ->numeric()
+                                    ->debounce(500)
+                                    ->default(fn($get) => round(($get('price') * $get('taxes')) / 100, 2))
+                                    ->prefix('€')
+                                    ->afterStateHydrated(function ($get, $set) {
+                                        if ($get('price') && $get('taxes')) {
+                                            $set('taxes_amount', round(($get('price') * $get('taxes')) / 100, 2));
+                                        }
+                                    }),
 
+                                // 🔹 Campo calculado: Precio total
+                                Forms\Components\TextInput::make('total_price')
+                                    ->label("Precio Total")
+                                    ->disabled()
+                                    ->hidden(fn($get) => empty($get('type')))
+                                    ->numeric()
+                                    ->default(fn($get) => round($get('price') + (($get('price') * $get('taxes')) / 100), 2))
+                                    ->prefix('€')
+                                    ->afterStateHydrated(function ($get, $set) {
+                                        if ($get('price') && $get('taxes')) {
+                                            $set('total_price', round($get('price') + (($get('price') * $get('taxes')) / 100), 2));
+                                        }
+                                    }),
 
 
                                 // Campo Marca (Solo visible cuando 'type' es 'product')
@@ -188,7 +224,7 @@ class ItemResource extends Resource
                     ->searchable()
                     ->formatStateUsing(fn($state) => number_format($state, 2) . '€')
                     ->sortable(),
-
+                    
                 Tables\Columns\TextColumn::make('taxes')
                     ->label("IVA %")
                     ->searchable()
@@ -287,6 +323,21 @@ class ItemResource extends Resource
         return [
             //
         ];
+    }
+
+    /**
+     * Función para actualizar los campos calculados en tiempo real
+     */
+    public static function updateCalculatedFields($get, $set)
+    {
+        $price = round((float) $get('price'), 2);
+        $taxes = round((float) $get('taxes'), 2);
+    
+        $taxAmount = round(($price * $taxes) / 100, 2);
+        $totalPrice = round($price + $taxAmount, 2);
+    
+        $set('taxes_amount', $taxAmount);
+        $set('total_price', $totalPrice);
     }
 
     public static function getPages(): array
