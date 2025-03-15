@@ -13,6 +13,11 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Exports\CategoryExport;
+use Filament\Tables\Actions\BulkAction;
+use Maatwebsite\Excel\Facades\Excel;
+
+
 
 class CategoryResource extends Resource
 {
@@ -77,11 +82,25 @@ class CategoryResource extends Resource
                 Tables\Actions\EditAction::make()->label(''),
                 Tables\Actions\DeleteAction::make()->label('')
             ])
-            /* ->bulkActions([
+             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    //Tables\Actions\DeleteBulkAction::make(),
+                    
                 ]),
-            ])*/;
+                BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                    ->action(function ($records) {
+                    
+                        $modelLabel = self::getPluralModelLabel();
+                        // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
+                        $fileName = $modelLabel . '-' . now()->format('Y-m-d') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+                        
+                        // Preparamos la consulta para exportar
+                        $query = \App\Models\Brand::whereIn('id', $records->pluck('id'));
+                        
+                        // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
+                        return Excel::download(new CategoryExport($query), $fileName);
+                    }),
+            ]);
     }
 
     public static function getRelations(): array

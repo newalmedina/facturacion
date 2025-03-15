@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\ItemExport;
 use App\Filament\Resources\ItemResource\Pages;
 use App\Filament\Resources\ItemResource\RelationManagers;
 use App\Models\Item;
@@ -14,11 +15,13 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ItemResource extends Resource
 {
@@ -311,11 +314,24 @@ class ItemResource extends Resource
                 Tables\Actions\EditAction::make()->label(''),
                 Tables\Actions\DeleteAction::make()->label('')
             ])
-            /* ->bulkActions([
+             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    //Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])*/;
+                BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                ->action(function ($records) {
+                
+                    $modelLabel = self::getPluralModelLabel();
+                    // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
+                    $fileName = $modelLabel . '-' . now()->format('Y-m-d') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+                    
+                    // Preparamos la consulta para exportar
+                    $query = \App\Models\Item::whereIn('id', $records->pluck('id'));
+                    
+                    // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
+                    return Excel::download(new ItemExport($query), $fileName);
+                }),
+            ]);
     }
 
     public static function getRelations(): array

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\UnitOfMeasureExport;
 use App\Filament\Resources\UnitOfMeasureResource\Pages;
 use App\Filament\Resources\UnitOfMeasureResource\RelationManagers;
 use App\Models\UnitOfMeasure;
@@ -13,6 +14,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Maatwebsite\Excel\Facades\Excel;
+use Filament\Tables\Actions\BulkAction;
 
 class UnitOfMeasureResource extends Resource
 {
@@ -78,11 +81,27 @@ class UnitOfMeasureResource extends Resource
                 Tables\Actions\EditAction::make()->label(''),
                 Tables\Actions\DeleteAction::make()->label('')
             ])
-            /* ->bulkActions([
+             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+               /* Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])*/;
+                ]),*/
+                
+            ]),
+            BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                ->action(function ($records) {
+                
+                    $modelLabel = self::getPluralModelLabel();
+                    // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
+                    $fileName = $modelLabel . '-' . now()->format('Y-m-d') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+                    
+                    // Preparamos la consulta para exportar
+                    $query = \App\Models\UnitOfMeasure::whereIn('id', $records->pluck('id'));
+                    
+                    // Llamamos al método ExcelBrandExport::download() y pasamos el nombre dinámico del archivo
+                    return Excel::download(new UnitOfMeasureExport($query), $fileName);
+                }),
+            ]);
     }
 
     public static function getRelations(): array

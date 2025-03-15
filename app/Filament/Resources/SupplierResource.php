@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\SupplierExport;
 use App\Filament\Resources\SupplierResource\Pages;
 use App\Filament\Resources\SupplierResource\RelationManagers;
 use App\Models\Supplier;
@@ -23,7 +24,11 @@ use App\Models\City;
 use App\Models\State;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\ImageColumn;
+use Maatwebsite\Excel\Facades\Excel;
+
+
 
 class SupplierResource extends Resource
 {
@@ -209,11 +214,24 @@ class SupplierResource extends Resource
                 Tables\Actions\EditAction::make()->label(''),
                 Tables\Actions\DeleteAction::make()->label('')
             ])
-            /* ->bulkActions([
+            ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                
                 ]),
-            ])*/;
+                BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                    ->action(function ($records) {
+                    
+                        $modelLabel = self::getPluralModelLabel();
+                        // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
+                        $fileName = $modelLabel . '-' . now()->format('Y-m-d') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+                        
+                        // Preparamos la consulta para exportar
+                        $query = \App\Models\Supplier::whereIn('id', $records->pluck('id'));
+                        
+                        // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
+                        return Excel::download(new SupplierExport($query), $fileName);
+                    }),
+            ]);
     }
 
     public static function getRelations(): array

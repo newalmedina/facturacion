@@ -2,18 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\CityExport;
 use App\Filament\Resources\CityResource\Pages;
 use App\Filament\Resources\CityResource\RelationManagers;
 use App\Models\City;
+use App\Models\Country;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Forms\Components\TextInput;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CityResource extends Resource
 {
@@ -58,27 +62,19 @@ class CityResource extends Resource
                     ->inline(false)
                     ->label("¿Activo?")
                     ->required(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->label("Fecha creación")
-                    ->formatStateUsing(function ($state) {
-                        return Carbon::parse($state)->format('d-m-Y h:i');
-                    })
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                // Forms\Components\TextInput::make('latitude')
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('longitude')
-                //     ->numeric(),
+               
 
             ]);
     }
 
     public static function getEloquentQuery(): Builder
     {
+        $activeCountries = Country::activos()->pluck( 'id')->toArray();
+
         return parent::getEloquentQuery()
-            ->join("countries", "countries.id", "=", "cities.country_id")
-            ->where('countries.is_active', 1);
+            ->select('cities.*') // Asegura que solo se seleccionen las columnas de 'cities'
+          
+            ->where('cities.country_id',$activeCountries);
     }
 
     public static function table(Table $table): Table
@@ -133,9 +129,23 @@ class CityResource extends Resource
                 Tables\Actions\DeleteAction::make()->label('')
             ])
             ->bulkActions([
-                /*Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),*/]);
+                Tables\Actions\BulkActionGroup::make([
+                    //Tables\Actions\DeleteBulkAction::make(),
+                ]),
+                BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                ->action(function ($records) {
+                
+                    $modelLabel = self::getPluralModelLabel();
+                    // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
+                    $fileName = $modelLabel . '-' . now()->format('Y-m-d') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+                    
+                    // Preparamos la consulta para exportar
+                    $query = \App\Models\City::whereIn('id', $records->pluck('id'));
+                    
+                    // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
+                    return Excel::download(new CityExport($query), $fileName);
+                }),
+            ]);
     }
 
     public static function getRelations(): array
