@@ -91,7 +91,7 @@ class UserResource extends Resource
                                             ->required(fn(\Filament\Forms\Get $get) => !$get('id')) // Requiere el campo solo si es un registro nuevo
                                             ->dehydrated(fn($state) => filled($state)) // Solo actualiza si el campo tiene un valor
                                             ->helperText(fn(\Filament\Forms\Get $get) => $get('id')
-                                                ? new HtmlString('<span style="color:#00B5D8">El campo solo se actualizará si ingresas un nuevo valor en el campo de contraseña.</span>')
+                                                ? new HtmlString('<span style="color:#00B5D8">El campo solo se actualizará si ingresas un nuevo valor.</span>')
                                                 : null) // Muestra la leyenda en modo edición
                                         ,
                                         Forms\Components\Toggle::make('active')

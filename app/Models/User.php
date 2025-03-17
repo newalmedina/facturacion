@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -80,4 +81,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(Timesheet::class);
     }
+
+    // app/Models/User.php
+
+public function getAvatarUrl(): string
+{
+    if ($this->image) {
+        return Storage::url($this->image); // Esto depende de cómo estés manejando las imágenes
+    }
+
+    // Si no tiene imagen, devuelve la URL de las iniciales
+    return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+}
+
 }

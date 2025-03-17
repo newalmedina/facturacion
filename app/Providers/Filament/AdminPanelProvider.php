@@ -17,9 +17,15 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Facades\Filament;
+use Filament\Navigation\MenuItem;
+use Filament\Navigation\UserMenuItem;
+use Filament\Pages\Auth\EditProfile;
+use Filament\Navigation\Navigation;
 
 class AdminPanelProvider extends PanelProvider
 {
+     
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -27,6 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+      
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -55,4 +62,17 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
+
+       // Método para registrar el menú del usuario
+       public function boot()
+       {
+           Filament::serving(function () {
+               Filament::registerUserMenuItems([
+                   'profile' => MenuItem::make()
+                       ->label('Perfil')
+                       ->url(route('filament.admin.pages.profile')) // Aquí también agregamos la URL
+                       ->icon('heroicon-o-user'),
+               ]);
+           });
+       }
 }
