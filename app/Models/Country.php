@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Country extends Model
 {
+    protected $guarded = [];
     /**
      * Scope para filtrar solo los países activos
      */

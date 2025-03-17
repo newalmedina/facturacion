@@ -20,9 +20,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class CountryResource extends Resource
 {
     protected static ?string $model = Country::class;
-    // protected static ?string $navigationLabel = 'Paises';
     protected static ?string $navigationGroup = 'Tablas de sistemas';
-    // protected static ?string $navigationLabel = 'Paises';
     protected static ?string $navigationIcon = 'heroicon-o-flag';
     protected static ?int $navigationSort = 15;
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\UserExport;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\City;
@@ -20,16 +21,19 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Collection;
+
 use Illuminate\Support\HtmlString;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
     protected static ?string $navigationLabel = 'Usuarios';
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $navigationIcon = 'heroicon-o-user';
     protected static ?string $navigationGroup = 'Administración usuarios';
     protected static ?int $navigationSort = 1;
     // protected static ?string $navigationLabel = 'Usuaios';
@@ -109,6 +113,12 @@ class UserResource extends Resource
                                             ])
                                             ->inline()
                                             ->inlineLabel(false),
+                                            Forms\Components\TextInput::make('phone')
+                                            ->maxLength(255)
+                                            ->label('Teléfono'),
+                                
+                                        Forms\Components\DatePicker::make('birth_date')
+                                        ->label('Fecha nacimiento'),
                                         Forms\Components\Select::make('country_id')
                                             ->relationship('country', 'name', function ($query) {
                                                 $query->where('is_active', true);  // Filtro para que solo se muestren países activos
@@ -229,9 +239,22 @@ class UserResource extends Resource
                 Tables\Actions\DeleteAction::make()->label('')
             ])
             ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
-                // ]),
+                Tables\Actions\BulkActionGroup::make([
+                   // Tables\Actions\DeleteBulkAction::make(),
+                ]),
+                BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                    ->action(function ($records) {
+                    
+                        $modelLabel = self::getPluralModelLabel();
+                        // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
+                        $fileName = $modelLabel . '-' . now()->format('Y-m-d') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+                        
+                        // Preparamos la consulta para exportar
+                        $query = \App\Models\User::whereIn('id', $records->pluck('id'));
+                        
+                        // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
+                        return Excel::download(new UserExport($query), $fileName);
+                    }),
             ]);
     }
 
