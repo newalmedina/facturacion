@@ -323,7 +323,7 @@ class ItemResource extends Resource
                 
                     $modelLabel = self::getPluralModelLabel();
                     // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
-                    $fileName = $modelLabel . '-' . now()->format('Y-m-d') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+                    $fileName = $modelLabel . '-' . now()->format('d-m-Y') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
                     
                     // Preparamos la consulta para exportar
                     $query = \App\Models\Item::whereIn('id', $records->pluck('id'));
