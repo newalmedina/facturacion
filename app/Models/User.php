@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Filament\Panel\Concerns\HasAvatars;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,8 +13,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
-
+    use HasApiTokens, HasFactory, Notifiable,HasAvatars;
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -83,15 +85,15 @@ class User extends Authenticatable
     }
 
     // app/Models/User.php
+   
+    public function getFilamentAvatarUrl(): ?string
+    {
+        if ($this->image) {
+            return Storage::url($this->image); // Esto depende de cómo estés manejando las imágenes
+        }
 
-public function getAvatarUrl(): string
-{
-    if ($this->image) {
-        return Storage::url($this->image); // Esto depende de cómo estés manejando las imágenes
+        // Si no tiene imagen, devuelve la URL de las iniciales
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
     }
-
-    // Si no tiene imagen, devuelve la URL de las iniciales
-    return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
-}
 
 }

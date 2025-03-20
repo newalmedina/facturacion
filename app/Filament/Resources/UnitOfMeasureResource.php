@@ -115,8 +115,8 @@ class UnitOfMeasureResource extends Resource
     {
         return [
             'index' => Pages\ListUnitOfMeasures::route('/'),
-            'create' => Pages\CreateUnitOfMeasure::route('/create'),
-            'edit' => Pages\EditUnitOfMeasure::route('/{record}/edit'),
+           /* 'create' => Pages\CreateUnitOfMeasure::route('/create'),
+            'edit' => Pages\EditUnitOfMeasure::route('/{record}/edit'),*/
         ];
     }
 }
