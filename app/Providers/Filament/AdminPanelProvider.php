@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\AvatarProviders\AutenticatedUserAvatar;
+use App\Filament\Pages\Settings\Settings;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -20,9 +21,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Facades\Filament;
 use Filament\Navigation\MenuItem;
-use Filament\Navigation\UserMenuItem;
-use Filament\Pages\Auth\EditProfile;
-use Filament\Navigation\Navigation;
+use Outerweb\FilamentSettings\Filament\Plugins\FilamentSettingsPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -41,6 +40,12 @@ class AdminPanelProvider extends PanelProvider
             ->defaultAvatarProvider(AutenticatedUserAvatar::class)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->plugins([
+                FilamentSettingsPlugin::make()
+                    ->pages([
+                       Settings::class,
+                    ])
+            ])
             ->pages([
                 Pages\Dashboard::class,
             ])
