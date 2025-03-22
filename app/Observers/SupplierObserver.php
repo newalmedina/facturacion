@@ -8,17 +8,6 @@ use Illuminate\Support\Facades\Storage;
 class SupplierObserver
 {
     /**
-     * Handle the Supplier "created" event.
-     *
-     * @param  \App\Models\Supplier  $supplier
-     * @return void
-     */
-    public function created(Supplier $supplier)
-    {
-        // No es necesario hacer nada aquí, ya que la imagen se sube cuando se crea.
-    }
-
-    /**
      * Handle the Supplier "updated" event.
      *
      * @param  \App\Models\Supplier  $supplier
@@ -28,9 +17,10 @@ class SupplierObserver
     {
         // Verificar si la imagen ha cambiado y eliminar la anterior si es necesario
         if ($supplier->isDirty('image')) {
-            // Eliminar la imagen anterior si existe
-            if ($supplier->getOriginal('image') && Storage::exists($supplier->getOriginal('image'))) {
-                Storage::delete($supplier->getOriginal('image'));
+            $oldImage = $supplier->getOriginal('image');
+            
+            if ($oldImage && Storage::disk('public')->exists($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
             }
         }
     }
@@ -43,21 +33,7 @@ class SupplierObserver
      */
     public function deleted(Supplier $supplier)
     {
-        // Eliminar la imagen cuando el registro se elimina
-        if ($supplier->image && Storage::exists($supplier->image)) {
-            Storage::delete($supplier->image);
-        }
-    }
-
-    /**
-     * Handle the Supplier "restored" event.
-     *
-     * @param  \App\Models\Supplier  $supplier
-     * @return void
-     */
-    public function restored(Supplier $supplier)
-    {
-        // No es necesario hacer nada aquí si es restaurado, pero puedes agregar lógica si lo deseas
+        $this->deleteImage($supplier);
     }
 
     /**
@@ -68,9 +44,19 @@ class SupplierObserver
      */
     public function forceDeleted(Supplier $supplier)
     {
-        // Eliminar la imagen al eliminarse de manera definitiva
-        if ($supplier->image && Storage::exists($supplier->image)) {
-            Storage::delete($supplier->image);
+        $this->deleteImage($supplier);
+    }
+
+    /**
+     * Elimina la imagen del almacenamiento si existe.
+     *
+     * @param  \App\Models\Supplier  $supplier
+     * @return void
+     */
+    private function deleteImage(Supplier $supplier)
+    {
+        if ($supplier->image && Storage::disk('public')->exists($supplier->image)) {
+            Storage::disk('public')->delete($supplier->image);
         }
     }
 }

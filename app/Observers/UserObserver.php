@@ -15,7 +15,7 @@ class UserObserver
      */
     public function created(User $user)
     {
-        // No es necesario hacer nada aquí, ya que la imagen se sube cuando se crea.
+        // No es necesario hacer nada aquí si no se requiere lógica adicional
     }
 
     /**
@@ -28,9 +28,10 @@ class UserObserver
     {
         // Verificar si la imagen ha cambiado y eliminar la anterior si es necesario
         if ($user->isDirty('image')) {
-            // Eliminar la imagen anterior si existe
-            if ($user->getOriginal('image') && Storage::exists($user->getOriginal('image'))) {
-                Storage::delete($user->getOriginal('image'));
+            $oldImage = $user->getOriginal('image');
+            
+            if ($oldImage && Storage::disk('public')->exists($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
             }
         }
     }
@@ -43,21 +44,7 @@ class UserObserver
      */
     public function deleted(User $user)
     {
-        // Eliminar la imagen cuando el registro se elimina
-        if ($user->image && Storage::exists($user->image)) {
-            Storage::delete($user->image);
-        }
-    }
-
-    /**
-     * Handle the User "restored" event.
-     *
-     * @param  \App\Models\User  $user
-     * @return void
-     */
-    public function restored(User $user)
-    {
-        // No es necesario hacer nada aquí si es restaurado, pero puedes agregar lógica si lo deseas
+        $this->deleteImage($user);
     }
 
     /**
@@ -68,9 +55,19 @@ class UserObserver
      */
     public function forceDeleted(User $user)
     {
-        // Eliminar la imagen al eliminarse de manera definitiva
-        if ($user->image && Storage::exists($user->image)) {
-            Storage::delete($user->image);
+        $this->deleteImage($user);
+    }
+
+    /**
+     * Elimina la imagen del almacenamiento si existe.
+     *
+     * @param  \App\Models\User  $user
+     * @return void
+     */
+    private function deleteImage(User $user)
+    {
+        if ($user->image && Storage::disk('public')->exists($user->image)) {
+            Storage::disk('public')->delete($user->image);
         }
     }
 }

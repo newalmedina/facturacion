@@ -8,17 +8,6 @@ use Illuminate\Support\Facades\Storage;
 class BrandObserver
 {
     /**
-     * Handle the Brand "created" event.
-     *
-     * @param  \App\Models\Brand  $brand
-     * @return void
-     */
-    public function created(Brand $brand)
-    {
-        // No es necesario hacer nada aquí, ya que la imagen se sube cuando se crea.
-    }
-
-    /**
      * Handle the Brand "updated" event.
      *
      * @param  \App\Models\Brand  $brand
@@ -28,9 +17,10 @@ class BrandObserver
     {
         // Verificar si la imagen ha cambiado y eliminar la anterior si es necesario
         if ($brand->isDirty('image')) {
-            // Eliminar la imagen anterior si existe
-            if ($brand->getOriginal('image') && Storage::exists($brand->getOriginal('image'))) {
-                Storage::delete($brand->getOriginal('image'));
+            $oldImage = $brand->getOriginal('image');
+            
+            if ($oldImage && Storage::disk('public')->exists($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
             }
         }
     }
@@ -43,21 +33,7 @@ class BrandObserver
      */
     public function deleted(Brand $brand)
     {
-        // Eliminar la imagen cuando el registro se elimina
-        if ($brand->image && Storage::exists($brand->image)) {
-            Storage::delete($brand->image);
-        }
-    }
-
-    /**
-     * Handle the Brand "restored" event.
-     *
-     * @param  \App\Models\Brand  $brand
-     * @return void
-     */
-    public function restored(Brand $brand)
-    {
-        // No es necesario hacer nada aquí si es restaurado, pero puedes agregar lógica si lo deseas
+        $this->deleteImage($brand);
     }
 
     /**
@@ -68,9 +44,19 @@ class BrandObserver
      */
     public function forceDeleted(Brand $brand)
     {
-        // Eliminar la imagen al eliminarse de manera definitiva
-        if ($brand->image && Storage::exists($brand->image)) {
-            Storage::delete($brand->image);
+        $this->deleteImage($brand);
+    }
+
+    /**
+     * Elimina la imagen del almacenamiento si existe.
+     *
+     * @param  \App\Models\Brand  $brand
+     * @return void
+     */
+    private function deleteImage(Brand $brand)
+    {
+        if ($brand->image && Storage::disk('public')->exists($brand->image)) {
+            Storage::disk('public')->delete($brand->image);
         }
     }
 }
