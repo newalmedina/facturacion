@@ -6,6 +6,7 @@ use App\Models\City;
 use App\Models\Country;
 use App\Models\State;
 use Closure;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -23,6 +24,23 @@ class Settings extends BaseSettings
     public static function getNavigationLabel(): string
     {
         return 'Configuración';
+    }
+    public function getTitle(): string
+    {
+        return 'Configuración';
+    }
+    public function getFormActions() : array
+    {
+        return [
+            Action::make('save')
+                ->label("Guardar")
+                ->submit('data')
+                ->keyBindings(['mod+s'])
+        ];
+    }
+    protected function getSavedNotificationTitle() : ?string
+    {
+        return "Guardado";
     }
     public function schema(): array|Closure
     {
