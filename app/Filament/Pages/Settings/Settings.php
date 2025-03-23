@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Settings;
 
 use App\Models\City;
 use App\Models\Country;
+use App\Models\Setting;
 use App\Models\State;
 use Closure;
 use Filament\Actions\Action;
@@ -44,6 +45,12 @@ class Settings extends BaseSettings
     }
     public function schema(): array|Closure
     {
+        $settings = Setting::first();
+$generalSettings = $settings->general;
+
+dd($generalSettings->imagef); // Accede como propiedad de objeto
+
+
         return [
             Grid::make(12) // Definimos un Grid con 12 columnas en total
                 ->schema([
