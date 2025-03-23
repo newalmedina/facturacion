@@ -45,12 +45,7 @@ class Settings extends BaseSettings
     }
     public function schema(): array|Closure
     {
-        $settings = Setting::first();
-$generalSettings = $settings->general;
-
-dd($generalSettings->imagef); // Accede como propiedad de objeto
-
-
+       
         return [
             Grid::make(12) // Definimos un Grid con 12 columnas en total
                 ->schema([

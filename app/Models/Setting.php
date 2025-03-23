@@ -10,7 +10,7 @@ class Setting extends Model
     use HasFactory;
 
     protected $table = 'settings';
-    
+    protected $guarded = [];
       /**
      * Accesor para obtener los valores como un objeto o null si no existen.
      */
@@ -27,4 +27,9 @@ class Setting extends Model
         
         return empty($data) ? null : (object) array_merge([], $data);
     }
+
+    /*$settings = Setting::first();
+    $generalSettings = $settings->general;
+    
+    dd($generalSettings->imagef); // Accede como propiedad de objeto*/
 }
