@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\AvatarProviders\AutenticatedUserAvatar;
 use App\Filament\Pages\Settings\Settings;
+use App\Models\Setting;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -21,19 +22,20 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Facades\Filament;
 use Filament\Navigation\MenuItem;
+use Illuminate\Support\Facades\Storage;
 use Outerweb\FilamentSettings\Filament\Plugins\FilamentSettingsPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
-     
+
     public function panel(Panel $panel): Panel
     {
-        return $panel
+        $panel
             ->default()
             ->id('admin')
             ->path('admin')
             ->login()
-      
+
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -43,7 +45,7 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 FilamentSettingsPlugin::make()
                     ->pages([
-                       Settings::class,
+                        Settings::class,
                     ])
             ])
             ->pages([
@@ -68,18 +70,29 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+
+        $settings = Setting::first();
+        $generalSettings = $settings->general;
+        if (!empty($generalSettings->image)) {
+            $panel->brandLogo(Storage::url(str_replace('"', '', $generalSettings->image)))
+                ->brandLogoHeight('3rem');
+        } else if (!empty($generalSettings->brand_name)) {
+            return $panel->brandName(str_replace('"', '', $generalSettings->brand_name));
+        }
+
+        return $panel;
     }
 
-       // Método para registrar el menú del usuario
-       public function boot()
-       {
-           Filament::serving(function () {
-               Filament::registerUserMenuItems([
-                   'profile' => MenuItem::make()
-                       ->label('Perfil')
-                       ->url(route('filament.admin.pages.profile')) // Aquí también agregamos la URL
-                       ->icon('heroicon-o-user'),
-               ]);
-           });
-       }
+    // Método para registrar el menú del usuario
+    public function boot()
+    {
+        Filament::serving(function () {
+            Filament::registerUserMenuItems([
+                'profile' => MenuItem::make()
+                    ->label('Perfil')
+                    ->url(route('filament.admin.pages.profile')) // Aquí también agregamos la URL
+                    ->icon('heroicon-o-user'),
+            ]);
+        });
+    }
 }

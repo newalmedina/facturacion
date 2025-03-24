@@ -28,5 +28,6 @@ class DatabaseSeeder extends Seeder
         $this->call(BrandDataSeeder::class);
         $this->call(CategoryDataSeeder::class);
         $this->call(SupplierDataSeeder::class);
+        $this->call(SettingDataSeeder::class);
     }
 }
