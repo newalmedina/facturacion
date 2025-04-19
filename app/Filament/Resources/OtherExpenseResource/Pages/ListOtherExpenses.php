@@ -3,22 +3,24 @@
 namespace App\Filament\Resources\OtherExpenseResource\Pages;
 
 use App\Filament\Resources\OtherExpenseResource;
-use App\Filament\Resources\OtherExpenseResource\Widgets\TotalGastadoWidget;
+use App\Filament\Resources\OtherExpenseResource\Widgets\OtherExpenseStats;
 use Filament\Actions;
+use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Pages\ListRecords;
 
 class ListOtherExpenses extends ListRecords
 {
-    protected static string $resource = OtherExpenseResource::class;
+    use ExposesTableToWidgets;
 
+    protected static string $resource = OtherExpenseResource::class;    
+    
     protected function getHeaderWidgets(): array
     {
         return [
-            TotalGastadoWidget::class => [
-                'total' => 1000, // Pasamos el valor aquí
-            ],
+            OtherExpenseStats::class,
         ];
     }
+    
     protected function getHeaderActions(): array
     {
         return [

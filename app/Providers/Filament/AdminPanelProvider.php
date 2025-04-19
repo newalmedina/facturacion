@@ -22,6 +22,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Facades\Filament;
 use Filament\Navigation\MenuItem;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Support\Facades\Storage;
 use Outerweb\FilamentSettings\Filament\Plugins\FilamentSettingsPlugin;
 
@@ -32,6 +33,8 @@ class AdminPanelProvider extends PanelProvider
     {
         $panel
             ->default()
+            ->sidebarCollapsibleOnDesktop()
+            ->maxContentWidth(MaxWidth::Full)
             ->id('admin')
             ->path('admin')
             ->login()
