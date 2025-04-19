@@ -95,8 +95,8 @@ class UserResource extends Resource
                                                 : null) // Muestra la leyenda en modo edición
                                         ,
                                         Forms\Components\Toggle::make('active')
-                                            ->label("¿Activo?")
                                             ->inline(false)
+                                            ->label("¿Activo?")
                                             ->required(),
 
 
@@ -113,12 +113,12 @@ class UserResource extends Resource
                                             ])
                                             ->inline()
                                             ->inlineLabel(false),
-                                            Forms\Components\TextInput::make('phone')
+                                        Forms\Components\TextInput::make('phone')
                                             ->maxLength(255)
                                             ->label('Teléfono'),
-                                
+
                                         Forms\Components\DatePicker::make('birth_date')
-                                        ->label('Fecha nacimiento'),
+                                            ->label('Fecha nacimiento'),
                                         Forms\Components\Select::make('country_id')
                                             ->relationship('country', 'name', function ($query) {
                                                 $query->where('is_active', true);  // Filtro para que solo se muestren países activos
@@ -240,18 +240,18 @@ class UserResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                   // Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
-                BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                BulkAction::make('export')->label('Exportar ' . self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
                     ->action(function ($records) {
-                    
+
                         $modelLabel = self::getPluralModelLabel();
                         // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
                         $fileName = $modelLabel . '-' . now()->format('d-m-Y') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
-                        
+
                         // Preparamos la consulta para exportar
                         $query = \App\Models\User::whereIn('id', $records->pluck('id'));
-                        
+
                         // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
                         return Excel::download(new UserExport($query), $fileName);
                     }),

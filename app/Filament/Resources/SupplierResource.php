@@ -114,6 +114,8 @@ class SupplierResource extends Resource
                                             ->label("Código postal")
                                             ->maxLength(255),
                                         Forms\Components\Toggle::make('active')
+                                            ->inline(false)
+                                            ->inline(false)
                                             ->label("Activo")
                                             ->required(),
 
@@ -212,22 +214,20 @@ class SupplierResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label(''),
-                Tables\Actions\DeleteAction::make()->label('')
+                Tables\Actions\DeleteAction::make()->label('')->visible(fn($record) =>  $record->canDelete)
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                
-                ]),
-                BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                Tables\Actions\BulkActionGroup::make([]),
+                BulkAction::make('export')->label('Exportar ' . self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
                     ->action(function ($records) {
-                    
+
                         $modelLabel = self::getPluralModelLabel();
                         // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
                         $fileName = $modelLabel . '-' . now()->format('d-m-Y') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
-                        
+
                         // Preparamos la consulta para exportar
                         $query = \App\Models\Supplier::whereIn('id', $records->pluck('id'));
-                        
+
                         // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
                         return Excel::download(new SupplierExport($query), $fileName);
                     }),

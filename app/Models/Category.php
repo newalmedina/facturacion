@@ -17,4 +17,8 @@ class Category extends Model
     {
         return $this->hasMany(Item::class);  // A category can have many items
     }
+    public function getCanDeleteAttribute(): bool
+    {
+        return $this->items()->doesntExist();
+    }
 }

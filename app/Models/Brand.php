@@ -13,4 +13,12 @@ class Brand extends Model
     protected $guarded = [];
 
     // Additional methods or relationships can go here
+    public function items()
+    {
+        return $this->hasMany(Item::class);  // A category can have many items
+    }
+    public function getCanDeleteAttribute(): bool
+    {
+        return $this->items()->doesntExist();
+    }
 }

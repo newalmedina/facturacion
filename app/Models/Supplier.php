@@ -26,4 +26,12 @@ class Supplier extends Model
     {
         return $this->belongsTo(City::class);
     }
+    public function items()
+    {
+        return $this->hasMany(Item::class);  // A category can have many items
+    }
+    public function getCanDeleteAttribute(): bool
+    {
+        return $this->items()->doesntExist();
+    }
 }

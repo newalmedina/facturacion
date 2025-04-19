@@ -95,7 +95,8 @@ class ItemResource extends Resource
 
                                 // Campo Activo
                                 Forms\Components\Toggle::make('active')
-                                    ->label("Activo")
+                                    ->inline(false)
+                                    ->label("¿Activo?")
                                     ->hidden(fn($get) => empty($get('type')))
                                     ->required(),
 
@@ -118,7 +119,7 @@ class ItemResource extends Resource
                                     ->reactive()
                                     ->debounce(500)
                                     ->afterStateUpdated(fn($state, $get, $set) => self::updateCalculatedFields($get, $set)),
-                                    
+
 
 
                                 // Campo IVA (Solo visible cuando 'type' es 'service')
@@ -129,9 +130,9 @@ class ItemResource extends Resource
                                     ->numeric()
                                     ->reactive()
                                     ->debounce(500)
-                                    ->afterStateUpdated(fn($state, $get, $set) => self::updateCalculatedFields($get, $set)),                                
+                                    ->afterStateUpdated(fn($state, $get, $set) => self::updateCalculatedFields($get, $set)),
 
-                                    // 🔹 Campo calculado: Monto de impuestos
+                                // 🔹 Campo calculado: Monto de impuestos
                                 // 🔹 Campo calculado: Monto de impuestos
                                 Forms\Components\TextInput::make('taxes_amount')
                                     ->label("Monto de Impuestos")
@@ -227,7 +228,7 @@ class ItemResource extends Resource
                     ->searchable()
                     ->formatStateUsing(fn($state) => number_format($state, 2) . '€')
                     ->sortable(),
-                    
+
                 Tables\Columns\TextColumn::make('taxes')
                     ->label("IVA %")
                     ->searchable()
@@ -256,7 +257,7 @@ class ItemResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\IconColumn::make('active')
-                    ->label("Activo")
+                    ->label("¿Activo?")
 
                     ->boolean(),
                 Tables\Columns\TextColumn::make('brand.name')
@@ -314,23 +315,23 @@ class ItemResource extends Resource
                 Tables\Actions\EditAction::make()->label(''),
                 Tables\Actions\DeleteAction::make()->label('')
             ])
-             ->bulkActions([
+            ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     //Tables\Actions\DeleteBulkAction::make(),
                 ]),
-                BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
-                ->action(function ($records) {
-                
-                    $modelLabel = self::getPluralModelLabel();
-                    // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
-                    $fileName = $modelLabel . '-' . now()->format('d-m-Y') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
-                    
-                    // Preparamos la consulta para exportar
-                    $query = \App\Models\Item::whereIn('id', $records->pluck('id'));
-                    
-                    // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
-                    return Excel::download(new ItemExport($query), $fileName);
-                }),
+                BulkAction::make('export')->label('Exportar ' . self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                    ->action(function ($records) {
+
+                        $modelLabel = self::getPluralModelLabel();
+                        // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
+                        $fileName = $modelLabel . '-' . now()->format('d-m-Y') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+
+                        // Preparamos la consulta para exportar
+                        $query = \App\Models\Item::whereIn('id', $records->pluck('id'));
+
+                        // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
+                        return Excel::download(new ItemExport($query), $fileName);
+                    }),
             ]);
     }
 
@@ -348,10 +349,10 @@ class ItemResource extends Resource
     {
         $price = round((float) $get('price'), 2);
         $taxes = round((float) $get('taxes'), 2);
-    
+
         $taxAmount = round(($price * $taxes) / 100, 2);
         $totalPrice = round($price + $taxAmount, 2);
-    
+
         $set('taxes_amount', $taxAmount);
         $set('total_price', $totalPrice);
     }

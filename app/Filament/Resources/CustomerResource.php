@@ -29,7 +29,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
-  
+
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?string $navigationGroup = 'Tablas de sistemas';
@@ -49,47 +49,47 @@ class CustomerResource extends Resource
     {
 
         return $form
-        ->schema([
-            Grid::make(12) // Definimos un Grid con 12 columnas en total
-                ->schema([
-                    Section::make()
-                        ->columnSpan(3) // Ocupa 2 columnas de las 12 disponibles
-                        ->schema([
-                            FileUpload::make('image')
-                                ->image()
-                                ->directory('customers')
-                                ->visibility('public')
-                                ->label('Imagen'),
-                            // Placeholder::make('created_at')
-                            //     ->label('Fecha de Creación')
-                            //     ->content(fn($get) => Carbon::parse($get('created_at'))->format('d-m-Y H:i')) // Formatea la fecha
-                            //     ->hidden(fn($get) => !$get('id')), // Solo mostrar en edición
+            ->schema([
+                Grid::make(12) // Definimos un Grid con 12 columnas en total
+                    ->schema([
+                        Section::make()
+                            ->columnSpan(3) // Ocupa 2 columnas de las 12 disponibles
+                            ->schema([
+                                FileUpload::make('image')
+                                    ->image()
+                                    ->directory('customers')
+                                    ->visibility('public')
+                                    ->label('Imagen'),
+                                // Placeholder::make('created_at')
+                                //     ->label('Fecha de Creación')
+                                //     ->content(fn($get) => Carbon::parse($get('created_at'))->format('d-m-Y H:i')) // Formatea la fecha
+                                //     ->hidden(fn($get) => !$get('id')), // Solo mostrar en edición
 
-                        ]),
+                            ]),
 
                         Section::make('Información general')
-                        ->columnSpan(9) // Ocupa 9 columnas de las 12 disponibles
-                        ->schema([
-                            Forms\Components\TextInput::make('name')
-                                ->required()
-                                ->maxLength(255)
-                                ->label('Nombre')
-                                ->columnSpan(2), // Ocupa 2 columnas
-                    
-                            Forms\Components\TextInput::make('email')
-                                ->email()
-                                ->required()
-                                ->maxLength(255)
-                                ->columnSpan(2),
-                            Forms\Components\TextInput::make('phone')
-                                ->maxLength(255)
-                                ->label('Teléfono')
-                                ->columnSpan(2),
-                    
-                            Forms\Components\DatePicker::make('birth_date')
-                            ->label('Fecha nacimiento')
-                                ->columnSpan(2),
-                    
+                            ->columnSpan(9) // Ocupa 9 columnas de las 12 disponibles
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->label('Nombre')
+                                    ->columnSpan(2), // Ocupa 2 columnas
+
+                                Forms\Components\TextInput::make('email')
+                                    ->email()
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->columnSpan(2),
+                                Forms\Components\TextInput::make('phone')
+                                    ->maxLength(255)
+                                    ->label('Teléfono')
+                                    ->columnSpan(2),
+
+                                Forms\Components\DatePicker::make('birth_date')
+                                    ->label('Fecha nacimiento')
+                                    ->columnSpan(2),
+
                                 Forms\Components\TextInput::make('identification')->columnSpan(2),
                                 Forms\Components\Radio::make('gender')
                                     ->label('Género')
@@ -100,7 +100,7 @@ class CustomerResource extends Resource
                                     ->inline()
                                     ->columnSpan(2)
                                     ->inlineLabel(false),
-                                    Forms\Components\Select::make('country_id')
+                                Forms\Components\Select::make('country_id')
                                     ->relationship('country', 'name', function ($query) {
                                         $query->where('is_active', true);  // Filtro para que solo se muestren países activos
                                     })
@@ -128,21 +128,21 @@ class CustomerResource extends Resource
                                     ->searchable()
                                     ->label("Ciudad")->columnSpan(2)
                                     ->preload(),
-                                    
+
                                 Forms\Components\TextInput::make('postal_code')
                                     ->label("Código postal")->columnSpan(2),
                                 Forms\Components\TextInput::make('address')
                                     ->label("Dirección")
                                     ->columnSpan(4),
-                                    Forms\Components\Toggle::make('active')
+                                Forms\Components\Toggle::make('active')
                                     ->label("¿Activo?")
                                     ->inline(false)
                                     ->columnSpan(2)
                                     ->required(),
-                        ])
-                        ->columns(4)
-                ]),
-        ]);
+                            ])
+                            ->columns(4)
+                    ]),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -202,18 +202,18 @@ class CustomerResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                   // Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
-                BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                BulkAction::make('export')->label('Exportar ' . self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
                     ->action(function ($records) {
-                    
+
                         $modelLabel = self::getPluralModelLabel();
                         // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
                         $fileName = $modelLabel . '-' . now()->format('d-m-Y') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
-                        
+
                         // Preparamos la consulta para exportar
                         $query = \App\Models\Customer::whereIn('id', $records->pluck('id'));
-                        
+
                         // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
                         return Excel::download(new CustomerExport($query), $fileName);
                     }),

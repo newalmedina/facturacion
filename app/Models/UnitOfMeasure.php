@@ -17,4 +17,8 @@ class UnitOfMeasure extends Model
     {
         return $this->hasMany(Item::class);  // A unit of measure can be used by many items
     }
+    public function getCanDeleteAttribute(): bool
+    {
+        return  $this->items()->doesntExist();
+    }
 }

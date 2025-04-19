@@ -194,25 +194,25 @@ class CountryResource extends Resource
                     ->modalDescription('¿Estás seguro de que deseas eliminar este registro?')
                     ->modalSubmitActionLabel('Si, eliminar')
                     ->modalCancelActionLabel('Cancelar') */
-                Tables\Actions\DeleteAction::make()->label('')
+                Tables\Actions\DeleteAction::make()->label('')->visible(fn($record) =>  $record->canDelete)
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     //Tables\Actions\DeleteBulkAction::make(),
                 ]),
-                BulkAction::make('export') ->label('Exportar '.self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
-                ->action(function ($records) {
-                
-                    $modelLabel = self::getPluralModelLabel();
-                    // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
-                    $fileName = $modelLabel . '-' . now()->format('d-m-Y') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
-                    
-                    // Preparamos la consulta para exportar
-                    $query = \App\Models\Country::whereIn('id', $records->pluck('id'));
-                    
-                    // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
-                    return Excel::download(new CountryExport($query), $fileName);
-                }),
+                BulkAction::make('export')->label('Exportar ' . self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                    ->action(function ($records) {
+
+                        $modelLabel = self::getPluralModelLabel();
+                        // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
+                        $fileName = $modelLabel . '-' . now()->format('d-m-Y') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+
+                        // Preparamos la consulta para exportar
+                        $query = \App\Models\Country::whereIn('id', $records->pluck('id'));
+
+                        // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
+                        return Excel::download(new CountryExport($query), $fileName);
+                    }),
             ]);
     }
 
