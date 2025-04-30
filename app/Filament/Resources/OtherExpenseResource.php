@@ -13,10 +13,14 @@ use Filament\Forms;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -25,6 +29,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Filters\DateFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\HtmlString;
 use Maatwebsite\Excel\Facades\Excel;
 
 class OtherExpenseResource extends Resource
@@ -49,12 +54,44 @@ class OtherExpenseResource extends Resource
     {
         return $form
             ->schema([
-                DatePicker::make('date')
-                    ->label("Fecha")
-                    ->required(),
-                TextInput::make('description')
-                    ->label("Descripción")
-                    ->maxLength(255),
+                // Fila 1: Total alineado a la derecha
+                Grid::make(12)
+                    ->schema([
+                        Placeholder::make('') // columna vacía
+                            ->columnSpan(10),
+                        Placeholder::make('total_placeholder')
+                            ->label(null)
+                            ->content(function (Get $get): HtmlString {
+                                $total = collect($get('details'))
+                                    ->sum(fn($item) => floatval($item['price'] ?? 0));
+
+                                $formattedTotal = number_format($total, 2, '.', ',');
+
+                                return new HtmlString(
+                                    '<div class="w-full flex justify-end">
+                                        <div class="bg-green-600 text-green font-bold text-xl px-6 py-3 rounded-lg shadow">
+                                            Total: € ' . $formattedTotal . '
+                                        </div>
+                                    </div>'
+                                );
+                            })
+                            ->columnSpanFull()
+                    ]),
+
+                // Fila 2: Fecha y Descripción
+                Grid::make(12)
+                    ->schema([
+                        DatePicker::make('date')
+                            ->label("Fecha")
+                            ->required()
+                            ->columnSpan(6),
+
+                        TextInput::make('description')
+                            ->label("Descripción")
+                            ->maxLength(255)
+                            ->columnSpan(6),
+                    ]),
+
                 Actions::make([
                     Action::make('createOtherExpenseItem')
                         ->label('Agregar Item')
@@ -78,34 +115,47 @@ class OtherExpenseResource extends Resource
                         ->modalSubmitActionLabel('Guardar')
                         ->modalWidth('md'),
                 ]),
+
                 Repeater::make('details')
                     ->label("Detalles")
                     ->relationship('details')
+                    ->live()
+                    ->afterStateHydrated(function (Get $get, Set $set) {
+                        $total = collect($get('details'))
+                            ->sum(fn($item) => floatval($item['price'] ?? 0));
+                        $set('total', number_format($total, 2, '.', ''));
+                    })
+                    ->afterStateUpdated(function (Get $get, Set $set) {
+                        $total = collect($get('details'))
+                            ->sum(fn($item) => floatval($item['price'] ?? 0));
+                        $set('total', number_format($total, 2, '.', ''));
+                    })
                     ->schema([
-                        // Select for Other Expense Item
-                        Select::make('other_expense_item_id')
-                            ->label("Items")
-                            ->options(OtherExpenseItem::active()->pluck('name', 'id'))
-                            ->searchable()
-                            ->live()
-                            ->required()
-                            ->columnSpan(4),  // Column span for this field (1/4 of the space)
+                        Grid::make(12)->schema([
+                            Select::make('other_expense_item_id')
+                                ->label("Items")
+                                ->options(OtherExpenseItem::active()->pluck('name', 'id'))
+                                ->searchable()
+                                ->required()
+                                ->columnSpan(10),
 
-                        // Amount field
-                        TextInput::make('price')
-                            ->label("Precio")
-                            ->numeric()
-                            ->required()
-                            ->columnSpan(2),  // Column span for this field (1/6 of the space)
+                            TextInput::make('price')
+                                ->label("Precio")
+                                ->numeric()
+                                ->required()
+                                ->prefix('€')
+                                ->columnSpan(2),
 
-                        // Observations field (larger)
-                        TextInput::make('observations')
-                            ->label("Observaciones")
-                            ->maxLength(255)
-                            ->columnSpan(6),
+                            TextInput::make('observations')
+                                ->label("Observaciones")
+                                ->maxLength(255)
+                                ->columnSpan(12),
+                        ]),
                     ])
                     ->minItems(1)
                     ->columnSpanFull(),
+
+
             ]);
     }
 
