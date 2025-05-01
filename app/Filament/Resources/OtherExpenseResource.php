@@ -59,7 +59,7 @@ class OtherExpenseResource extends Resource
                     ->schema([
                         Placeholder::make('') // columna vacía
                             ->columnSpan(10),
-                        Placeholder::make('total_placeholder')
+                        Placeholder::make('')
                             ->label(null)
                             ->content(function (Get $get): HtmlString {
                                 $total = collect($get('details'))
@@ -67,10 +67,19 @@ class OtherExpenseResource extends Resource
 
                                 $formattedTotal = number_format($total, 2, '.', ',');
 
+                                /*return new HtmlString(
+                                    '<div class="w-full flex justify-end text-center">
+                                        <div style="background-color: #28a745; color: white; font-weight: bold; font-size: 1.25rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">                                 
+                                            <p class="mb-2">Total:</p>    
+                                            <span style="font-weight: bold; font-size: 1.5rem;" >' . $formattedTotal . '€</span>                                  
+                                        </div>
+                                    </div>'
+                                );*/
                                 return new HtmlString(
-                                    '<div class="w-full flex justify-end">
+                                    '<div class="w-full flex justify-end text-center">
                                         <div class="bg-green-600 text-green font-bold text-xl px-6 py-3 rounded-lg shadow">
-                                            Total: € ' . $formattedTotal . '
+                                         <p class="mb-2">Total:</p>        
+                                        <span style=" font-size: 1.5rem;">' . $formattedTotal . '</span>
                                         </div>
                                     </div>'
                                 );
@@ -84,12 +93,12 @@ class OtherExpenseResource extends Resource
                         DatePicker::make('date')
                             ->label("Fecha")
                             ->required()
-                            ->columnSpan(6),
+                            ->columnSpan(2),
 
                         TextInput::make('description')
                             ->label("Descripción")
                             ->maxLength(255)
-                            ->columnSpan(6),
+                            ->columnSpan(10),
                     ]),
 
                 Actions::make([
@@ -143,7 +152,8 @@ class OtherExpenseResource extends Resource
                                 ->label("Precio")
                                 ->numeric()
                                 ->required()
-                                ->prefix('€')
+                                ->prefix('€')->reactive()
+                                ->debounce(500)
                                 ->columnSpan(2),
 
                             TextInput::make('observations')
@@ -162,6 +172,11 @@ class OtherExpenseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(
+                OtherExpense::query()
+                    // Usamos 'withSum' para calcular la suma de los precios en los detalles relacionados
+                    ->withSum('details', 'price')  // 'details' es la relación, 'price' es el campo a sumar
+            )
             ->columns([
 
                 Tables\Columns\TextColumn::make('date')
@@ -173,7 +188,7 @@ class OtherExpenseResource extends Resource
                     //->toggleable(isToggledHiddenByDefault: true)
                     //->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('description'),
+                Tables\Columns\TextColumn::make('description')->sortable(),
                 //->searchable(),
 
 
@@ -183,12 +198,18 @@ class OtherExpenseResource extends Resource
                     ->formatStateUsing(function ($record) {
                         return $record->itemnamestring;  // Usamos el accesor "itemnamestring" que definimos
                     }),
-
-                Tables\Columns\TextColumn::make('total')
+                Tables\Columns\TextColumn::make('details_sum_price')  // El nombre generado por 'withSum' es 'details_sum_price'
                     ->label('Total')
                     ->formatStateUsing(function ($record) {
-                        return $record->total;  // Usamos el accesor "total" que definimos
-                    }),
+                        return number_format($record->details_sum_price, 2, '.', ',');
+                    })
+                    ->sortable(),  // Hacer que la columna 'total' sea ordenable
+
+                /*Tables\Columns\TextColumn::make('total')
+                    ->label('Total')
+                    ->formatStateUsing(function ($record) {
+                        return number_format($record->total, 2, '.', ',');  // Usamos el accesor "total" que definimos
+                    }),*/
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->label("Fecha creación")
