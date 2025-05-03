@@ -38,7 +38,7 @@ class OtherExpenseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
     protected static ?string $navigationGroup = 'Operaciones';
-    protected static ?int $navigationSort = 25;
+    protected static ?int $navigationSort = 31;
     // protected static ?string $navigationLabel = 'Ciudadedsadss';
     public static function getModelLabel(): string
     {
@@ -65,7 +65,7 @@ class OtherExpenseResource extends Resource
                                 $total = collect($get('details'))
                                     ->sum(fn($item) => floatval($item['price'] ?? 0));
 
-                                $formattedTotal = number_format($total, 2, '.', ',');
+                                $formattedTotal = number_format($total, 2) . '€';
 
                                 /*return new HtmlString(
                                     '<div class="w-full flex justify-end text-center">
@@ -201,14 +201,14 @@ class OtherExpenseResource extends Resource
                 Tables\Columns\TextColumn::make('details_sum_price')  // El nombre generado por 'withSum' es 'details_sum_price'
                     ->label('Total')
                     ->formatStateUsing(function ($record) {
-                        return number_format($record->details_sum_price, 2, '.', ',');
+                        return number_format($record->details_sum_price, 2) . '€';
                     })
                     ->sortable(),  // Hacer que la columna 'total' sea ordenable
 
                 /*Tables\Columns\TextColumn::make('total')
                     ->label('Total')
                     ->formatStateUsing(function ($record) {
-                        return number_format($record->total, 2, '.', ',');  // Usamos el accesor "total" que definimos
+                        return number_format($record->total, 2);  // Usamos el accesor "total" que definimos
                     }),*/
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

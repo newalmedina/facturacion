@@ -1,22 +1,24 @@
 <?php
 
-namespace App\Filament\Resources\OtherExpenseItemResource\Pages;
+namespace App\Filament\Resources\SaleResource\Pages;
 
-use App\Filament\Resources\OtherExpenseItemResource;
+use App\Filament\Resources\SaleResource;
 use Filament\Actions;
+
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 
-class EditOtherExpenseItem extends EditRecord
+class EditSale extends EditRecord
 {
-    protected static string $resource = OtherExpenseItemResource::class;
+    protected static string $resource = SaleResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            //    Actions\DeleteAction::make(),
         ];
     }
+
     protected function getCancelFormAction(): Action
     {
         return Action::make('cancel')
