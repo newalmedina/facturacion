@@ -12,7 +12,8 @@ class EditSale extends EditRecord
 {
     protected static string $resource = SaleResource::class;
 
-    protected function getHeaderActions(): array
+
+    /* protected function getHeaderActions(): array
     {
         return [
             //    Actions\DeleteAction::make(),
@@ -25,5 +26,5 @@ class EditSale extends EditRecord
             ->label(__('filament-panels::resources/pages/edit-record.form.actions.cancel.label'))
             ->url($this->getResource()::getUrl('index'))
             ->color('gray');
-    }
+    }*/
 }

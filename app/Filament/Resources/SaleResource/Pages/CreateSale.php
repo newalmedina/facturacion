@@ -9,4 +9,5 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateSale extends CreateRecord
 {
     protected static string $resource = SaleResource::class;
+    protected static string $view = 'filament.resources.sale-resource.pages.sale-form';
 }
