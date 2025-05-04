@@ -23,6 +23,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Facades\Filament;
 use Filament\Navigation\MenuItem;
 use Filament\Support\Enums\MaxWidth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Outerweb\FilamentSettings\Filament\Plugins\FilamentSettingsPlugin;
 
@@ -74,14 +75,18 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
 
-        $settings = Setting::first();
-        $generalSettings = $settings->general;
-        if (!empty($generalSettings->image)) {
-            $panel->brandLogo(Storage::url(str_replace('"', '', $generalSettings->image)))
-                ->brandLogoHeight('3rem');
-        } else if (!empty($generalSettings->brand_name)) {
-            return $panel->brandName(str_replace('"', '', $generalSettings->brand_name));
+
+        if (Schema::hasTable('settings')) {
+            $settings = Setting::first();
+            $generalSettings = $settings->general;
+            if (!empty($generalSettings->image)) {
+                $panel->brandLogo(Storage::url(str_replace('"', '', $generalSettings->image)))
+                    ->brandLogoHeight('3rem');
+            } else if (!empty($generalSettings->brand_name)) {
+                return $panel->brandName(str_replace('"', '', $generalSettings->brand_name));
+            }
         }
+
 
         return $panel;
     }
