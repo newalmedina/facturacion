@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Sales;
 
+use App\Models\Customer;
 use Livewire\Component;
 use App\Models\Order;
 
@@ -9,9 +10,11 @@ class Form extends Component
 {
     public ?Order $order = null;
 
+    public $customerList = [];
+
     public $form = [
-        'customer_name' => '',
-        'total' => '',
+        'date' => '',
+        'customer_id' => '',
         // Agrega aquí más campos si los necesitas
     ];
 
@@ -22,6 +25,7 @@ class Form extends Component
         if ($order) {
             $this->form = $order->only(array_keys($this->form));
         }
+        $this->customerList = Customer::active()->get();
     }
 
     public function save()

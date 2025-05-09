@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')
                 ->constrained()
-                ->onDelete('cascade'); // si se borra la orden, se borran los detalles
+                ->onDelete('cascade')->nullable(); // si se borra la orden, se borran los detalles
+                
+            $table->string("product_name", 100)->nullable();
 
             $table->foreignId('item_id')
                 ->constrained()
