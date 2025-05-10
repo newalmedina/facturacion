@@ -3,8 +3,10 @@
 namespace App\Livewire\Sales;
 
 use App\Models\Customer;
+use App\Models\Item;
 use Livewire\Component;
 use App\Models\Order;
+use App\Models\User;
 
 class Form extends Component
 {
@@ -28,6 +30,8 @@ class Form extends Component
         $this->customerList = Customer::active()->get();
     }
 
+
+
     public function save()
     {
         /*$this->validate([
@@ -48,6 +52,8 @@ class Form extends Component
 
     public function render()
     {
-        return view('livewire.Sales.form');
+        return view('livewire.Sales.form', [
+            'items' => Item::active()->paginate(10),
+        ]);
     }
 }

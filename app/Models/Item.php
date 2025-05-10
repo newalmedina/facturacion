@@ -36,17 +36,20 @@ class Item extends Model
     }
 
     public function getTaxesAmountAttribute(): float
-{
-    $price = round((float) $this->price, 2);
-    $taxes = round((float) $this->taxes, 2);
+    {
+        $price = round((float) $this->price, 2);
+        $taxes = round((float) $this->taxes, 2);
 
-    return round(($price * $taxes) / 100, 2);
-}
+        return round(($price * $taxes) / 100, 2);
+    }
 
-    
+
     public function getTotalPriceAttribute(): float
     {
-        return round((float) $this->price + $this->taxes_amount,2);
+        return round((float) $this->price + $this->taxes_amount, 2);
     }
-    
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
+    }
 }
