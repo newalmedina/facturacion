@@ -7,12 +7,15 @@ use App\Models\Item;
 use Livewire\Component;
 use App\Models\Order;
 use App\Models\User;
+use Livewire\WithPagination;
 
 class Form extends Component
 {
-    public ?Order $order = null;
 
-    public $customerList = [];
+    use WithPagination;
+    public ?Order $order = null;
+    public  $searchProduct = null;
+    public int | string $perPage = 3;
 
     public $form = [
         'date' => '',
@@ -27,7 +30,6 @@ class Form extends Component
         if ($order) {
             $this->form = $order->only(array_keys($this->form));
         }
-        $this->customerList = Customer::active()->get();
     }
 
 
@@ -53,7 +55,8 @@ class Form extends Component
     public function render()
     {
         return view('livewire.Sales.form', [
-            'items' => Item::active()->paginate(10),
+            'items' => Item::active()->paginate($this->perPage),
+            'customerList' => Customer::active()->get(),
         ]);
     }
 }

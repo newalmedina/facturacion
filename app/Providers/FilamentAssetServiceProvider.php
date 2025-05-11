@@ -13,9 +13,9 @@ class FilamentAssetServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        /*FilamentAsset::register([
+        FilamentAsset::register([
             Js::make('custom-tailwind', asset('js/filament/tailwind/tailwind.js')),
-        ]);*/
+        ]);
     }
 
     /**

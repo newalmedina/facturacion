@@ -1,5 +1,5 @@
-<div class="grid grid-cols-5 gap-4">
-    <div class="col-span-3">
+<div class="grid grid-cols-9 gap-4">
+    <div class="col-span-5">
         <x-filament::section collapsible >
             <x-slot name="heading">
                Productos Seleccionados
@@ -9,7 +9,7 @@
             {{-- pRODUCTOS SELECCIONADOS --}}
         </x-filament::section>
     </div>
-    <div class="col-span-2">
+    <div class="col-span-4">
         <x-filament::section collapsible   class="mb-5">
             <x-slot name="heading">
               Info general
@@ -53,26 +53,44 @@
             </x-slot>
 
             {{-- lISTADO PRODUCTO --}}
-            <table style="width: 100%" class="min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <x-filament::input.wrapper  :valid="! $errors->has('form.date')">
+                <x-filament::input
+                    type="text"
+                    wire:model="searchProduct"
+                    placeholder="Buscar producto"
+
+                />
+            </x-filament::input.wrapper>
+            <table style="width: 100%" class="mt-5 min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-white dark:bg-gray-800">
                     <tr>
-                        <th class="px-4 py-2 text-left text-black dark:text-white">ID</th>
                         <th class="px-4 py-2 text-left text-black dark:text-white">Nombre</th>
+                        <th class="px-4 py-2 text-left text-black dark:text-white">Cantidad</th>
+                        <th class="px-4 py-2 text-left text-black dark:text-white">Precio</th>
+                        <th class="px-4 py-2 text-left text-black dark:text-white">IVA%</th>
+                        <th class="px-4 py-2 text-left text-black dark:text-white">Total</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                     @foreach ($items as $item)
                         <tr>
-                            <td class="px-4 py-2 text-black dark:text-white">{{ $item->id }}</td>
                             <td class="px-4 py-2 text-black dark:text-white">{{ $item->name }}</td>
+                            <td class="px-4 py-2 text-black dark:text-white">{{ $item->amount }}</td>
+                            <td class="px-4 py-2 text-black dark:text-white">{{ $item->price }}</td>
+                            <td class="px-4 py-2 text-black dark:text-white">{{ $item->taxes }}</td>
+                            <td class="px-4 py-2 text-black dark:text-white">{{ $item->totalPrice }}</td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-            
+
 
             <div class="mt-4">
-                <x-filament::pagination :paginator="$items" />
+               <x-filament::pagination
+                        :paginator="$items"
+                        :page-options="[5, 10, 20, 50, 100, 'all']"
+                        :current-page-option-property="$perPage"
+                    />
             </div>
             {{-- lISTADO PRODUCTO --}}
         </x-filament::section>
