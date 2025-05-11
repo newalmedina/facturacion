@@ -15,7 +15,7 @@ class Form extends Component
     use WithPagination;
     public ?Order $order = null;
     public  $searchProduct = null;
-    public int | string $perPage = 3;
+    public int | string $perPage = 10;
 
     public $form = [
         'date' => '',
@@ -32,7 +32,10 @@ class Form extends Component
         }
     }
 
-
+    public function buscarProducto()
+    {
+        $this->resetPage();
+    }
 
     public function save()
     {
@@ -52,10 +55,17 @@ class Form extends Component
         return redirect()->to('admin/sales');
     }
 
+    public function getConsultaItemsProperty()
+    {
+        return Item::active()
+            ->when($this->searchProduct, function ($query) {
+                $query->where('name', 'like', '%' . $this->searchProduct . '%');
+            });
+    }
     public function render()
     {
         return view('livewire.Sales.form', [
-            'items' => Item::active()->paginate($this->perPage),
+            'items' => $this->consultaItems->paginate($this->perPage),
             'customerList' => Customer::active()->get(),
         ]);
     }

@@ -57,6 +57,7 @@
                 <x-filament::input
                     type="text"
                     wire:model="searchProduct"
+                    wire:keyup="buscarProducto"
                     placeholder="Buscar producto"
 
                 />
@@ -88,8 +89,6 @@
             <div class="mt-4">
                <x-filament::pagination
                         :paginator="$items"
-                        :page-options="[5, 10, 20, 50, 100, 'all']"
-                        :current-page-option-property="$perPage"
                     />
             </div>
             {{-- lISTADO PRODUCTO --}}
