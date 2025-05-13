@@ -33,6 +33,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         $panel
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->default()
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(MaxWidth::Full)
