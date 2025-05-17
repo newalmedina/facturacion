@@ -2,21 +2,31 @@ import preset from '../../../../vendor/filament/filament/tailwind.config.preset'
 /** @type {import('tailwindcss').Config} */
 export default {
     presets: [preset],
+    // content: [
+    //     './app/Filament/**/*.php',
+    //     './resources/views/filament/**/*.blade.php',
+    //     './vendor/filament/**/*.blade.php',
+    // ],
     content: [
-        './app/Filament/**/*.php',
-        './resources/views/filament/**/*.blade.php',
-        './vendor/filament/**/*.blade.php',
-    ],
+    './app/**/*.php',                         // Todos los archivos PHP
+    './resources/**/*.blade.php',            // Todas las vistas Blade
+    './resources/**/*.js',                   // JS o Alpine.js
+    './resources/**/*.vue',                  // Si usas Vue
+    './vendor/filament/**/*.blade.php',      // Vistas de Filament
+],
+
     safelist: [
+
         'grid', // Habilita display: grid
         'inline-grid', // Habilita display: inline-grid
-        { pattern: /^grid-cols-(\d{1,2})$/ }, // Habilita grid-cols-1 hasta grid-cols-99 (útil para definir número de columnas)
-        { pattern: /^col-span-(\d{1,2})$/ }, // Habilita col-span-1 hasta col-span-99 (útil para el tamaño de columna)
-        { pattern: /^(sm|md|lg|xl):grid-cols-(\d{1,2})$/ }, // Habilita grid-cols-X con breakpoints responsivos
-        { pattern: /^(sm|md|lg|xl):col-span-(\d{1,2})$/ }, // Habilita col-span-X con breakpoints responsivos
-        { pattern: /^gap(-[xy])?-(0|1|2|3|4|5|6|8|10|12|16|20)$/ }, // Habilita espaciado (gap, gap-x, gap-y) para valores comunes
-        { pattern: /^(m|p)([trblxy]?)-[0-9]+$/ }, // Habilita márgenes (m) y padding (p), direccionales o globales
-        { pattern: /^(min-w|w)-full$/ }, // Habilita min-w-full y w-full
+        'grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4', 'grid-cols-5',
+        'col-span-1', 'col-span-2', 'col-span-3', 'col-span-4', 'col-span-5',
+        'sm:grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3', 'xl:grid-cols-4',
+        'sm:col-span-1', 'md:col-span-2', 'lg:col-span-3', 'xl:col-span-4',
+        'gap-1', 'gap-2', 'gap-4', 'gap-6', 'gap-8', 'gap-10',
+        'p-2', 'p-4', 'p-6', 'm-2', 'm-4', 'm-6',
+        'min-w-full', 'w-full',
+
 
          // Colores
           'text-red-500',
@@ -110,6 +120,34 @@ export default {
         'xl:col-span-1', 'xl:col-span-2', 'xl:col-span-3', 'xl:col-span-4',
         'xl:col-span-5', 'xl:col-span-6', 'xl:col-span-7', 'xl:col-span-8',
         'xl:col-span-9', 'xl:col-span-10', 'xl:col-span-11', 'xl:col-span-12',
+
+          'flex',
+    'justify-between', // Asegúrate de que esta clase esté en la lista
+    'inline-flex',
+    'flex-row',
+    'flex-row-reverse',
+    'flex-col',
+    'flex-col-reverse',
+    'flex-wrap',
+    'flex-wrap-reverse',
+    'flex-nowrap',
+    'justify-start',
+    'justify-end',
+    'justify-center',
+    'justify-between',
+    'justify-around',
+    'justify-evenly',
+    'items-start',
+    'items-end',
+    'items-center',
+    'items-baseline',
+    'items-stretch',
+    'gap-2',
+    'h-full',
+    'w-full',
+    'min-h-[50px]',
+    'h-5',
+    'w-5',
     ]
 
 

@@ -116,6 +116,81 @@
 
             {{-- lISTADO PRODUCTO --}}
            <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
+               <div class="lg:col-span-5" style="text-align: right">
+                  <x-filament::modal  id="manual-product-modal" width="5xl" :close-by-clicking-away="false">
+                    <x-slot name="trigger">
+                        <x-filament::button size="sm" color="info">
+                             Añadir producto manual
+                        </x-filament::button>
+                    </x-slot>
+                    <x-slot name="header">
+                        Añadir producto manual
+                    </x-slot>
+                    <hr>
+                    <div class="mb-5 mt-5" style="text-align: left !important">
+                        <div class="grid grid-cols-1 lg:grid-cols-7 gap-2">
+                            <div class="col-span-1 lg:col-span-2">
+                                <x-filament-forms::field-wrapper.label>
+                                    Nombre Producto
+                                </x-filament-forms::field-wrapper.label>
+                                <x-filament::input.wrapper>
+                                    <x-filament::input type="text" />
+                                </x-filament::input.wrapper>
+                            </div>
+                            <div class="col-span-1 lg:col-span-1">
+                                <x-filament-forms::field-wrapper.label>
+                                    Precio
+                                </x-filament-forms::field-wrapper.label>
+                                <x-filament::input.wrapper>
+                                    <x-filament::input type="number" min="1" />
+                                </x-filament::input.wrapper>
+                            </div>
+                            <div class="col-span-1 lg:col-span-1">
+                                <x-filament-forms::field-wrapper.label>
+                                    Cantidad
+                                </x-filament-forms::field-wrapper.label>
+                                <x-filament::input.wrapper>
+                                    <x-filament::input type="number" min="1" />
+                                </x-filament::input.wrapper>
+                            </div>
+                            <div class="col-span-1 lg:col-span-1">
+                                <x-filament-forms::field-wrapper.label>
+                                    Iva %
+                                </x-filament-forms::field-wrapper.label>
+                                <x-filament::input.wrapper>
+                                    <x-filament::input type="number" min="1" />
+                                </x-filament::input.wrapper>
+                            </div>
+                            <div class="col-span-1 lg:col-span-1">
+                                <x-filament-forms::field-wrapper.label>
+                                    Iva €
+                                </x-filament-forms::field-wrapper.label>
+                                <x-filament::input.wrapper>
+                                    <x-filament::input style="background: #e9e9e9f" disabled type="number" min="1" />
+                                </x-filament::input.wrapper>
+                            </div>
+                            <div class="col-span-1 lg:col-span-1">
+                                <x-filament-forms::field-wrapper.label>
+                                    Total €
+                                </x-filament-forms::field-wrapper.label>
+                                <x-filament::input.wrapper>
+                                    <x-filament::input disabled style="background: #e9e9e9f" type="number" min="1" />
+                                </x-filament::input.wrapper>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <x-slot name="footerActions">
+
+                        <x-filament::button size="sm" class="col-span-1">
+                            Guardar
+                        </x-filament::button>
+                    </x-slot>
+                    {{-- Modal content --}}
+                </x-filament::modal>
+               </div>
                 <!-- Primer input: Buscar Producto -->
                 <div class="lg:col-span-3">
                     <x-filament::input.wrapper >
@@ -138,6 +213,18 @@
                         </x-filament::input.select>
                     </x-filament::input.wrapper>
                 </div>
+
+                {{-- <div class="lg:col-span-5 flex items-center justify-center gap-2 w-full" wire:loading wire:target="buscarProducto"   >
+                    <x-filament::loading-indicator class="h-5 w-5"  />
+                    <span>Cargando tabla</span>
+                </div> --}}
+                <div class="lg:col-span-5 w-full flex justify-center" wire:loading wire:target="buscarProducto" >
+                    <div class="flex items-center justify-center gap-2">
+                        <x-filament::loading-indicator class="h-5 w-5" />
+                        <span>Cargando tabla</span>
+                    </div>
+                </div>
+
             </div>
 
             <div class="flex items-center mr-4  mt-5">
@@ -151,7 +238,7 @@
                 </div>
             </div>
             <div class="overflow-x-auto">
-                    <table  class="mt-5 min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <table  class="mt-5 min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700" >
                         <thead class="bg-white dark:bg-gray-800">
                             <tr>
                                 <th class="px-1 py-2 text-left text-black dark:text-white">Nombre</th>

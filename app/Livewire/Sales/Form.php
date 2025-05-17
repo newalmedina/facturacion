@@ -20,6 +20,7 @@ class Form extends Component
     public int | string $perPage = 10;
     public $inputValues = [];
     public $selectedProducts = [];
+    public $manualProduct = [];
     public $form = [
         'date' => '',
         'customer_id' => '',
