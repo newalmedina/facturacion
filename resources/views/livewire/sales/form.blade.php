@@ -1,11 +1,24 @@
 <div class="grid grid-cols-10 gap-4">
-    <div class="col-span-10 flex justify-end w-full">
-        <x-filament::button color="primary"   class="mr-5" wire:click="saveForm(0)">
-            Guardar 
-        </x-filament::button>
-        <x-filament::button color="success" wire:click='saveManualProduct'  class="" wire:click="saveForm(1)">
-            Guardar y facturar
-        </x-filament::button>
+    <div class="col-span-10 flex justify-between w-full">
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <x-filament::badge 
+                color="success"
+                style="font-size: 28px; font-weight: bold; padding: 20px 32px; width: 220px; text-align: center; line-height: 1.5; height: 70px; display: flex; align-items: center; justify-content: center;"
+            >
+                {{ number_format($getGeneralTotals['total'], 2) }} €
+            </x-filament::badge>
+        </div>
+        
+        
+       <div>
+            <x-filament::button color="primary"   class="mr-5" wire:click="saveForm(0)">
+                Guardar 
+            </x-filament::button>
+            <x-filament::button color="success" wire:click='saveManualProduct'  class="" wire:click="saveForm(1)">
+                Guardar y facturar
+            </x-filament::button>
+       </div>
       </div>
     <div class="col-span-9 lg:col-span-6">
         <x-filament::section collapsible >
@@ -72,6 +85,16 @@
                             </tr>
                         @endforeach
                     </tbody>
+                    @if($getGeneralTotals['taxes_amount']<>0)
+                    <tfoot>
+                        <tr>
+                            <th colspan="5"></th>
+                            <th class="px-1 py-2 text-left text-black dark:text-white"  colspan="1">{{ number_format($getGeneralTotals['taxes_amount'], 2)}}</th>
+                            <th  class="px-1 py-2 text-left text-black dark:text-white" colspan="1">{{ number_format($getGeneralTotals['total'], 2)}}</th>
+                            <th colspan="1"></th>
+                        </tr>
+                    </tbody>
+                    @endif
                 </table>
             </div>
             {{-- pRODUCTOS SELECCIONADOS --}}
@@ -284,7 +307,7 @@
             </div>
 
           
-            <div class="overflow-x-auto">
+            <div class="overflow-auto h-full">
                     <table  class="mt-5 min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700" >
                         <thead class="bg-white dark:bg-gray-800">
                             <tr>

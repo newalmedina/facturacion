@@ -29,6 +29,7 @@ export default {
         'mt-5',
         'mr-5',
         'mr-2',
+        'text-2xl',
 
         // Colores
         'text-red-600',

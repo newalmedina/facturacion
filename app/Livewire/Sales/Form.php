@@ -7,6 +7,7 @@ use App\Models\Item;
 use Livewire\Component;
 use App\Models\Order;
 use App\Models\User;
+use Carbon\Carbon;
 use Livewire\WithPagination;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Str;
@@ -22,6 +23,9 @@ class Form extends Component
     public $inputValues = [];
     public $selectedProducts = [];
     public $manualProduct;
+    public $getGeneralTotals = [
+        "total" => 0,
+    ];
 
     public $form = [
         'date' => '',
@@ -33,10 +37,15 @@ class Form extends Component
     {
         $this->resertManualProduct();
         $this->order = $order;
-
+        dd($this->order);
         if ($order) {
             $this->form = $order->only(array_keys($this->form));
         }
+
+        if (empty($order->id)) {
+            $this->form["date"] = Carbon::now()->format("Y-m-d");
+        }
+
         foreach ($this->consultaItems->get() as $item) {;
             if ($item->type == "service") {
                 $this->inputValues[$item->id] =  1;
@@ -61,6 +70,17 @@ class Form extends Component
             "price_with_taxes" => null,
             "total" => null,
         ];
+    }
+    public function getGeneralTotal()
+    {
+        $this->getGeneralTotals = [
+            "total" => 0,
+            "taxes_amount" => 0,
+        ];
+        foreach ($this->selectedProducts as $value) {
+            $this->getGeneralTotals["total"] += $value["total"];
+            $this->getGeneralTotals["taxes_amount"] += $value["taxes_amount"];
+        }
     }
     public function calculateManualProduct()
     {
@@ -134,6 +154,7 @@ class Form extends Component
             ->success()
             ->duration(3000)
             ->send();
+
         $this->dispatch('close-modal', id: 'manual-product-modal');
         $this->resertManualProduct();
     }
@@ -156,13 +177,9 @@ class Form extends Component
             ]
         );
     }
+
     public function saveForm($action = 0)
     {
-        /*$this->validate([
-            'form.customer_name' => 'required|string',
-            'form.total' => 'required|numeric',
-        ]);*/
-
         $this->validateForm();
 
         if (count($this->selectedProducts) == 0) {
@@ -175,12 +192,23 @@ class Form extends Component
             return false;
         }
 
+
+
+        if (empty($this->order->id)) {
+            //$this->
+        }
+
+
         Notification::make()
             ->title($action ? "Facturada" : "Guardada")
             ->body($action ? "Venta facturada correctamente" : "Vente guardada correctamente")
             ->success()
             ->duration(3000)
             ->send();
+
+
+
+
         /*if ($this->order) {
             $this->order->update($this->form);
             session()->flash('success', 'Venta actualizada.');
@@ -289,6 +317,7 @@ class Form extends Component
 
     public function render()
     {
+        $this->getGeneralTotal();
         return view('livewire.Sales.form', [
             'items' => $this->consultaItems->paginate($this->perPage),
             'customerList' => Customer::active()->get(),
