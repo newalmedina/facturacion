@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\User;
 use Livewire\WithPagination;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Str;
 
 class Form extends Component
 {
@@ -20,7 +21,8 @@ class Form extends Component
     public int | string $perPage = 10;
     public $inputValues = [];
     public $selectedProducts = [];
-    public $manualProduct = [];
+    public $manualProduct;
+
     public $form = [
         'date' => '',
         'customer_id' => '',
@@ -29,6 +31,7 @@ class Form extends Component
 
     public function mount(?Order $order = null)
     {
+        $this->resertManualProduct();
         $this->order = $order;
 
         if ($order) {
@@ -47,23 +50,146 @@ class Form extends Component
     {
         $this->resetPage();
     }
+    public function resertManualProduct()
+    {
+        $this->manualProduct = [
+            "product_name" => "",
+            "price" => null,
+            "quantity" => null,
+            "taxes" => null,
+            "taxes_amount" => null,
+            "price_with_taxes" => null,
+            "total" => null,
+        ];
+    }
+    public function calculateManualProduct()
+    {
+        if (
+            empty($this->manualProduct["quantity"]) ||
+            empty($this->manualProduct["price"]) ||
+            empty($this->manualProduct["taxes"])
+        ) {
+            $this->manualProduct["taxes_amount"] = null;
+            $this->manualProduct["price_with_taxes"] = null;
+            $this->manualProduct["total"] = null;
+            return false;
+        }
 
-    public function save()
+        $taxes_amount = round(
+            (float)($this->manualProduct["quantity"] * $this->manualProduct["price"] * $this->manualProduct["taxes"]) / 100,
+            2
+        );
+        $price  = ($this->manualProduct["quantity"] * $this->manualProduct["price"]);
+        $this->manualProduct["taxes_amount"] = $taxes_amount;
+        $this->manualProduct["price_with_taxes"] = $taxes_amount + $price;
+        $this->manualProduct["total"] = $taxes_amount + $price;
+    }
+
+    public function validateManualProduct()
+    {
+        $this->validate(
+            [
+                'manualProduct.product_name' => ['required', 'string'],
+                'manualProduct.price' => ['required', 'numeric', 'min:0'],
+                'manualProduct.quantity' => ['required', 'integer', 'min:1'],
+                'manualProduct.taxes' => ['required', 'numeric', 'min:0'],
+            ],
+            [
+                'manualProduct.product_name.required' => 'Este campo es obligatorio.',
+                'manualProduct.price.required' => 'Este campo es obligatorio.',
+                'manualProduct.quantity.required' => 'Este campo es obligatorio.',
+                'manualProduct.taxes.required' => 'Este campo es obligatorio.',
+            ]
+        );
+    }
+
+    public function updated($property)
+    {
+        if (str_starts_with($property, 'manualProduct.')) {
+            $this->calculateManualProduct();
+        }
+    }
+    public function saveManualProduct()
+    {
+
+        $this->validateManualProduct();
+        $id_aleatory = Str::random(16);
+        $this->selectedProducts[$id_aleatory] = [
+            "aleatory_id" => $id_aleatory,
+            "detail_id" => null,
+            "item_id" => null,
+            "item_name" => $this->manualProduct["product_name"],
+            "item_type" => "manual_product",
+            "price_unit" => $this->manualProduct["price"],
+            "price" => $this->manualProduct["price"],
+            "taxes" => $this->manualProduct["taxes"],
+            "taxes_amount" => $this->manualProduct["taxes_amount"],
+            "quantity" => $this->manualProduct["quantity"],
+            "price_with_taxes" => $this->manualProduct["price_with_taxes"],
+            "total" => $this->manualProduct["total"],
+        ];
+        Notification::make()
+            ->title('Producto añadido')
+            ->body('Producto añadido correctamente')
+            ->success()
+            ->duration(3000)
+            ->send();
+        $this->dispatch('close-modal', id: 'manual-product-modal');
+        $this->resertManualProduct();
+    }
+    public function closeModalManual()
+    {
+        $this->dispatch('close-modal', id: 'manual-product-modal');
+    }
+
+
+    public function validateForm()
+    {
+        $this->validate(
+            [
+                'form.customer_id' => ['required'],
+                'form.date' => ['required'],
+            ],
+            [
+                'form.customer_id.required' => 'Este campo es obligatorio.',
+                'form.date.required' => 'Este campo es obligatorio.',
+            ]
+        );
+    }
+    public function saveForm($action = 0)
     {
         /*$this->validate([
             'form.customer_name' => 'required|string',
             'form.total' => 'required|numeric',
         ]);*/
 
-        if ($this->order) {
+        $this->validateForm();
+
+        if (count($this->selectedProducts) == 0) {
+            Notification::make()
+                ->title('Error al guardar')
+                ->body('Debes seleccionar almenos 1 artículo')
+                ->danger()
+                ->duration(3000)
+                ->send();
+            return false;
+        }
+
+        Notification::make()
+            ->title($action ? "Facturada" : "Guardada")
+            ->body($action ? "Venta facturada correctamente" : "Vente guardada correctamente")
+            ->success()
+            ->duration(3000)
+            ->send();
+        /*if ($this->order) {
             $this->order->update($this->form);
             session()->flash('success', 'Venta actualizada.');
         } else {
             Order::create($this->form);
             session()->flash('success', 'Venta creada.');
-        }
+        }*/
 
-        return redirect()->to('admin/sales');
+        //return redirect()->to('admin/sales');
     }
 
     public function getConsultaItemsProperty()
@@ -106,6 +232,7 @@ class Form extends Component
 
         if (!isset($this->selectedProducts[$item->id])) {
             $this->selectedProducts[$item->id] = [
+                "aleatory_id" => null,
                 "detail_id" => null,
                 "item_id" => $item->id,
                 "item_name" => $item->name,
@@ -113,19 +240,19 @@ class Form extends Component
                 "price_unit" => $item->price,
                 "price" => 0,
                 "taxes" => $item->taxes,
-                "taxesAmount" => 0,
+                "taxes_amount" => 0,
                 "price_with_taxes" => 0,
                 "quantity" => 0,
                 "total" => 0,
             ];
         }
 
-        $taxesAmount = round((float)($quantity * $item->price * $item->taxes) / 100, 2);
+        $taxes_amount = round((float)($quantity * $item->price * $item->taxes) / 100, 2);
         $price  = ($quantity * $item->price);
         $this->selectedProducts[$item->id]["price"] = $price;
         $this->selectedProducts[$item->id]["quantity"] = $quantity;
-        $this->selectedProducts[$item->id]["total"] = $price + $taxesAmount;
-        $this->selectedProducts[$item->id]["taxesAmount"] =  $taxesAmount;
+        $this->selectedProducts[$item->id]["total"] = $price + $taxes_amount;
+        $this->selectedProducts[$item->id]["taxes_amount"] =  $taxes_amount;
 
         Notification::make()
             ->title('Producto añadido')
@@ -158,6 +285,8 @@ class Form extends Component
         // Conviértelo a número (int o float según corresponda)
         return is_numeric($raw) ? $raw + 0 : 0;
     }
+
+
     public function render()
     {
         return view('livewire.Sales.form', [

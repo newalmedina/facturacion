@@ -8,12 +8,12 @@ export default {
     //     './vendor/filament/**/*.blade.php',
     // ],
     content: [
-    './app/**/*.php',                         // Todos los archivos PHP
-    './resources/**/*.blade.php',            // Todas las vistas Blade
-    './resources/**/*.js',                   // JS o Alpine.js
-    './resources/**/*.vue',                  // Si usas Vue
-    './vendor/filament/**/*.blade.php',      // Vistas de Filament
-],
+        './app/**/*.php',                         // Todos los archivos PHP
+        './resources/**/*.blade.php',            // Todas las vistas Blade
+        './resources/**/*.js',                   // JS o Alpine.js
+        './resources/**/*.vue',                  // Si usas Vue
+        './vendor/filament/**/*.blade.php',      // Vistas de Filament
+    ],
 
     safelist: [
 
@@ -26,40 +26,47 @@ export default {
         'gap-1', 'gap-2', 'gap-4', 'gap-6', 'gap-8', 'gap-10',
         'p-2', 'p-4', 'p-6', 'm-2', 'm-4', 'm-6',
         'min-w-full', 'w-full',
+        'mt-5',
+        'mr-5',
+        'mr-2',
 
-
-         // Colores
-          'text-red-500',
+        // Colores
+        'text-red-600',
+        'text-red-500',
         'hover:text-red-600',
-         'bg-blue-500',
-    'bg-blue-700',
-    'border-blue-700',
-    'bg-yellow-400',
-    'border-yellow-600',
-    'bg-green-500',
-    'hover:bg-green-600',
-    'border-2',
-    'border-green-500',
-    'hover:border-green-600',
-    'text-white',
-    'hover:text-green-200',
+        'bg-violet-500',
+        'bg-violet-700',
+        'bg-fuchsia-500',
+        'bg-fuchsia-700',
+        'bg-blue-500',
+        'bg-blue-700',
+        'border-blue-700',
+        'bg-yellow-400',
+        'border-yellow-600',
+        'bg-green-500',
+        'hover:bg-green-600',
+        'border-2',
+        'border-green-500',
+        'hover:border-green-600',
+        'text-white',
+        'hover:text-green-200',
 
-    // Efectos de hover y transición
-    'transform',
-    'hover:scale-105',
-    'shadow-md',
+        // Efectos de hover y transición
+        'transform',
+        'hover:scale-105',
+        'shadow-md',
 
-    // Otros posibles estilos
-    'focus:outline-none',
-    'transition-all',
-    'duration-300',
-    'ease-in-out',
+        // Otros posibles estilos
+        'focus:outline-none',
+        'transition-all',
+        'duration-300',
+        'ease-in-out',
         'border-green-500',
         'hover:border-green-300',
         'text-green-500',          // Color base del ícono
         'hover:text-green-300',    // Color al pasar el cursor
         // Clases específicas (útiles si el patrón no los detecta en tiempo de build)
-            // Grid column counts (1–12)
+        // Grid column counts (1–12)
         'grid-cols-1', // 1 columna
         'grid-cols-2', // 2 columnas
         'grid-cols-3', // 3 columnas
@@ -121,33 +128,7 @@ export default {
         'xl:col-span-5', 'xl:col-span-6', 'xl:col-span-7', 'xl:col-span-8',
         'xl:col-span-9', 'xl:col-span-10', 'xl:col-span-11', 'xl:col-span-12',
 
-          'flex',
-    'justify-between', // Asegúrate de que esta clase esté en la lista
-    'inline-flex',
-    'flex-row',
-    'flex-row-reverse',
-    'flex-col',
-    'flex-col-reverse',
-    'flex-wrap',
-    'flex-wrap-reverse',
-    'flex-nowrap',
-    'justify-start',
-    'justify-end',
-    'justify-center',
-    'justify-between',
-    'justify-around',
-    'justify-evenly',
-    'items-start',
-    'items-end',
-    'items-center',
-    'items-baseline',
-    'items-stretch',
-    'gap-2',
-    'h-full',
-    'w-full',
-    'min-h-[50px]',
-    'h-5',
-    'w-5',
+
     ]
 
 
