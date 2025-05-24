@@ -1,24 +1,30 @@
 <div class="grid grid-cols-10 gap-4">
     <div class="col-span-10 flex justify-between w-full">
 
+       <div>
+            <x-filament::button color="primary"   class="mr-5" wire:click="saveForm(0)">
+                Guardar
+            </x-filament::button>
+            <x-filament::button color="success"  class="" wire:click="saveForm(1)">
+                Guardar y facturar
+            </x-filament::button>
+       </div>
+       <div>
+            <x-filament::button color="gray"  onclick="cancelBtnAction()"  class="mr-5" >
+                Cancelar
+            </x-filament::button>
+       </div>
+      </div>
+    <div class="col-span-10 flex justify-between w-full">
+
         <div style="display: flex; justify-content: center; align-items: center;">
-            <x-filament::badge 
+            <x-filament::badge
                 color="success"
                 style="font-size: 28px; font-weight: bold; padding: 20px 32px; width: 220px; text-align: center; line-height: 1.5; height: 70px; display: flex; align-items: center; justify-content: center;"
             >
                 {{ number_format($getGeneralTotals['total'], 2) }} €
             </x-filament::badge>
         </div>
-        
-        
-       <div>
-            <x-filament::button color="primary"   class="mr-5" wire:click="saveForm(0)">
-                Guardar 
-            </x-filament::button>
-            <x-filament::button color="success" wire:click='saveManualProduct'  class="" wire:click="saveForm(1)">
-                Guardar y facturar
-            </x-filament::button>
-       </div>
       </div>
     <div class="col-span-9 lg:col-span-6">
         <x-filament::section collapsible >
@@ -42,7 +48,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach ($selectedProducts as $product)
+                        @foreach ($selectedProducts as $key => $product)
                         {{-- @dd($product) --}}
                             <tr>
                                 <td class="px-2 py-2 text-black dark:text-white">
@@ -76,7 +82,7 @@
                                 <td class="px-2 py-2 text-black dark:text-white">
                                     <button
                                         wire:loading.attr="disabled"
-                                        wire:click="deleteItem({{ !empty($product['item_id'])? $product['item_id']:"'".$product['aleatory_id']."'" }})"
+                                        wire:click="deleteItem('{{ $key }}')"
                                         class="w-12 h-12 flex items-center justify-center focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-110">
                                         <x-heroicon-s-trash class="w-6 h-6 text-red-500 hover:text-red-600" />
                                     </button>
@@ -187,7 +193,7 @@
                                 <x-filament::input.wrapper
                                 :valid="! $errors->has('manualProduct.product_name')"
                                 >
-                                    <x-filament::input type="text" 
+                                    <x-filament::input type="text"
                                          wire:model="manualProduct.product_name"  />
                                 </x-filament::input.wrapper>
                                 @error('manualProduct.product_name')
@@ -199,7 +205,7 @@
                                     Precio
                                 </x-filament-forms::field-wrapper.label>
                                 <x-filament::input.wrapper :valid="! $errors->has('manualProduct.price')">
-                                    <x-filament::input type="number"   
+                                    <x-filament::input type="number"
                                           wire:model.live.debounce.500ms="manualProduct.price" min="1" />
                                 </x-filament::input.wrapper>
                                 @error('manualProduct.price')
@@ -211,9 +217,9 @@
                                     Cantidad
                                 </x-filament-forms::field-wrapper.label>
                                 <x-filament::input.wrapper :valid="! $errors->has('manualProduct.quantity')">
-                                    <x-filament::input    
+                                    <x-filament::input
                                           wire:model.live.debounce.500ms="manualProduct.quantity" type="number" min="1"   />
-                                       
+
                                 </x-filament::input.wrapper>
                                 @error('manualProduct.quantity')
                                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -224,7 +230,7 @@
                                     Iva %
                                 </x-filament-forms::field-wrapper.label>
                                 <x-filament::input.wrapper :valid="! $errors->has('manualProduct.taxes')" >
-                                    <x-filament::input   
+                                    <x-filament::input
                                           wire:model.live.debounce.500ms="manualProduct.taxes" type="number" min="1"  />
                                 </x-filament::input.wrapper>
                                 @error('manualProduct.taxes')
@@ -236,7 +242,7 @@
                                     Iva €
                                 </x-filament-forms::field-wrapper.label>
                                 <x-filament::input.wrapper>
-                                    <x-filament::input style="background: #e9e9e9f"  
+                                    <x-filament::input style="background: #e9e9e9f"
                                          wire:model.defer="manualProduct.taxes_amount" disabled type="number" min="1" />
                                 </x-filament::input.wrapper>
                             </div>
@@ -245,7 +251,7 @@
                                     Total €
                                 </x-filament-forms::field-wrapper.label>
                                 <x-filament::input.wrapper>
-                                    <x-filament::input disabled style="background: #e9e9e9f"   
+                                    <x-filament::input disabled style="background: #e9e9e9f"
                                          wire:model.defer="manualProduct.total" type="number" min="1" />
                                 </x-filament::input.wrapper>
                             </div>
@@ -264,8 +270,8 @@
                               Guardar
                             </x-filament::button>
                           </div>
-                          
-                          
+
+
                     </x-slot>
                     {{-- Modal content --}}
                 </x-filament::modal>
@@ -276,7 +282,7 @@
                         <x-filament::input
                             type="text"
                             wire:model.live.debounce.500ms="searchProduct"
-                           
+
                             placeholder="Buscar producto"
                         />
                     </x-filament::input.wrapper>
@@ -306,7 +312,7 @@
 
             </div>
 
-          
+
             <div class="overflow-auto h-full">
                     <table  class="mt-5 min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700" >
                         <thead class="bg-white dark:bg-gray-800">
@@ -328,8 +334,8 @@
                                             @if ($item->type == "service")
                                                 <div class="w-4 h-4 rounded bg-yellow-400 border border-yellow-600 mr-2"></div>
                                             @elseif ($item->type == "product")
-                                                <div class="w-4 h-4 rounded bg-blue-500 border border-blue-700 mr-2"></div>                                               
-                                                
+                                                <div class="w-4 h-4 rounded bg-blue-500 border border-blue-700 mr-2"></div>
+
                                                 @else
                                                 <div class="w-4 h-4 rounded bg-fuchsia-500 border border-fuchsia-700 mr-2"></div>
                                             @endif
@@ -375,4 +381,9 @@
             {{-- lISTADO PRODUCTO --}}
         </x-filament::section>
     </div>
+    <script>
+         function cancelBtnAction() {
+                window.location.href = "{{ url('/admin/sales') }}";
+            }
+    </script>
   </div>

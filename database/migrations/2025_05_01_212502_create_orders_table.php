@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->enum('type', ['sale', 'purchase', 'quote']);
+            $table->enum('type', ['sale', 'purchase', 'quote'])->default('sale');
             $table->foreignId('customer_id')
                 ->constrained()
                 ->onDelete('restrict'); // impide borrar un cliente con órdenes
 
-            $table->enum('status', ['pending', 'invoiced']);
+            $table->enum('status', ['pending', 'invoiced'])->default('pending');
             $table->timestamps();
             $table->softDeletes(); // 👈 Aquí el soft delete
         });

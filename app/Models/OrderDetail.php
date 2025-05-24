@@ -13,7 +13,7 @@ class OrderDetail extends Model
         'original_price',
         'price',
         'taxes',
-        'amount',
+        'quantity',
     ];
 
     public function order(): BelongsTo
@@ -24,5 +24,18 @@ class OrderDetail extends Model
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);
+    }
+    public function getTaxesAmountAttribute(): float
+    {
+        $price = round((float) $this->price, 2);
+        $taxes = round((float) $this->taxes, 2);
+
+        return round(($price * $taxes) / 100, 2);
+    }
+
+
+    public function getTotalPriceAttribute(): float
+    {
+        return round((float) $this->price + $this->taxes_amount, 2);
     }
 }

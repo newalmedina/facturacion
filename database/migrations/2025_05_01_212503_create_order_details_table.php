@@ -13,20 +13,22 @@ return new class extends Migration
     {
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('order_id')
                 ->constrained()
-                ->onDelete('cascade')->nullable(); // si se borra la orden, se borran los detalles
-                
+                ->onDelete('cascade'); // esta no es nullable por lógica
+
             $table->string("product_name", 100)->nullable();
 
             $table->foreignId('item_id')
+                ->nullable()          // <-- aquí primero nullable
                 ->constrained()
-                ->onDelete('restrict'); // impide borrar un item con ventas
+                ->onDelete('restrict');
 
-            $table->decimal('original_price', 10, 2);
-            $table->decimal('price', 10, 2);
-            $table->decimal('taxes', 10, 2);
-            $table->integer('amount');
+            $table->decimal('original_price', 10, 2)->nullable();
+            $table->decimal('price', 10, 2)->default();
+            $table->decimal('taxes', 10, 2)->default();
+            $table->integer('quantity')->nullable();
             $table->timestamps();
         });
     }
