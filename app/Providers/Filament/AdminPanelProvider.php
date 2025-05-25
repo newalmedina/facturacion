@@ -42,7 +42,15 @@ class AdminPanelProvider extends PanelProvider
             ->login()
 
             ->colors([
-                'primary' => Color::Amber,
+                //'primary' => Color::Amber,
+                'primary' => Color::Blue,      // Azul similar a Bootstrap primary (#0d6efd)
+                'secondary' => Color::Zinc,
+                'success' => Color::Emerald,   // Verde success (#198754)
+                'danger' => Color::Red,        // Rojo danger (#dc3545)
+                'warning' => Color::Yellow,    // Amarillo warning (#ffc107)
+                'info' => Color::Sky,          // Azul info (#0dcaf0)
+                'light' => Color::Gray,         // gris claro aproximado
+                'dark' => Color::Slate,
             ])
             ->defaultAvatarProvider(AutenticatedUserAvatar::class)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

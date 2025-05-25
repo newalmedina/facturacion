@@ -2,10 +2,10 @@
     <div class="col-span-10 flex justify-between w-full">
 
        <div>
-            <x-filament::button color="primary"   class="mr-5" wire:click="saveForm(0)">
+            <x-filament::button color="primary"   class="mr-5 mb-3" wire:click="saveForm(0)">
                 Guardar
             </x-filament::button>
-            <x-filament::button color="success"  class="" wire:click="saveForm(1)">
+            <x-filament::button color="success"  class="mr-5 mb-3" wire:click="saveForm(1)">
                 Guardar y facturar
             </x-filament::button>
        </div>
@@ -15,18 +15,44 @@
             </x-filament::button>
        </div>
       </div>
-    <div class="col-span-10 flex justify-between w-full">
-
-        <div style="display: flex; justify-content: center; align-items: center;">
-            <x-filament::badge
-                color="success"
-                style="font-size: 28px; font-weight: bold; padding: 20px 32px; width: 220px; text-align: center; line-height: 1.5; height: 70px; display: flex; align-items: center; justify-content: center;"
+      <div class="col-span-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+            <div class="w-full md:w-auto justify-self-center md:justify-self-start">
+                <x-filament::badge
+                color="info"
+                style="
+                    font-size: 30px;
+                    font-weight: bold;
+                    padding: 12px 30px;
+                    line-height: 1.2;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    white-space: nowrap; /* para que no haga salto de línea */
+                "
+                class="w-full md:w-auto"
             >
                 {{ number_format($getGeneralTotals['total'], 2) }} €
             </x-filament::badge>
+            
+            
+            
+            
+            </div>
+            <div class="w-full md:w-auto justify-self-center md:justify-self-end">
+                <x-filament::badge
+                     :color="$order->status === 'pending' ? 'warning' : 'success'"
+                    class="text-[28px] font-bold px-6 py-3 text-center leading-snug h-[70px] flex items-center justify-center md:w-auto w-full"
+                >
+                  <b>  {{$order->status=="pending"?"Pendiente":"Facturado"}}</b>
+                </x-filament::badge>
+            </div>
         </div>
-      </div>
-    <div class="col-span-9 lg:col-span-6">
+    </div>
+    
+    
+    
+    <div class="col-span-10 lg:col-span-6">
         <x-filament::section collapsible >
             <x-slot name="heading">
                Productos Seleccionados
@@ -106,7 +132,7 @@
             {{-- pRODUCTOS SELECCIONADOS --}}
         </x-filament::section>
     </div>
-    <div class="col-span-9 lg:col-span-4">
+    <div class="col-span-10 lg:col-span-4">
         <x-filament::section collapsible   class="mb-5">
             <x-slot name="heading">
               Info general

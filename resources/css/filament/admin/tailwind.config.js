@@ -1,6 +1,20 @@
 import preset from '../../../../vendor/filament/filament/tailwind.config.preset'
 /** @type {import('tailwindcss').Config} */
 export default {
+    theme: {
+        extend: {
+            colors: {
+                primary: '#2563eb',    // azul (aprox Bootstrap primary)
+                secondary: '#6b7280',  // gris medio (secondary)
+                success: '#16a34a',    // verde (success)
+                danger: '#dc2626',     // rojo (danger)
+                warning: '#fbbf24',    // amarillo (warning)
+                info: '#0ea5e9',       // azul claro (info)
+                light: '#f3f4f6',      // gris claro (light)
+                dark: '#111827',       // gris oscuro (dark)
+            },
+        },
+    },
     presets: [preset],
     // content: [
     //     './app/Filament/**/*.php',
@@ -16,6 +30,19 @@ export default {
     ],
 
     safelist: [
+        'justify-self-start',
+        'justify-self-end',
+        'justify-self-center',
+        'md:justify-self-start',
+        'md:justify-self-end',
+        'md:justify-self-center',
+        'w-auto',
+        'md:w-auto',
+        'text-xs', 'text-sm',
+        'sm:text-xs', 'sm:text-sm',
+        'md:text-xs', 'md:text-sm',
+        'lg:text-xs', 'lg:text-sm',
+        'xl:text-xs', 'xl:text-sm',
 
         'grid', // Habilita display: grid
         'inline-grid', // Habilita display: inline-grid
@@ -25,9 +52,11 @@ export default {
         'sm:col-span-1', 'md:col-span-2', 'lg:col-span-3', 'xl:col-span-4',
         'gap-1', 'gap-2', 'gap-4', 'gap-6', 'gap-8', 'gap-10',
         'p-2', 'p-4', 'p-6', 'm-2', 'm-4', 'm-6',
+        'px-2', 'px-4', 'px-6', 'xm-2', 'xm-4', 'xm-6',
         'min-w-full', 'w-full',
         'mt-5',
         'mr-5',
+        'mb-3',
         'mr-2',
         'text-2xl',
 
