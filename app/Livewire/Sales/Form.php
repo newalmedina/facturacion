@@ -62,8 +62,8 @@ class Form extends Component
                 "taxes_amount" =>    $detail->taxes_amount * $detail->quantity,
                 "quantity" => $detail->quantity,
 
-                "price_with_taxes" =>  $detail->total_price * $detail->quantity,
-                "total" => $detail->total_price * $detail->quantity,
+                "price_with_taxes" =>  round($detail->total_price * $detail->quantity, 2),
+                "total" => round($detail->total_price * $detail->quantity, 2),
             ];
         }
 
@@ -86,6 +86,7 @@ class Form extends Component
             $this->calculateManualProduct();
         }
     }
+
 
     public function buscarProducto(): void
     {
@@ -123,8 +124,8 @@ class Form extends Component
         $taxesAmount = round($price * $quantity * $taxes_percent, 2);
 
         $this->manualProduct['taxes_amount'] = $taxesAmount;
-        $this->manualProduct['price_with_taxes'] =  $subtotal + $taxesAmount;
-        $this->manualProduct['total'] =  $subtotal + $taxesAmount;
+        $this->manualProduct['price_with_taxes'] =  round($subtotal + $taxesAmount, 2);
+        $this->manualProduct['total'] = round($subtotal + $taxesAmount, 2);
     }
 
     protected function isManualProductComplete(): bool
@@ -174,8 +175,8 @@ class Form extends Component
             "taxes" => $this->manualProduct["taxes"],
             "taxes_amount" => $this->manualProduct["taxes_amount"],
             "quantity" => $this->manualProduct["quantity"],
-            "price_with_taxes" => $this->manualProduct["price_with_taxes"],
-            "total" => $this->manualProduct["total"],
+            "price_with_taxes" => round($this->manualProduct["price_with_taxes"], 2),
+            "total" => round($this->manualProduct["total"], 2),
         ];
 
         $this->notify('Producto añadido correctamente', 'Producto añadido', 'success');
@@ -298,13 +299,44 @@ class Form extends Component
 
             "taxes_amount" => $taxesAmount,
 
-            "price_with_taxes" => $subtotal + $taxesAmount,
+            "price_with_taxes" => round($subtotal + $taxesAmount, 2),
 
 
-            "total" => $subtotal + $taxesAmount,
+            "total" => round($subtotal + $taxesAmount, 2),
         ];
 
         $this->notify('Producto añadido correctamente', 'Producto añadido', 'success');
+    }
+    protected function recalculateProducts()
+    {
+        foreach ($this->selectedProducts as $key => $product) {
+
+            // ⚠️ Convertir a float antes de operar
+            $quantity = (float) ($product['quantity'] ?? 0);
+            $priceUnit = (float) ($product['price_unit'] ?? 0);
+            $taxRate = (float) ($product['taxes'] ?? 0); // porcentaje (ej: 21)
+
+            $subtotal = $priceUnit * $quantity;
+            $taxesAmount = $subtotal * ($taxRate / 100);
+            $priceWithTaxes = $subtotal + $taxesAmount;
+
+            // ✅ Guardar valores redondeados (2 decimales para precios)
+            $this->selectedProducts[$key] = [
+                "aleatory_id"       => $product['aleatory_id'] ?? null,
+                "detail_id"         => $product['detail_id'] ?? null,
+                "image_url"         => $product['image_url'] ?? null,
+                "item_id"           => $product['item_id'] ?? null,
+                "item_name"         => $product['item_name'] ?? '',
+                "item_type"         => $product['item_type'] ?? '',
+                "price_unit"        => $priceUnit,
+                "quantity"          => $quantity,
+                "price"             => round($subtotal, 2),
+                "taxes"             => $taxRate,
+                "taxes_amount"      => round($taxesAmount, 2),
+                "price_with_taxes"  => round($priceWithTaxes, 2),
+                "total"             => round($priceWithTaxes, 2),
+            ];
+        }
     }
 
     public function deleteItem($id): void
@@ -331,7 +363,7 @@ class Form extends Component
     {
         $this->getGeneralTotals = ['total' => 0, 'taxes_amount' => 0];
 
-        foreach ($this->selectedProducts as $item) {
+        foreach ($this->selectedProducts as $key => $item) {
             $this->getGeneralTotals['total'] += $item['total'];
             $this->getGeneralTotals['taxes_amount'] += $item['taxes_amount'];
         }
@@ -349,7 +381,9 @@ class Form extends Component
 
     public function render()
     {
+        $this->recalculateProducts();
         $this->getGeneralTotal();
+
 
         return view('livewire.Sales.form', [
             'items' => $this->consultaItems->paginate($this->perPage),

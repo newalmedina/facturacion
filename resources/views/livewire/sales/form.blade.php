@@ -99,14 +99,14 @@
                                 </td>
                                 <td class="px-2 py-2 text-black dark:text-white">{{ $product["price_unit"] }}</td>
                                 <td class="px-2 py-2 text-black dark:text-white"  style="width: 120px !important;">
-                                    <x-filament::input.wrapper >
-                                        <x-filament::input
-                                        value="{{$product['quantity']}}"
-                                        wire:target="selectItem"
+                                   <x-filament::input.wrapper>
+                                    <x-filament::input
+                                        wire:model.live.debounce.500ms="selectedProducts.{{ $key }}.quantity"
                                         type="number"
                                         min="1"
-                                        />
-                                    </x-filament::input.wrapper>
+                                    />
+                                </x-filament::input.wrapper>
+
 
                                 </td>
                                 <td class="px-2 py-2 text-black dark:text-white">{{ $product["price"] }}</td>
