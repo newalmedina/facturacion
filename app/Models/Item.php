@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Item extends Model
 {
@@ -44,6 +45,7 @@ class Item extends Model
     }
 
 
+
     public function getTotalPriceAttribute(): float
     {
         return round((float) $this->price + $this->taxes_amount, 2);
@@ -51,5 +53,21 @@ class Item extends Model
     public function scopeActive($query)
     {
         return $query->where('active', true);
+    }
+    public function getImageUrlAttribute()
+    {
+        if (!$this->image) {
+            return null;
+        }
+
+        $path = "/{$this->image}";
+
+        // Verifica si el archivo existe en el disco 'public'
+        if (!Storage::disk('public')->exists($path)) {
+            return null;
+        }
+
+        // Retorna la URL pública del archivo
+        return Storage::url($path);
     }
 }

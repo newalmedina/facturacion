@@ -34,10 +34,10 @@
             >
                 {{ number_format($getGeneralTotals['total'], 2) }} €
             </x-filament::badge>
-            
-            
-            
-            
+
+
+
+
             </div>
             <div class="w-full md:w-auto justify-self-center md:justify-self-end">
                 <x-filament::badge
@@ -49,9 +49,9 @@
             </div>
         </div>
     </div>
-    
-    
-    
+
+
+
     <div class="col-span-10 lg:col-span-6">
         <x-filament::section collapsible >
             <x-slot name="heading">
@@ -63,6 +63,7 @@
                 <table  class="mt-5 min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-white dark:bg-gray-800">
                         <tr>
+                            <th class="px-1 py-2 text-left text-black dark:text-white"></th>
                             <th class="px-1 py-2 text-left text-black dark:text-white">Nombre</th>
                             <th class="px-1 py-2 text-left text-black dark:text-white">Precio Unidad</th>
                             <th class="px-1 py-2 text-left text-black dark:text-white">Cantidad</th>
@@ -77,6 +78,13 @@
                         @foreach ($selectedProducts as $key => $product)
                         {{-- @dd($product) --}}
                             <tr>
+                                <td class="px-2 py-2 text-black dark:text-white">
+                                    @if ($product["image_url"])
+                                    <div class="flex items-center ">
+                                        <img src="{{ $product["image_url"] }}" alt="{{$product["item_name"]  }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                                    </div>
+                                        @endif
+                                </td>
                                 <td class="px-2 py-2 text-black dark:text-white">
                                     <div class="flex items-center ">
                                         @if ($product["item_type"] == "service")
@@ -338,11 +346,11 @@
 
             </div>
 
-
-            <div class="overflow-auto h-full">
-                    <table  class="mt-5 min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700" >
-                        <thead class="bg-white dark:bg-gray-800">
+            <div class="overflow-x-auto">
+                <table  class="mt-5 min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-white dark:bg-gray-800">
                             <tr>
+                                <th class="px-1 py-2 text-left text-black dark:text-white"></th>
                                 <th class="px-1 py-2 text-left text-black dark:text-white">Nombre</th>
                                 <th class="px-1 py-2 text-left text-black dark:text-white">Disp.</th>
                                 <th class="px-1 py-2 text-left text-black dark:text-white">Precio</th>
@@ -356,6 +364,15 @@
                             @foreach ($items as $item)
                                 <tr>
                                     <td class="px-2 py-2 text-black dark:text-white">
+                                        @if ($item->image_url)
+                                        <div class="flex items-center ">
+                                              <img src="{{ $item->image_url }}" alt="{{$item->name}}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                                        </div>
+                                              @endif
+
+                                    </td>
+                                    <td class="px-2 py-2 text-black dark:text-white">
+
                                         <div class="flex items-center ">
                                             @if ($item->type == "service")
                                                 <div class="w-4 h-4 rounded bg-yellow-400 border border-yellow-600 mr-2"></div>
@@ -402,7 +419,6 @@
                             />
                     </div>
             </div>
-
 
             {{-- lISTADO PRODUCTO --}}
         </x-filament::section>

@@ -51,6 +51,7 @@ class Form extends Component
             $this->selectedProducts[$index] = [
                 "aleatory_id" =>  $aleatory,
                 "detail_id" => $detail->id,
+                "image_url" => !empty($detail->item_id) ? $detail->item->image_url : null,
                 "item_id" => $detail->item_id,
                 "item_name" => $detail->product_name,
                 "item_type" => $detail->item?->type ?? 'manual_product',
@@ -285,6 +286,7 @@ class Form extends Component
         $this->selectedProducts[$index] = [
             "aleatory_id" => null,
             "detail_id" => null,
+            "image_url" => $item->image_url,
             "item_id" => $item->id,
             "item_name" => $item->name,
             "item_type" => $item->type,
