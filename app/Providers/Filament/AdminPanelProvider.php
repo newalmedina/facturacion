@@ -87,14 +87,19 @@ class AdminPanelProvider extends PanelProvider
 
         if (Schema::hasTable('settings')) {
             $settings = Setting::first();
-            $generalSettings = $settings->general;
-            if (!empty($generalSettings->image)) {
-                $panel->brandLogo(Storage::url(str_replace('"', '', $generalSettings->image)))
-                    ->brandLogoHeight('3rem');
-            } else if (!empty($generalSettings->brand_name)) {
-                return $panel->brandName(str_replace('"', '', $generalSettings->brand_name));
+
+            if ($settings && $settings->general) {
+                $generalSettings = $settings->general;
+
+                if (!empty($generalSettings->image)) {
+                    $panel->brandLogo(Storage::url(str_replace('"', '', $generalSettings->image)))
+                        ->brandLogoHeight('3rem');
+                } elseif (!empty($generalSettings->brand_name)) {
+                    return $panel->brandName(str_replace('"', '', $generalSettings->brand_name));
+                }
             }
         }
+
 
 
         return $panel;

@@ -69,16 +69,16 @@ class OtherExpenseResource extends Resource
 
                                 /*return new HtmlString(
                                     '<div class="w-full flex justify-end text-center">
-                                        <div style="background-color: #28a745; color: white; font-weight: bold; font-size: 1.25rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">                                 
-                                            <p class="mb-2">Total:</p>    
-                                            <span style="font-weight: bold; font-size: 1.5rem;" >' . $formattedTotal . '€</span>                                  
+                                        <div style="background-color: #28a745; color: white; font-weight: bold; font-size: 1.25rem; padding: 0.75rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                                            <p class="mb-2">Total:</p>
+                                            <span style="font-weight: bold; font-size: 1.5rem;" >' . $formattedTotal . '€</span>
                                         </div>
                                     </div>'
                                 );*/
                                 return new HtmlString(
                                     '<div class="w-full flex justify-end text-center">
                                         <div class="bg-green-600 text-green font-bold text-xl px-6 py-3 rounded-lg shadow">
-                                         <p class="mb-2">Total:</p>        
+                                         <p class="mb-2">Total:</p>
                                         <span style=" font-size: 1.5rem;">' . $formattedTotal . '</span>
                                         </div>
                                     </div>'
@@ -277,8 +277,8 @@ class OtherExpenseResource extends Resource
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
-                Tables\Actions\EditAction::make()->label(''),
-                Tables\Actions\DeleteAction::make()->label('')
+                Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
+                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')
             ])
             ->bulkActions([
                 /*Tables\Actions\BulkActionGroup::make([

@@ -4,16 +4,20 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
+use App\Mail\OrderDeletedMail;
 use App\Models\Order;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Mail;
 
 class SaleResource extends Resource
 {
@@ -100,11 +104,115 @@ class SaleResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
+                // 1. Enviar factura por email (solo si está facturado)
+                // 1. Enviar factura por e-mail
+                Tables\Actions\Action::make('sendInvoiceEmail')
+                    ->label('')
+                    ->icon('heroicon-o-envelope')
+                    ->color('secondary') // azul
+                    ->tooltip('Enviar la factura por correo electrónico')
+                    ->visible(fn($record) => $record->status === 'invoiced')
+                    ->modalHeading('Enviar factura por correo electrónico')
+                    ->form([
+                        Forms\Components\TextInput::make('email')
+                            ->label('Correo electrónico')
+                            ->email()
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data) {
+                        // Mail::to($data['email'])->send(new InvoiceMail($record));
+                        Notification::make()
+                            ->title('Factura enviada por email')
+                            ->success()
+                            ->send();
+                    }),
+
+                // 2. Enviar por WhatsApp
+                Tables\Actions\Action::make('sendWhatsapp')
+                    ->label('')
+                    ->icon('heroicon-o-chat-bubble-left-right')
+                    ->color('success') // verde
+                    ->tooltip('Enviar la factura por WhatsApp')
+                    ->visible(fn($record) => $record->status === 'invoiced')
+                    ->modalHeading('Enviar factura por WhatsApp')
+                    ->form([
+                        Forms\Components\TextInput::make('phone')
+                            ->label('Teléfono (código país + número)')
+                            ->tel()
+                            ->required(),
+                        Forms\Components\Textarea::make('message')
+                            ->label('Mensaje')
+                            ->default(fn($record) => "Hola, te envío la factura #{$record->id}")
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data) {
+                        $phone   = preg_replace('/\D+/', '', $data['phone']);
+                        $message = urlencode($data['message']);
+                        Notification::make()
+                            ->title('WhatsApp preparado')
+                            ->body("Haz clic para abrir WhatsApp.")
+                            ->action(
+                                url: "https://wa.me/{$phone}?text={$message}",
+                                label: 'Abrir WhatsApp'
+                            )
+                            ->send();
+                    }),
+
+                // 3. Facturar
+                Tables\Actions\Action::make('invoice')
+                    ->label('')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->color('warning') // amarillo
+                    ->tooltip('Generar factura')
+                    ->visible(fn($record) => $record->status !== 'invoiced')
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirmar facturación')
+                    ->action(function ($record) {
+                        $record->facturar();
+                        Notification::make()
+                            ->title('Factura generada')
+                            ->success()
+                            ->send();
+                    }),
+
+                // 4. Revertir facturación
+                Tables\Actions\Action::make('revertInvoice')
+                    ->label('')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->color('danger') // rojo
+                    ->tooltip('Revertir la facturación')
+                    ->visible(fn($record) => $record->status === 'invoiced')
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirmar reversión de facturación')
+                    ->action(function ($record) {
+                        $record->revertirFacturacion();
+                        Notification::make()
+                            ->title('Facturación revertida')
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\DeleteAction::make()
+                    ->label('')
+                    ->tooltip('Eliminar')
+                    ->visible(fn($record) => !$record->disabled_sales)
+                    ->after(function ($record) {
+                        // Enviar el correo
+                        $settings = Setting::first();
+                        if ($settings && $settings->general) {
+                            $generalSettings = $settings->general;
+
+                            if (!empty($generalSettings->email)) {
+                                $email = str_replace('"', '', $generalSettings->email);
+
+                                Mail::to($email)->send(new OrderDeletedMail($record));
+                            }
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

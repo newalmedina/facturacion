@@ -188,13 +188,13 @@ class CountryResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->label(''),
-                /*Tables\Actions\DeleteAction::make()->label('')->successNotificationTitle('Registro eliminado correctamente')
+                Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
+                /*Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->successNotificationTitle('Registro eliminado correctamente')
                     ->modalHeading('Eliminar registro')
                     ->modalDescription('¿Estás seguro de que deseas eliminar este registro?')
                     ->modalSubmitActionLabel('Si, eliminar')
                     ->modalCancelActionLabel('Cancelar') */
-                Tables\Actions\DeleteAction::make()->label('')->visible(fn($record) =>  $record->canDelete)
+                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->visible(fn($record) =>  $record->canDelete)
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

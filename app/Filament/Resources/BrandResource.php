@@ -116,8 +116,8 @@ class BrandResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->label(''),
-                Tables\Actions\DeleteAction::make()->label('')->visible(fn($record) =>  $record->canDelete)
+                Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
+                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->visible(fn($record) =>  $record->canDelete)
             ])
 
             ->bulkActions([

@@ -196,9 +196,9 @@ class CustomerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->label(''),
+                Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
 
-                Tables\Actions\DeleteAction::make()->label('')
+                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -23,6 +23,7 @@ class Form extends Component
     public array $selectedProducts = [];
     public array $getGeneralTotals = ["total" => 0, "taxes_amount" => 0];
     public array $manualProduct = [];
+    public array $detail_id_delete = [];
 
     public array $form = [
         'date' => '',
@@ -53,7 +54,7 @@ class Form extends Component
                 "detail_id" => $detail->id,
                 "image_url" => !empty($detail->item_id) ? $detail->item->image_url : null,
                 "item_id" => $detail->item_id,
-                "item_name" => $detail->product_name,
+                "item_name" => !empty($detail->item_id) ? $detail->item->name : $detail->product_name,
                 "item_type" => $detail->item?->type ?? 'manual_product',
                 "price_unit" => $detail->price,
                 "price" => $detail->price * $detail->quantity,
@@ -243,6 +244,12 @@ class Form extends Component
             $detail->save();
         }
 
+        //eliminamo de base de datos detalles que esten quitados
+        if (count($this->detail_id_delete) > 0) {
+            OrderDetail::whereIn('id', $this->detail_id_delete)->delete();
+            $this->detail_id_delete = [];
+        }
+
         $this->notify(
             $action ? 'Venta facturada correctamente' : 'Venta guardada correctamente',
             $action ? 'Facturada' : 'Guardada',
@@ -252,6 +259,20 @@ class Form extends Component
         if ($this->actionType == "new") {
             return redirect("/admin/sales/{$this->order->id}/edit");
         }
+    }
+    public function revertStatus()
+    {
+
+        $this->order->status = "pending";
+
+        $this->order->save();
+
+
+        $this->notify(
+            '',
+            'Acción realizada correctamente',
+            'success'
+        );
     }
 
     public function selectItem($itemId): void
@@ -341,7 +362,11 @@ class Form extends Component
 
     public function deleteItem($id): void
     {
+
         if (isset($this->selectedProducts[$id])) {
+            if (!empty($this->selectedProducts[$id]["detail_id"])) {
+                $this->detail_id_delete[] = $this->selectedProducts[$id]["detail_id"];
+            }
             unset($this->selectedProducts[$id]);
             $this->notify('Producto eliminado correctamente', 'Producto eliminado', 'success');
         }

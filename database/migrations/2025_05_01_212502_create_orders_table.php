@@ -15,13 +15,26 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->enum('type', ['sale', 'purchase', 'quote'])->default('sale');
+
             $table->foreignId('customer_id')
                 ->constrained()
-                ->onDelete('restrict'); // impide borrar un cliente con órdenes
+                ->onDelete('restrict');
 
             $table->enum('status', ['pending', 'invoiced'])->default('pending');
+
+            // Campos de tracking
+            $table->foreignId('created_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
+            $table->foreignId('deleted_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
             $table->timestamps();
-            $table->softDeletes(); // 👈 Aquí el soft delete
+            $table->softDeletes();
         });
     }
 
