@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Setting;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SettingDataSeeder extends Seeder
@@ -13,26 +12,22 @@ class SettingDataSeeder extends Seeder
      */
     public function run(): void
     {
-        $keys = [
-            'general.image',
-            'general.brand_name',
-            'general.email',
-            'general.phone',
-            'general.country_id',
-            'general.state_id',
-            'general.city_id',
-            'general.postal_code',
-            'general.address',
+        $settings = [
+            'general.image'       => [],
+            'general.brand_name'  => 'Keep Boxing',
+            'general.email'       => 'info@keepboxing.com',
+            'general.phone'       => '674987708',
+            'general.country_id'  => [],
+            'general.state_id'    => [],
+            'general.city_id'     => [],
+            'general.postal_code' => '09922',
+            'general.address'     => 'fonollar 6, planta baja',
         ];
-       
 
-        // Recorremos el array de keys y realizamos un insert para cada uno
-        // Recorremos el array de keys y realizamos un insert para cada uno utilizando save
-        foreach ($keys as $key) {
-            // Verificamos si ya existe el key, si no existe lo creamos
+        foreach ($settings as $key => $value) {
             Setting::firstOrCreate(
-                ['key' => $key],  // Condición de búsqueda
-                ['value' => json_encode([])]  // Insertamos un JSON vacío válido
+                ['key' => $key],
+                ['value' => json_encode($value)]  // Asegura que todos los valores sean JSON válidos
             );
         }
     }

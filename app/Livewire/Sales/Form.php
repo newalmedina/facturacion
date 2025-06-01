@@ -35,6 +35,7 @@ class Form extends Component
         if (!$order) {
             $order = new Order();
         }
+
         $this->resetManualProduct();
         $this->order = $order;
 
@@ -110,7 +111,9 @@ class Form extends Component
     public function calculateManualProduct(): void
     {
         if (!$this->isManualProductComplete()) {
-            $this->manualProduct['taxes_amount'] = $this->manualProduct['price_with_taxes'] = $this->manualProduct['total'] = null;
+            $this->manualProduct['taxes_amount'] = null;
+            $this->manualProduct['price_with_taxes'] = null;
+            $this->manualProduct['total'] = null;
             return;
         }
 
@@ -119,20 +122,24 @@ class Form extends Component
         $tax = $this->manualProduct['taxes'];
 
         $subtotal = $quantity * $price;
-
         $taxes_percent = $tax / 100;
 
-        $taxesAmount = round($price * $quantity * $taxes_percent, 2);
+        // Calcula el monto de impuestos, aunque sea 0
+        $taxesAmount = round($subtotal * $taxes_percent, 2);
 
         $this->manualProduct['taxes_amount'] = $taxesAmount;
-        $this->manualProduct['price_with_taxes'] =  round($subtotal + $taxesAmount, 2);
+        $this->manualProduct['price_with_taxes'] = round($subtotal + $taxesAmount, 2);
         $this->manualProduct['total'] = round($subtotal + $taxesAmount, 2);
     }
 
+
     protected function isManualProductComplete(): bool
     {
-        return $this->manualProduct['quantity'] && $this->manualProduct['price'] && $this->manualProduct['taxes'];
+        return !is_null($this->manualProduct['quantity'])
+            && !is_null($this->manualProduct['price'])
+            && !is_null($this->manualProduct['taxes']);
     }
+
 
     public function validateManualProduct(): void
     {
@@ -219,6 +226,9 @@ class Form extends Component
         $this->order->customer_id = $this->form["customer_id"];
         if ($action) {
             $this->order->status = "invoiced";
+        }
+        if (empty($this->order->id)) {
+            $this->order->type = "sale";
         }
         $this->order->save();
 

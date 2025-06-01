@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->string("code", 30)->nullable();
             $table->date('date');
             $table->enum('type', ['sale', 'purchase', 'quote'])->default('sale');
 

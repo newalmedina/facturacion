@@ -57,7 +57,12 @@ class SaleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->searchPlaceholder('Buscar código')
             ->columns([
+                Tables\Columns\TextColumn::make('code')
+                    ->searchable()
+                    ->label("Código")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('date')
                     ->date()
                     ->label("Fecha")

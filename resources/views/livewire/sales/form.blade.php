@@ -1,7 +1,13 @@
 <div class="grid grid-cols-10 gap-4">
+    @if(!empty($order->code))
+    <div class="col-span-10 flex justify-between w-full mb-3">
+            <h2 style="font-size: 24px"> Código: <b>{{$order->code}}</b></h2>
+        </div>
+        @endif
     <div class="col-span-10 flex justify-between w-full">
-
+        
        <div >
+
             @if (empty($order->id))
                 <x-filament::button color="primary"   class="mr-5 mb-3" wire:click="saveForm(0)">
                     Guardar
