@@ -5,7 +5,7 @@
         </div>
         @endif
     <div class="col-span-10 flex justify-between w-full">
-        
+
        <div >
 
             @if (empty($order->id))
@@ -183,7 +183,7 @@
                     @if($getGeneralTotals['taxes_amount']<>0)
                     <tfoot>
                         <tr>
-                            <th colspan="5"></th>
+                            <th colspan="6"></th>
                             <th class="px-1 py-2 text-left text-black dark:text-white"  colspan="1">{{ number_format($getGeneralTotals['taxes_amount'], 2)}}</th>
                             <th  class="px-1 py-2 text-left text-black dark:text-white" colspan="1">{{ number_format($getGeneralTotals['total'], 2)}}</th>
                             <th colspan="1"></th>

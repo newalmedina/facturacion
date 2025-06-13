@@ -26,6 +26,7 @@ class Order extends Model
         return $this->hasMany(OrderDetail::class);
     }
 
+
     public function getDisabledSalesAttribute(): bool
     {
         return $this->status == 'invoiced';

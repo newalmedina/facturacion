@@ -21,10 +21,18 @@ class OrderDetail extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function getProductNameFormattedAttribute(): string
+    {
+        return $this->item_id && $this->item
+            ? $this->item->name
+            : ($this->product_name ?? 'Sin nombre');
+    }
+
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);
     }
+
     public function getTaxesAmountAttribute(): float
     {
         $price = round((float) $this->price, 2);

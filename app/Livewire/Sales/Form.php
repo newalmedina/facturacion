@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Sales;
 
-use App\Models\{Customer, Item, Order, OrderDetail};
+use App\Models\{Customer, Item, Order, OrderDetail, Setting};
+use App\Services\ReceiptService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Filament\Notifications\Notification;
@@ -80,6 +82,16 @@ class Form extends Component
         foreach ($this->consultaItems->get() as $item) {
             $this->inputValues[$item->id] = $item->type === 'service' ? 1 : ($item->amount == 0 ? 0 : 1);
         }
+    }
+
+    public function generateReceipt()
+    {
+        $receiptService = new ReceiptService();
+        $pdf = $receiptService->generate($this->order);
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, $this->order->code . '.pdf');
     }
 
     public function updated($propertyName): void

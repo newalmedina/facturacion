@@ -90,8 +90,7 @@ class AdminPanelProvider extends PanelProvider
 
             if ($settings && $settings->general) {
                 $generalSettings = $settings->general;
-
-                if (!empty($generalSettings->image)) {
+                if (!empty($generalSettings->image) && $generalSettings->image != "[]") {
                     $panel->brandLogo(Storage::url(str_replace('"', '', $generalSettings->image)))
                         ->brandLogoHeight('3rem');
                 } elseif (!empty($generalSettings->brand_name)) {

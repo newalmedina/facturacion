@@ -13,13 +13,13 @@ class SettingDataSeeder extends Seeder
     public function run(): void
     {
         $settings = [
-            'general.image'       => [],
+            'general.image'       => "",
             'general.brand_name'  => 'Keep Boxing',
             'general.email'       => 'info@keepboxing.com',
             'general.phone'       => '674987708',
-            'general.country_id'  => [],
-            'general.state_id'    => [],
-            'general.city_id'     => [],
+            'general.country_id'  => "",
+            'general.state_id'    => "",
+            'general.city_id'     => "",
             'general.postal_code' => '09922',
             'general.address'     => 'fonollar 6, planta baja',
         ];
