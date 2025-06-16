@@ -41,7 +41,7 @@
             >
                 Enviar recibo por mail
             </x-filament::button>
-
+            {{--
             <!-- 3. Enviar recibo por WhatsApp -->
             <x-filament::button class="mr-5 mb-3"
                 icon="heroicon-o-chat-bubble-left-right"
@@ -50,6 +50,7 @@
             >
                 Enviar recibo por WhatsApp
             </x-filament::button>
+            --}}
 
                 <x-filament::button color="warning"   class="mr-5 mb-3"  icon="heroicon-o-arrow-uturn-left" wire:click="revertStatus(0)">
                     Revertir a pendiente
@@ -183,7 +184,10 @@
                     @if($getGeneralTotals['taxes_amount']<>0)
                     <tfoot>
                         <tr>
-                            <th colspan="6"></th>
+                            <th colspan="4"></th>
+                            <th class="px-1 py-2 text-left text-black dark:text-white"  colspan="1">{{ number_format($getGeneralTotals['subtotal'], 2)}}</th>
+                            
+                            <th></th>
                             <th class="px-1 py-2 text-left text-black dark:text-white"  colspan="1">{{ number_format($getGeneralTotals['taxes_amount'], 2)}}</th>
                             <th  class="px-1 py-2 text-left text-black dark:text-white" colspan="1">{{ number_format($getGeneralTotals['total'], 2)}}</th>
                             <th colspan="1"></th>
@@ -203,7 +207,7 @@
 
             <div class="grid grid-cols-1 gap-2">
                 <div class="col-span-1">
-                    <x-filament-forms::field-wrapper.label>
+                    <x-filament-forms::field-wrapper.label >
                         Fecha
                     </x-filament-forms::field-wrapper.label>
                     <x-filament::input.wrapper  :valid="! $errors->has('form.date')">
@@ -232,7 +236,21 @@
                     </x-filament::input.wrapper>
                     @error('form.customer_id')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                @enderror
+                    @enderror
+                </div>
+                <div class="col-span-1">
+                    <x-filament-forms::field-wrapper.label>
+                        Observaciones
+                    </x-filament-forms::field-wrapper.label>
+                    <x-filament::input.wrapper >
+                        <x-filament::input
+                        :disabled="$order->disabled_sales"
+                          type="text"
+                          wire:model="form.observations"
+
+                      />
+                    </x-filament::input.wrapper>
+                   
                 </div>
             </div>
             {{-- INFO GENERAL --}}

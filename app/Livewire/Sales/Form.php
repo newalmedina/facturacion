@@ -23,13 +23,14 @@ class Form extends Component
 
     public array $inputValues = [];
     public array $selectedProducts = [];
-    public array $getGeneralTotals = ["total" => 0, "taxes_amount" => 0];
+    public array $getGeneralTotals = ["subtotal" => 0, "total" => 0, "taxes_amount" => 0];
     public array $manualProduct = [];
     public array $detail_id_delete = [];
 
     public array $form = [
         'date' => '',
         'customer_id' => '',
+        'observations' => '',
     ];
 
     public function mount($order = null): void
@@ -236,6 +237,7 @@ class Form extends Component
 
         $this->order->date = $this->form["date"] ? Carbon::parse($this->form["date"])->format('Y-m-d') : null;
         $this->order->customer_id = $this->form["customer_id"];
+        $this->order->observations = $this->form["observations"];
         if ($action) {
             $this->order->status = "invoiced";
         }
@@ -408,10 +410,11 @@ class Form extends Component
 
     public function getGeneralTotal(): void
     {
-        $this->getGeneralTotals = ['total' => 0, 'taxes_amount' => 0];
+        $this->getGeneralTotals = ['subtotal' => 0, 'total' => 0, 'taxes_amount' => 0];
 
         foreach ($this->selectedProducts as $key => $item) {
             $this->getGeneralTotals['total'] += $item['total'];
+            $this->getGeneralTotals['subtotal'] += ($item['total'] - $item['taxes_amount']);
             $this->getGeneralTotals['taxes_amount'] += $item['taxes_amount'];
         }
     }

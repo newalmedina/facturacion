@@ -14,7 +14,6 @@ class ReceiptService
         $settings = Setting::pluck('value', 'key')->map(function ($value) {
             return is_array($value) ? $value : json_decode($value, true);
         });
-
         $generalSettings = collect($settings)->filter(function ($_, $key) {
             return str_starts_with($key, 'general.');
         })->mapWithKeys(function ($value, $key) {

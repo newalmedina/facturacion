@@ -15,7 +15,11 @@ class Order extends Model
     use SoftDeletes;
 
     protected $guarded = [];
-
+    protected $appends = [
+        'subtotal',
+        'impuestos',
+        'total'
+    ];
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
@@ -33,28 +37,45 @@ class Order extends Model
     }
     private static function generateCode($order)
     {
-        if ($order->type == 'sale') {
-            $prefix = 'VEN';
-            $datePart = Carbon::now()->format('ymd');
-
-            $latest = self::where('type', 'sale')
-                ->whereDate('created_at', Carbon::today())
-                ->whereNotNull("code")
-                ->orderBy('id', 'desc')
-                ->first();
-
-            $lastCode = $latest?->code;
-
-            if ($lastCode && Str::startsWith($lastCode, $prefix . $datePart)) {
-                $lastSequence = (int)substr($lastCode, -3);
-                $nextSequence = str_pad($lastSequence + 1, 3, '0', STR_PAD_LEFT);
-            } else {
-                $nextSequence = '001';
-            }
-
-            return $prefix . $datePart . $nextSequence;
+        if ($order->type !== 'sale') {
+            return null;
         }
-        return null;
+
+        $prefix = 'VEN';
+        $datePart = Carbon::now()->format('ymd');
+
+        // Obtener el último código creado (incluyendo soft deleted)
+        $latest = self::withTrashed()
+            ->where('type', 'sale')
+            ->whereDate('created_at', Carbon::today())
+            ->whereNotNull('code')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($latest && Str::startsWith($latest->code, $prefix . $datePart)) {
+            // Extraer la secuencia numérica del código (últimos 3 dígitos)
+            $lastSequence = (int) substr($latest->code, -3);
+            $nextSequence = $lastSequence + 1;
+        } else {
+            $nextSequence = 1;
+        }
+
+        // Buscar un código que no exista (incluyendo soft deleted)
+        do {
+            $code = $prefix . $datePart . str_pad($nextSequence, 3, '0', STR_PAD_LEFT);
+
+            $exists = self::withTrashed()
+                ->where('code', $code)
+                ->exists();
+
+            if ($exists) {
+                $nextSequence++;
+            } else {
+                break;
+            }
+        } while (true);
+
+        return $code;
     }
 
     protected static function booted(): void
@@ -85,5 +106,20 @@ class Order extends Model
     public function deletedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'deleted_by');
+    }
+
+    public function getSubtotalAttribute(): float
+    {
+        return round($this->orderDetails->sum('total_base_price'), 2);
+    }
+
+    public function getImpuestosAttribute(): float
+    {
+        return round($this->orderDetails->sum('taxes_amount'), 2);
+    }
+
+    public function getTotalAttribute(): float
+    {
+        return round($this->subtotal + $this->impuestos, 2);
     }
 }

@@ -5,8 +5,10 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
 use App\Mail\OrderDeletedMail;
+use App\Mail\ReceiptMail;
 use App\Models\Order;
 use App\Models\Setting;
+use App\Services\ReceiptService;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -112,21 +114,75 @@ class SaleResource extends Resource
                 Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
                 // 1. Enviar factura por email (solo si está facturado)
                 // 1. Enviar factura por e-mail
+                Tables\Actions\Action::make('generateInvoice')
+                    ->label('')
+                    ->icon('heroicon-o-document-text')  // Ícono de recibo/factura
+                    ->color('secondary')            // Azul, por ejemplo
+                    ->tooltip('Generar recibo')
+                    ->visible(fn($record) => $record->status === 'invoiced')
+                    ->action(function ($record) {
+                        // Aquí va la lógica para generar la factura
+                        // $record->generateInvoice();
+
+                        $receiptService = new ReceiptService();
+                        $pdf = $receiptService->generate($record);
+
+                        return  response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->stream();
+                        }, $record->code . '.pdf');
+                    }),
                 Tables\Actions\Action::make('sendInvoiceEmail')
                     ->label('')
                     ->icon('heroicon-o-envelope')
-                    ->color('secondary') // azul
+                    ->color('primary') // azul
                     ->tooltip('Enviar la factura por correo electrónico')
                     ->visible(fn($record) => $record->status === 'invoiced')
                     ->modalHeading('Enviar factura por correo electrónico')
                     ->form([
+                        Forms\Components\Select::make('email_option')
+                            ->label('Selecciona correo')
+                            ->options([
+                                'same' => 'Mismo correo del cliente',
+                                'other' => 'Otro correo',
+                            ])
+                            ->afterStateUpdated(function (callable $get, $set, $record) {
+                                $set('email', null);
+                                if ($get('email_option') === 'same' && $record?->customer?->email) {
+                                    $set('email', $record->customer->email);
+                                }
+                            })
+                            ->default('same')
+                            ->reactive(),  // permite reaccionar a cambios
+
                         Forms\Components\TextInput::make('email')
                             ->label('Correo electrónico')
                             ->email()
-                            ->required(),
+                            ->required()
+                            ->disabled(fn(callable $get) => $get('email_option') === 'same')
+                            ->afterStateHydrated(function ($state, callable $get, $set, $record) {
+                                // Al cargar el formulario por primera vez
+                                if ($get('email_option') === 'same' && $record?->customer?->email) {
+                                    $set('email', $record->customer->email);
+                                }
+                            })
+
+                            ->dehydrated(),
+
+
                     ])
                     ->action(function ($record, array $data) {
                         // Mail::to($data['email'])->send(new InvoiceMail($record));
+                        $receiptService = new ReceiptService();
+                        $pdf = $receiptService->generate($record);
+
+                        // Enviar correo a la dirección del cliente
+                        Mail::to($data['email'])
+                            ->send(new ReceiptMail($pdf, $record));
+
+                        /*  Mail::to($record->customer->email)
+                            ->send(new ReceiptMail($pdf, $record));*/
+
+
                         Notification::make()
                             ->title('Factura enviada por email')
                             ->success()
@@ -134,7 +190,7 @@ class SaleResource extends Resource
                     }),
 
                 // 2. Enviar por WhatsApp
-                Tables\Actions\Action::make('sendWhatsapp')
+                /*Tables\Actions\Action::make('sendWhatsapp')
                     ->label('')
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->color('success') // verde
@@ -162,7 +218,7 @@ class SaleResource extends Resource
                                 label: 'Abrir WhatsApp'
                             )
                             ->send();
-                    }),
+                    }),*/
 
                 // 3. Facturar
                 Tables\Actions\Action::make('invoice')
@@ -174,7 +230,9 @@ class SaleResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading('Confirmar facturación')
                     ->action(function ($record) {
-                        $record->facturar();
+                        $record->status = "invoiced";
+                        $record->save();
+
                         Notification::make()
                             ->title('Factura generada')
                             ->success()
@@ -191,7 +249,9 @@ class SaleResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading('Confirmar reversión de facturación')
                     ->action(function ($record) {
-                        $record->revertirFacturacion();
+
+                        $record->status = "pending";
+                        $record->save();
                         Notification::make()
                             ->title('Facturación revertida')
                             ->success()

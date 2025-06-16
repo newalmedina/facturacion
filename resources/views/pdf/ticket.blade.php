@@ -10,7 +10,9 @@
         margin: 0 auto;
         padding: 0;
         box-sizing: border-box;
-        background: orange;
+    }
+    .nobreak {
+        white-space: nowrap;
     }
 
     .text-center { text-align: center; }
@@ -38,14 +40,16 @@
 
     .separator {
         border-top: 1px dashed #000;
-        margin: 0;
+        margin: 10px 0px;
     }
 </style>
 </head>
 <body>
     <div class="text-center bold" style="font-size:14px;">
+ 
          @if (!empty($settings['image']))
-            <img src="{{ public_path('storage/' . $settings['image']) }}" alt="Logo" style="max-height: 50px; margin-bottom: 5px;">
+            <img src="{{ public_path('storage/' . $settings['image']) }}" alt="Logo" style="max-height: 50px; margin-bottom: 10px;">
+            <br>
         @endif
         {{ $settings['brand_name'] ?? 'Nombre Marca' }}<br>
         {{ $settings['address'] ?? 'Dirección' }}<br>
@@ -64,8 +68,9 @@
 
     <div class="separator"></div>
 
+    <br>
     <table>
-        <thead>
+        {{-- <thead>
             <tr>
                 <th class="text-left" style="width: 35%;">Producto</th>
                 <th class="text-right" style="width: 15%;">P.U.</th>
@@ -74,24 +79,25 @@
                 <th class="text-right" style="width: 6%;">IVA%</th>
                 <th class="text-right" style="width: 25%;">Total</th>
             </tr>
-        </thead>
+        </thead>--}}
         <tbody>
             @php
                 $subtotal = 0;
                 $totalImpuestos = 0;
             @endphp
             @foreach($order->orderDetails as $detail)
-                @php
-                    $totalImpuestos+=$detail->taxes_amount;
-                    $subtotal+=($detail->total_price - $detail->taxes_amount);
-                @endphp
+               
                 <tr>
-                    <td class="text-left" style="font-size: 11px;">{{ \Illuminate\Support\Str::limit($detail->product_name_formatted, 30, '...') }}</td>
-                    <td class="text-right">{{ number_format($detail->price, 2) }}€</td>
-                    <td class="text-right">{{ $detail->quantity }}</td>
-                    <td class="text-right">{{ number_format($detail->taxes, 2) }}</td>
-                    <td class="text-right">{{ number_format($detail->taxes_amount, 2) }}</td>
-                    <td class="text-right">{{ number_format($detail->total_price, 2) }}€</td>
+                    <td colspan="6" class="text-left" style="font-size: 11px;">{{ \Illuminate\Support\Str::limit($detail->product_name_formatted, 30, '...') }}</td>
+                    
+                </tr>
+                <tr>
+                    <td class="text-right nobreak">{{ number_format($detail->price, 2) }}€</td>
+                    <td class="text-right nobreak">x {{ $detail->quantity }}</td>
+                    <td class="text-right nobreak">{{ number_format($detail->total_base_price, 2) }}€</td>
+                    <td class="text-right nobreak">{{ number_format($detail->taxes, 2) }} %</td>
+                    {{-- <td class="text-right nobreak">{{ number_format($detail->taxes_amount, 2) }} €</td> --}}
+                    <td class="text-right bold nobreak">{{ number_format($detail->total_with_taxes, 2) }}€</td>
                 </tr>
             @endforeach
         </tbody>
@@ -102,17 +108,18 @@
     <table>
         <tr>
             <td class="text-left">Subtotal</td>
-            <td class="text-right">{{ number_format($subtotal, 2) }}€</td>
+            <td class="text-right bold">{{ number_format($order->subtotal, 2) }}€</td>
         </tr>
         <tr>
             <td class="text-left">Impuestos</td>
-            <td class="text-right">{{ number_format($totalImpuestos, 2) }}€</td>
+            <td class="text-right bold">{{ number_format($order->impuestos, 2) }}€</td>
         </tr>
         <tr class="bold">
             <td class="text-left">Total</td>
-            <td class="text-right">{{ number_format($subtotal + $totalImpuestos, 2) }}€</td>
+            <td class="text-right bold">{{ number_format($order->total, 2) }}€</td>
         </tr>
     </table>
+
 
     <div class="separator"></div>
 

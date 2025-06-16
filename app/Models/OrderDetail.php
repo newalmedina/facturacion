@@ -16,6 +16,12 @@ class OrderDetail extends Model
         'quantity',
     ];
 
+    protected $appends = [
+        'total_base_price',
+        'taxes_amount',
+        'total_with_taxes'
+    ];
+
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
@@ -33,17 +39,19 @@ class OrderDetail extends Model
         return $this->belongsTo(Item::class);
     }
 
+    public function getTotalBasePriceAttribute(): float
+    {
+        return round($this->price * $this->quantity, 2);
+    }
     public function getTaxesAmountAttribute(): float
     {
         $price = round((float) $this->price, 2);
         $taxes = round((float) $this->taxes, 2);
 
-        return round(($price * $taxes) / 100, 2);
+        return round(($price * $taxes * $this->quantity) / 100, 2);
     }
-
-
-    public function getTotalPriceAttribute(): float
+    public function getTotalWithTaxesAttribute(): float
     {
-        return round((float) $this->price + $this->taxes_amount, 2);
+        return round($this->total_base_price + $this->taxes_amount, 2);
     }
 }

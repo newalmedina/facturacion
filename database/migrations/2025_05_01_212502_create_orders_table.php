@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("code", 30)->nullable();
             $table->date('date');
+            $table->text('observations')->nullable();
             $table->enum('type', ['sale', 'purchase', 'quote'])->default('sale');
 
             $table->foreignId('customer_id')
