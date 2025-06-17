@@ -57,17 +57,18 @@
         {{ $settings['email'] ?? '-' }}
     </div>
 
-    <div class="separator"></div>
+    {{-- <div class="separator"></div>
 
     <div>
         <strong>Cliente:</strong> {{ $order->customer->name ?? '-' }}<br>
         <strong>Tel:</strong> {{ $order->customer->phone ?? '-' }}<br>
         <strong>Fecha:</strong> {{ \Carbon\Carbon::parse($order->date)->format('d/m/Y') }}<br>
         <strong>Código:</strong> {{ $order->code ?? '-' }}
-    </div>
+    </div> --}}
 
     <div class="separator"></div>
 
+    <strong>Detalle de la factura</strong>
     <br>
     <table>
         {{-- <thead>

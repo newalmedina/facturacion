@@ -151,11 +151,11 @@
                     @yield('content')
 
                     <!-- Mensaje general -->
-                    <tr>
+                    {{-- <tr>
                         <td class="content">
                             <p>Si tienes alguna duda, contacta con soporte.</p>
                         </td>
-                    </tr>
+                    </tr> --}}
 
                     <!-- Pie de página -->
                     <tr>
