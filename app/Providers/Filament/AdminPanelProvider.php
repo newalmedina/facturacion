@@ -22,6 +22,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Facades\Filament;
 use Filament\Navigation\MenuItem;
+use Filament\Pages\Auth\PasswordReset\RequestPasswordReset;
 use Filament\Support\Enums\MaxWidth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -40,7 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->passwordReset()
+            ->passwordReset(RequestPasswordReset::class)
             ->colors([
                 //'primary' => Color::Amber,
                 'primary' => Color::Blue,      // Azul similar a Bootstrap primary (#0d6efd)

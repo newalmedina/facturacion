@@ -13,8 +13,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable,HasAvatars;
-    
+    use HasApiTokens, HasFactory, Notifiable, HasAvatars;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -85,7 +85,7 @@ class User extends Authenticatable
     }
 
     // app/Models/User.php
-   
+
     public function getFilamentAvatarUrl(): ?string
     {
         if ($this->image) {
@@ -95,5 +95,4 @@ class User extends Authenticatable
         // Si no tiene imagen, devuelve la URL de las iniciales
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
     }
-
 }
