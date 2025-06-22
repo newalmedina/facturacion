@@ -2,24 +2,35 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\OtherExpenseExport;
+use App\Exports\SaleDetailExport;
+use App\Exports\SaleExport;
 use App\Filament\Resources\SaleResource\Pages;
 use App\Filament\Resources\SaleResource\RelationManagers;
 use App\Mail\OrderDeletedMail;
 use App\Mail\ReceiptMail;
+use App\Models\Customer;
 use App\Models\Order;
+use App\Models\OtherExpenseItem;
 use App\Models\Setting;
 use App\Services\ReceiptService;
 use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SaleResource extends Resource
 {
@@ -56,10 +67,19 @@ class SaleResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+
+        return parent::getEloquentQuery()->sales();
+    }
+
+
     public static function table(Table $table): Table
     {
         return $table
-            ->searchPlaceholder('Buscar código')
+            ->searchPlaceholder('Buscar código, cliente, observaciones')
+            ->query(fn() => \App\Models\Order::query()->withCalculatedTotals()->sales())
+
             ->columns([
                 Tables\Columns\TextColumn::make('code')
                     ->searchable()
@@ -75,7 +95,34 @@ class SaleResource extends Resource
                 //Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->numeric()
+                    ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('products')
+                    ->label('Productos')
+                    ->limit(50) // Limita los caracteres visibles (opcional)
+                    ->toggleable() // Permite ocultar/mostrar la columna desde el UI
+                    ->sortable(false) // No se puede ordenar si es un atributo calculado directamente
+                    ->searchable(false), // Solo si quieres permitir búsqueda en este campo
+                Tables\Columns\TextColumn::make('observations')
+                    ->searchable()
+                    ->toggleable()
+                    ->label("Observaciones")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('subtotal')
+                    ->label('Subtotal')
+                    ->money('EUR') // Puedes usar 'USD', 'MXN', etc., según tu caso
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('impuestos')
+                    ->label('Impuestos')
+                    ->money('EUR')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('total')
+                    ->label('Total')
+                    ->money('EUR')
+                    ->sortable(),
+
                 //Tables\Columns\TextColumn::make('status'),
                 TextColumn::make('status')
                     ->label('Estado')
@@ -98,17 +145,93 @@ class SaleResource extends Resource
                     })
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                /*Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),*/
+
             ])
             ->filters([
-                //
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('date_from')->label("Fecha inicio"),
+                        DatePicker::make('date_until')->label("Fecha fin"),
+                        Select::make('customer_ids')
+                            ->label('Clientes')
+                            ->options(
+                                Customer::active()->pluck('name', 'id')
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->multiple()
+                            ->native(false)
+                            ->placeholder('Selecciona cliente(s)'),
+                        TextInput::make('observations')->label("Observaciones"),
+                        Select::make('status')
+                            ->label('Estado')
+                            ->options([
+                                'pending' => 'Pendiente',
+                                'invoiced' => 'Facturado',
+                            ])
+                            ->native(false)
+                            ->placeholder('Selecciona estado'),
+                        /* Select::make('items')
+                            ->label('Items')
+                            ->multiple()
+                            ->searchable()
+                            ->options(OtherExpenseItem::all()->pluck('name', 'name')) // Aquí obtienes las opciones del modelo
+                            ->preload(),*/
+                    ])
+                    ->indicateUsing(function (array $data): array {
+                        $filter = [];
+
+                        // Si 'date_from' y 'date_until' están llenos, aplicamos el filtro de fecha
+                        if (isset($data['date_from'])) {
+                            $filter['date_from'] = "Desde " .  Carbon::parse($data['date_from'])->format("d-m-Y");  // Fecha inicio
+                        }
+                        if (isset($data['date_until'])) {
+                            $filter['date_until'] = "Hasta " .  Carbon::parse($data['date_until'])->format("d-m-Y");   // Fecha fin
+                        }
+                        if (isset($data['observations'])) {
+                            $filter['observations'] = $data['observations'];  // Fecha inicio
+                        }
+                        if (isset($data['status'])) {
+                            $filter['status'] = $data['status'] == "invoiced" ? "Facturado" : "Pendiente";  // Fecha inicio
+                        }
+
+                        if (!empty($data['customer_ids']) && is_array($data['customer_ids'])) {
+                            $names = Customer::whereIn('id', $data['customer_ids'])->pluck('name')->toArray();
+                            $filter["customer_ids"] = 'Clientes: ' . implode(', ', $names);
+                        }
+                        return $filter;
+                    })
+                    ->query(function ($query, array $data) {
+                        // Aplica el filtro en la consulta
+                        if (!empty($data['customer_ids']) && is_array($data['customer_ids'])) {
+                            $names = Customer::whereIn('id', $data['customer_ids'])->pluck('name')->toArray();
+                        }
+                        if (isset($data['date_from']) && !empty($data['date_from'])) {
+                            $query->where('date', '>=', $data['date_from']);
+                        }
+                        if (isset($data['date_until']) && !empty($data['date_until'])) {
+                            $query->where('date', '<=', $data['date_until']);
+                        }
+                        if (isset($data['observations']) && !empty($data['observations'])) {
+                            $query->where('observations', 'like', '%' . $data['observations'] . '%');
+                        }
+                        if (isset($data['status']) && !empty($data['status'])) {
+                            $query->where('status',  $data['status']);
+                        }
+                        if (isset($data['items'])) {
+                            if (count($data['items']) > 0) {
+                                $query->whereHas('details.item', function ($query) use ($data) {
+                                    $query->whereIn('name', $data['items']);
+                                });
+                            }
+                        }
+                        if (!empty($data['customer_ids']) && is_array($data['customer_ids'])) {
+                            $query->whereIn('customer_id', $data['customer_ids']);
+                        }
+
+
+                        return $query;
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
@@ -189,36 +312,7 @@ class SaleResource extends Resource
                             ->send();
                     }),
 
-                // 2. Enviar por WhatsApp
-                /*Tables\Actions\Action::make('sendWhatsapp')
-                    ->label('')
-                    ->icon('heroicon-o-chat-bubble-left-right')
-                    ->color('success') // verde
-                    ->tooltip('Enviar la factura por WhatsApp')
-                    ->visible(fn($record) => $record->status === 'invoiced')
-                    ->modalHeading('Enviar factura por WhatsApp')
-                    ->form([
-                        Forms\Components\TextInput::make('phone')
-                            ->label('Teléfono (código país + número)')
-                            ->tel()
-                            ->required(),
-                        Forms\Components\Textarea::make('message')
-                            ->label('Mensaje')
-                            ->default(fn($record) => "Hola, te envío la factura #{$record->id}")
-                            ->required(),
-                    ])
-                    ->action(function ($record, array $data) {
-                        $phone   = preg_replace('/\D+/', '', $data['phone']);
-                        $message = urlencode($data['message']);
-                        Notification::make()
-                            ->title('WhatsApp preparado')
-                            ->body("Haz clic para abrir WhatsApp.")
-                            ->action(
-                                url: "https://wa.me/{$phone}?text={$message}",
-                                label: 'Abrir WhatsApp'
-                            )
-                            ->send();
-                    }),*/
+
 
                 // 3. Facturar
                 Tables\Actions\Action::make('invoice')
@@ -277,7 +371,32 @@ class SaleResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    // Tables\Actions\DeleteBulkAction::make(),
+                    BulkAction::make('export')->label('Exportar ' . self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                        ->action(function ($records) {
+
+                            $modelLabel = self::getPluralModelLabel();
+                            // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
+                            $fileName = $modelLabel . '-' . now()->format('d-m-Y') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+
+                            // Preparamos la consulta para exportar
+                            $query = \App\Models\Order::whereIn('id', $records->pluck('id'));
+
+                            // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
+                            return Excel::download(new SaleExport($query), $fileName);
+                        }),
+                    BulkAction::make('exportDetail')->label('Exportar detalle ' . self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
+                        ->action(function ($records) {
+
+                            $modelLabel = self::getPluralModelLabel();
+                            // Puedes agregar la fecha o cualquier otro dato para personalizar el nombre
+                            $fileName = $modelLabel .  ' detalle -' . now()->format('d-m-Y') . '.xlsx'; // Ejemplo: "Marcas-2025-03-14.xlsx"
+
+                            // Preparamos la consulta para exportar
+                            $query = \App\Models\OrderDetail::whereIn('order_id', $records->pluck('id'));
+
+                            // Llamamos al método Excel::download() y pasamos el nombre dinámico del archivo
+                            return Excel::download(new SaleDetailExport($query), $fileName);
+                        }),
                 ]),
             ]);
     }

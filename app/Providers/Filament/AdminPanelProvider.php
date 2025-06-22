@@ -40,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-
+            ->passwordReset()
             ->colors([
                 //'primary' => Color::Amber,
                 'primary' => Color::Blue,      // Azul similar a Bootstrap primary (#0d6efd)

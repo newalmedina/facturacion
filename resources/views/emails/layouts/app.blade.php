@@ -1,26 +1,11 @@
 @php
     use App\Models\Setting;
 
-    $settings = Setting::first();
-    $brandName = config('app.name', 'Mi Empresa');
-    $brandLogoBase64 = null;
+$settings = Setting::first();
+$generalSettings = $settings?->general;
 
-    if ($settings && $settings->general) {
-        $generalSettings = $settings->general;
-
-        if (!empty($generalSettings->image)) {
-            $imagePath = storage_path('app/public/' . str_replace('"', '', $generalSettings->image));
-            if (file_exists($imagePath)) {
-                $imageData = base64_encode(file_get_contents($imagePath));
-                $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
-                $brandLogoBase64 = 'data:image/' . $extension . ';base64,' . $imageData;
-            }
-        }
-
-        if (!empty($generalSettings->brand_name)) {
-            $brandName = str_replace('"', '', $generalSettings->brand_name);
-        }
-    }
+$brandName = $generalSettings?->brand_name ?? config('app.name', 'Mi Empresa');
+$brandLogoBase64 = $generalSettings?->image_base64 ?? null;
 @endphp
 
 <!DOCTYPE html>
@@ -58,7 +43,7 @@
         }
         /* Cabecera */
         td.header {
-            background-color: #2a7ae2;
+            background-color: #acacac;
             height: 80px;
             padding: 0 20px;
             display: flex;

@@ -34,13 +34,66 @@
             </x-filament::button>
 
             <!-- 2. Enviar recibo por e-mail -->
-            <x-filament::button class="mr-5 mb-3"
-                icon="heroicon-o-envelope"
-                color="primary"
-                wire:click="sendReceiptByEmail"
-            >
-                Enviar recibo por mail
-            </x-filament::button>
+            
+            <x-filament::modal  id="send-invoiced-modal" width="sm" :close-by-clicking-away="false">
+                <x-slot name="trigger">
+                    <x-filament::button class="mr-5 mb-3"
+                        icon="heroicon-o-envelope"
+                        color="primary"
+                    >
+                        Enviar recibo por email
+                    </x-filament::button>
+
+                </x-slot>
+                <x-slot name="header">
+                    Enviar recibo por email
+                </x-slot>
+                <hr>
+                <div class="mb-5 mt-5 text-left">
+                    <div class="grid grid-cols-1 gap-4">
+                        <x-filament::input.wrapper>
+                            <x-filament::input.select 
+                                    wire:model="recipientType"
+                                    wire:change="changeRecipientType"
+                            >
+                                <option value="same">Mismo cliente</option>
+                                <option value="other">Otro email</option>
+                            </x-filament::input.select>
+                        </x-filament::input.wrapper>   
+            
+                        <x-filament::input.wrapper :valid="! $errors->has('frecipientEmail')">
+                            <x-filament::input 
+                                type="email" 
+                                wire:model.defer="recipientEmail" 
+                                :readonly="$recipientType === 'same'" 
+                                placeholder="Email del destinatario"
+                            />
+                            
+                        </x-filament::input.wrapper>
+                        @error('recipientEmail') 
+                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                    </div>
+                </div>
+                
+
+                <hr>
+
+                <x-slot name="footerActions">
+
+                    <div class="flex justify-between w-full">
+                        <x-filament::button color="gray" wire:click="closeModalsendInvoiceEmail" size="sm" class="">
+                        Cerrar
+                        </x-filament::button>
+                        <x-filament::button wire:click='sendInvoiceEmail' size="sm" class="">
+                        Enviar factura
+                        </x-filament::button>
+                    </div>
+
+
+                </x-slot>
+                {{-- Modal content --}}
+            </x-filament::modal>
             {{--
             <!-- 3. Enviar recibo por WhatsApp -->
             <x-filament::button class="mr-5 mb-3"
