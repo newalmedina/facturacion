@@ -3,7 +3,13 @@
 namespace App\Providers\Filament;
 
 use App\Filament\AvatarProviders\AutenticatedUserAvatar;
+use App\Filament\CustomWidgets\OtherExpensesChart;
+use App\Filament\CustomWidgets\OtherExpensesStats;
+use App\Filament\CustomWidgets\VentasStats;
 use App\Filament\Pages\Settings\Settings;
+use App\Filament\Resources\OtherExpenseResource\Widgets\OtherExpenseStats;
+use App\Filament\CustomWidgets\VentasMensualesChart;
+use App\Filament\CustomWidgets\VentasVsGastosPorDiaChart;
 use App\Models\Setting;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -69,6 +75,11 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                VentasStats::class,
+                OtherExpensesStats::class,
+                VentasMensualesChart::class,
+                OtherExpensesChart::class,
+                VentasVsGastosPorDiaChart::class
             ])
             ->middleware([
                 EncryptCookies::class,

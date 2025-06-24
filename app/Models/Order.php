@@ -22,6 +22,7 @@ class Order extends Model
         'total',
         'products', // <-- aquí lo agregas
     ];
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
@@ -158,5 +159,13 @@ class Order extends Model
     public function scopeSales($query)
     {
         return $query->where('type', "sale");
+    }
+    public function scopeInvoiced($query)
+    {
+        return $query->where('status', "invoiced");
+    }
+    public function scopePending($query)
+    {
+        return $query->where('status', "pending");
     }
 }
