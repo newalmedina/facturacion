@@ -35,6 +35,10 @@ class User extends Authenticatable
     //     'gender',
     //     'identification'
     // ];
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
+    }
     protected $guarded = [];
     /**
      * The attributes that should be hidden for serialization.
@@ -55,10 +59,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return true;
-    }
+   
     public function country()
     {
         return $this->belongsTo(Country::class);

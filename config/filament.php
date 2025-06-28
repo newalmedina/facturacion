@@ -14,19 +14,8 @@ return [
     | This will allow your users to receive real-time notifications.
     |
     */
-    /*'auth' => [
-        'user' => App\Models\User::class,
-    ],*/
     'auth' => [
-        'guard' => 'web',
-        'pages' => [
-            'login' => \App\Http\Livewire\Auth\Login::class,
-        ],
-    ],
-    'middleware' => [
-        'auth' => [
-            \Illuminate\Auth\Middleware\Authenticate::class,
-        ],
+        'user' => App\Models\User::class,
     ],
     'broadcasting' => [
 
