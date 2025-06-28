@@ -58,12 +58,7 @@ class User extends Authenticatable
     ];
     public function canAccessPanel(Panel $panel): bool
     {
-        // Aquí defines la lógica que permite el acceso al panel.
-        // Ejemplo simple: permitir acceso a todos los usuarios con email verificado
-        return $this->hasVerifiedEmail();
-
-        // O un filtro más restrictivo:
-        // return str_ends_with($this->email, '@tu-dominio.com') && $this->hasVerifiedEmail();
+        return true;
     }
     public function country()
     {
