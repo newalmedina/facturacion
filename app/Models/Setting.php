@@ -47,7 +47,9 @@ class Setting extends Model
             // Convertir imagen a base64 si existe
             if (!empty($object->image)) {
                 $imagePath = storage_path('app/public/' . str_replace('"', '', $object->image));
-                if (file_exists($imagePath)) {
+
+                // Verifica que el archivo realmente sea un archivo y no un directorio
+                if (is_file($imagePath)) {
                     $imageData = base64_encode(file_get_contents($imagePath));
                     $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
                     $object->image_base64 = 'data:image/' . $extension . ';base64,' . $imageData;
