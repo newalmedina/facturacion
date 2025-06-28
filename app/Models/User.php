@@ -5,6 +5,8 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Filament\Panel\Concerns\HasAvatars;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -54,7 +56,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Aquí defines la lógica que permite el acceso al panel.
+        // Ejemplo simple: permitir acceso a todos los usuarios con email verificado
+        return $this->hasVerifiedEmail();
 
+        // O un filtro más restrictivo:
+        // return str_ends_with($this->email, '@tu-dominio.com') && $this->hasVerifiedEmail();
+    }
     public function country()
     {
         return $this->belongsTo(Country::class);

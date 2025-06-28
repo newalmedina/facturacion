@@ -14,13 +14,8 @@ return [
     | This will allow your users to receive real-time notifications.
     |
     */
-    /*'auth' => [
-        'user' => App\Models\User::class,
-    ],*/
     'auth' => [
-        'guard' => 'web',
         'user' => App\Models\User::class,
-        'middleware' => ['web', 'auth'],
     ],
     'broadcasting' => [
 
