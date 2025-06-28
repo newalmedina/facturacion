@@ -77,7 +77,7 @@ class OtherExpenseResource extends Resource
                                 );*/
                                 return new HtmlString(
                                     '<div class="w-full flex justify-end text-center">
-                                        <div class="bg-green-600 text-green font-bold text-xl px-6 py-3 rounded-lg shadow">
+                                        <div style="background-color: #F0F9FF; color:#0284c7; border: solid 1pxrgb(31, 158, 221)" class=" font-bold text-xl px-6 py-3 rounded-lg shadow">
                                          <p class="mb-2">Total:</p>
                                         <span style=" font-size: 1.5rem;">' . $formattedTotal . '</span>
                                         </div>
@@ -239,10 +239,10 @@ class OtherExpenseResource extends Resource
 
                         // Si 'date_from' y 'date_until' están llenos, aplicamos el filtro de fecha
                         if (isset($data['date_from'])) {
-                            $filter['date_from'] = Carbon::parse($data['date_from'])->format("d-m-Y");  // Fecha inicio
+                            $filter['date_from'] = "Desde " .  Carbon::parse($data['date_from'])->format("d-m-Y");  // Fecha inicio
                         }
                         if (isset($data['date_until'])) {
-                            $filter['date_until'] = Carbon::parse($data['date_until'])->format("d-m-Y");   // Fecha fin
+                            $filter['date_until'] = "Hasta " .  Carbon::parse($data['date_until'])->format("d-m-Y");   // Fecha fin
                         }
                         if (isset($data['description'])) {
                             $filter['description'] = $data['description'];  // Fecha inicio

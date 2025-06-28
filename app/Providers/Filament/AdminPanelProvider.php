@@ -3,7 +3,13 @@
 namespace App\Providers\Filament;
 
 use App\Filament\AvatarProviders\AutenticatedUserAvatar;
+use App\Filament\CustomWidgets\OtherExpensesChart;
+use App\Filament\CustomWidgets\OtherExpensesStats;
+use App\Filament\CustomWidgets\VentasStats;
 use App\Filament\Pages\Settings\Settings;
+use App\Filament\Resources\OtherExpenseResource\Widgets\OtherExpenseStats;
+use App\Filament\CustomWidgets\VentasMensualesChart;
+use App\Filament\CustomWidgets\VentasVsGastosPorDiaChart;
 use App\Models\Setting;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -22,6 +28,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Facades\Filament;
 use Filament\Navigation\MenuItem;
+use Filament\Pages\Auth\PasswordReset\RequestPasswordReset;
 use Filament\Support\Enums\MaxWidth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -40,7 +47,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-
+            ->passwordReset(RequestPasswordReset::class)
             ->colors([
                 //'primary' => Color::Amber,
                 'primary' => Color::Blue,      // Azul similar a Bootstrap primary (#0d6efd)
@@ -67,7 +74,12 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                //Widgets\FilamentInfoWidget::class,
+                VentasStats::class,
+                OtherExpensesStats::class,
+                VentasMensualesChart::class,
+                OtherExpensesChart::class,
+                VentasVsGastosPorDiaChart::class
             ])
             ->middleware([
                 EncryptCookies::class,

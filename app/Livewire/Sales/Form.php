@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Sales;
 
+use App\Mail\ReceiptMail;
 use App\Models\{Customer, Item, Order, OrderDetail, Setting};
 use App\Services\ReceiptService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 class Form extends Component
 {
@@ -26,7 +28,8 @@ class Form extends Component
     public array $getGeneralTotals = ["subtotal" => 0, "total" => 0, "taxes_amount" => 0];
     public array $manualProduct = [];
     public array $detail_id_delete = [];
-
+    public string $recipientType = 'same';
+    public string $recipientEmail = '';
     public array $form = [
         'date' => '',
         'customer_id' => '',
@@ -41,7 +44,10 @@ class Form extends Component
 
         $this->resetManualProduct();
         $this->order = $order;
-
+        // Al cargar, establecer el email del cliente por defecto
+        if ($this->order->customer?->email) {
+            $this->recipientEmail = $this->order->customer->email;
+        }
         if (!empty($this->order->id)) {
             $this->actionType = "update";
         }
@@ -85,6 +91,40 @@ class Form extends Component
         }
     }
 
+    public function changeRecipientType()
+    {
+        if ($this->recipientType === 'same') {
+            $this->recipientEmail = $this->order->customer->email ?? '';
+        } else {
+            $this->recipientEmail = '';
+        }
+    }
+
+    public function sendInvoiceEmail()
+    {
+        $this->validate([
+            'recipientEmail' => 'required|email',
+        ], [
+            'recipientEmail.required' => 'El campo correo electrónico es obligatorio.',
+            'recipientEmail.email' => 'Debes ingresar un correo electrónico válido.',
+        ]);
+
+        $receiptService = new ReceiptService();
+        $pdf = $receiptService->generate($this->order);
+
+        // Enviar correo a la dirección del cliente
+        Mail::to($this->recipientEmail)
+            ->send(new ReceiptMail($pdf, $this->order));
+
+        /*  Mail::to($this->order->customer->email)
+            ->send(new ReceiptMail($pdf, $this->order));*/
+
+
+        // Aquí se envía el correo (ejemplo genérico)
+        // Mail::to($this->recipientEmail)->send(new InvoiceMail($this->order));
+        $this->notify('Factura enviada a ' . $this->recipientEmail, 'Factura enviada',  'success');
+        $this->dispatch('close-modal', id: 'send-invoiced-modal');
+    }
     public function generateReceipt()
     {
         $receiptService = new ReceiptService();
@@ -209,6 +249,11 @@ class Form extends Component
     {
         $this->dispatch('close-modal', id: 'manual-product-modal');
     }
+    public function closeModalsendInvoiceEmail(): void
+    {
+        $this->dispatch('close-modal', id: 'send-invoiced-modal');
+    }
+
 
     public function validateForm(): void
     {

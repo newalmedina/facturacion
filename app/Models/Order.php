@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 
 class Order extends Model
 {
@@ -18,8 +19,10 @@ class Order extends Model
     protected $appends = [
         'subtotal',
         'impuestos',
-        'total'
+        'total',
+        'products', // <-- aquí lo agregas
     ];
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
@@ -28,6 +31,13 @@ class Order extends Model
     public function orderDetails(): HasMany
     {
         return $this->hasMany(OrderDetail::class);
+    }
+
+    public function getProductsAttribute(): string
+    {
+        return $this->orderDetails
+            ->map(fn($detail) => $detail->product_name_formatted)
+            ->implode(', ');
     }
 
 
@@ -121,5 +131,41 @@ class Order extends Model
     public function getTotalAttribute(): float
     {
         return round($this->subtotal + $this->impuestos, 2);
+    }
+    public function scopeWithCalculatedTotals(Builder $query): Builder
+    {
+        return $query
+            ->select('orders.*') // Muy importante para que no se sobrescriba la query base
+            ->selectSub(
+                'SELECT COALESCE(SUM(price * quantity), 0)
+             FROM order_details
+             WHERE order_details.order_id = orders.id',
+                'subtotal'
+            )
+            ->selectSub(
+                'SELECT COALESCE(SUM((price * taxes * quantity) / 100), 0)
+             FROM order_details
+             WHERE order_details.order_id = orders.id',
+                'impuestos'
+            )
+            ->selectSub(
+                'SELECT COALESCE(SUM((price * quantity) + ((price * taxes * quantity) / 100)), 0)
+             FROM order_details
+             WHERE order_details.order_id = orders.id',
+                'total'
+            );
+    }
+
+    public function scopeSales($query)
+    {
+        return $query->where('type', "sale");
+    }
+    public function scopeInvoiced($query)
+    {
+        return $query->where('status', "invoiced");
+    }
+    public function scopePending($query)
+    {
+        return $query->where('status', "pending");
     }
 }
