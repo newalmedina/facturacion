@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;  // ¡No olvides importarlo!
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -21,6 +21,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
+
+        Gate::define('viewFilament', function ($user) {
+            // Para pruebas, permite a todos los usuarios autenticados acceder al admin
+            return true;
+        });
     }
 }
