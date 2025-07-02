@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make("Secret15*"),
         ]);
 
-        $this->call(InsertDataSeeder::class);
+        /*$this->call(InsertDataSeeder::class);
         $this->call(UnitOfMeasureSeeder::class);
         $this->call(BrandDataSeeder::class);
         $this->call(CategoryDataSeeder::class);
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
         $this->call(OtherExpenseItemSeeder::class);
         $this->call(InsertItemsSeeder::class);
         $this->call(OrderSeeder::class);
-        $this->call(OtherExpenseSeeder::class);
+        $this->call(OtherExpenseSeeder::class);*/
         $this->call(WorldTableSeeder::class);
     }
 }
