@@ -78,8 +78,7 @@ class Settings extends BaseSettings
                                             ->action(function (): void {
                                                 $email = Auth()->user()->email;
 
-                                                Mail::to($email)
-                                                    ->send(new TestMail(Auth()->user()));
+                                                Mail::to(Auth()->user()->email)->send(new TestMail(Auth()->user()));
 
                                                 Notification::make()
                                                     ->title('Correo de prueba enviado a ' . $email)
