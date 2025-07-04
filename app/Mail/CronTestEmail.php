@@ -20,7 +20,7 @@ class CronTestEmail extends Mailable
     public function build()
     {
         return $this->markdown('emails.cron_test_email')
-            ->subject('Factura enviada')
+            ->subject('Validando funcioanmiento del cron')
             ->with('userName', $this->userName);
     }
 }
