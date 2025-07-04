@@ -14,6 +14,8 @@ use App\Observers\SupplierObserver;
 use App\Observers\UserObserver;
 use Illuminate\Support\ServiceProvider;
 
+use Illuminate\Support\Facades\URL;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -29,10 +31,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
         User::observe(UserObserver::class);
         Brand::observe(BrandObserver::class);
         Supplier::observe(SupplierObserver::class);
         Customer::observe(CustomerObserver::class);
-        Item ::observe(ItemObserver::class);
+        Item::observe(ItemObserver::class);
     }
 }
