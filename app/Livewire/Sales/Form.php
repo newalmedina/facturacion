@@ -480,7 +480,7 @@ class Form extends Component
         $this->getGeneralTotal();
 
 
-        return view('livewire.Sales.form', [
+        return view('livewire.sales.form', [
             'items' => $this->consultaItems->paginate($this->perPage),
             'customerList' => Customer::active()->get(),
         ]);
