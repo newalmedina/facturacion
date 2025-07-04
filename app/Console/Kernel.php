@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\HelloCron;
 use App\Jobs\SendTestEmailJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -15,6 +16,10 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->job(new SendTestEmailJob)->everyMinute();
         // $schedule->command('inspire')->hourly();
+
+        $schedule->command(HelloCrons::class, ['--no-ansi'])
+            ->everyMinute()
+            ->appendOutputTo(storage_path('logs/cron.log'));
     }
 
     /**
