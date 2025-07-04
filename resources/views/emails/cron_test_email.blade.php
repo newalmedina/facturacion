@@ -8,8 +8,10 @@
         <h2 style="margin-top: 0;">Hola {{ $userName}}!!,</h2>
 
         <p>
-            Este es un correo de prueba para verificar que la configuración de envío de correos electrónicos está funcionando correctamente. Si estás viendo este mensaje, significa que el sistema puede enviar correos electrónicos sin problemas.
+            Este correo es una prueba automática enviada por el sistema para confirmar que el cron y el envío de correos funcionan correctamente. 
+            Si recibes este mensaje, significa que todo está configurado y funcionando sin problemas.
         </p>
+        
     </td>
 </tr>
 @endsection
