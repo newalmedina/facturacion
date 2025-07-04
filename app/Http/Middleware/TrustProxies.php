@@ -10,9 +10,11 @@ class TrustProxies extends Middleware
     /**
      * The trusted proxies for this application.
      *
+     * Puedes poner '*' para confiar en todos los proxies (útil para producción con balanceadores)
+     *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*';  // <-- Aquí está el cambio
 
     /**
      * The headers that should be used to detect proxies.
@@ -20,7 +22,7 @@ class TrustProxies extends Middleware
      * @var int
      */
     protected $headers =
-        Request::HEADER_X_FORWARDED_FOR |
+    Request::HEADER_X_FORWARDED_FOR |
         Request::HEADER_X_FORWARDED_HOST |
         Request::HEADER_X_FORWARDED_PORT |
         Request::HEADER_X_FORWARDED_PROTO |
