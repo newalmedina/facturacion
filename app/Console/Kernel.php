@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
         // $schedule->job(new SendTestEmailJob)->everyMinute();
         // $schedule->command('inspire')->hourly();
 
-        $schedule->command(HelloCrons::class, ['--no-ansi'])
+        $schedule->command(HelloCron::class, ['--no-ansi'])
             ->everyMinute()
             ->appendOutputTo(storage_path('logs/cron.log'));
     }
