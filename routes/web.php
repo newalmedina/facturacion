@@ -18,10 +18,3 @@ Route::get('/', function () {
 
     return view('welcome');
 });
-Route::get('/test-session', function () {
-    session(['foo' => 'bar']);
-    return response()->json([
-        'stored' => session('foo'),
-        'session_id' => session()->getId(),
-    ]);
-});
