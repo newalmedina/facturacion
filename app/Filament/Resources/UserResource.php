@@ -230,13 +230,56 @@ class UserResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
+                /*  Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
+                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')*/
+                Tables\Actions\EditAction::make()
+                    ->label('')
+                    ->tooltip('Editar')
+                    ->visible(function ($record) {
+                        $currentEmail = auth()->user()->email;
+
+                        if ($currentEmail == 'ing.newal.medina@gmail.com' && $record->email == 'ing.newal.medina@gmail.com') {
+                            // Solo visible si el registro es del mismo email
+                            return true;
+                        }
+                        if ($record->email != 'ing.newal.medina@gmail.com') {
+
+                            return true;
+                        }
+
+                        // Para todos los demás usuarios, siempre visible
+                        return false;
+                    }),
+
+                Tables\Actions\DeleteAction::make()
+                    ->label('')
+                    ->tooltip('Eliminar')
+                    ->successNotificationTitle('Registro eliminado correctamente')
+                    ->modalHeading('Eliminar registro')
+                    ->modalDescription('¿Estás seguro de que deseas eliminar este registro?')
+                    ->modalSubmitActionLabel('Si, eliminar')
+                    ->modalCancelActionLabel('Cancelar')
+                    ->visible(function ($record) {
+                        $currentEmail = auth()->user()->email;
+
+                        if ($currentEmail == 'ing.newal.medina@gmail.com' && $record->email == 'ing.newal.medina@gmail.com') {
+                            // Solo visible si el registro es del mismo email
+                            return true;
+                        }
+                        if ($record->email != 'ing.newal.medina@gmail.com') {
+
+                            return true;
+                        }
+
+                        // Para todos los demás usuarios, siempre visible
+                        return false;
+                    }),
+
                 /*Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->successNotificationTitle('Registro eliminado correctamente')
                     ->modalHeading('Eliminar registro')
                     ->modalDescription('¿Estás seguro de que deseas eliminar este registro?')
                     ->modalSubmitActionLabel('Si, eliminar')
                     ->modalCancelActionLabel('Cancelar') */
-                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
