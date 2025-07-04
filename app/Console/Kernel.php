@@ -18,8 +18,8 @@ class Kernel extends ConsoleKernel
         // $schedule->job(new SendTestEmailJob)->everyMinute();
         // $schedule->command('inspire')->hourly();
         $schedule->command('email:send-cron-test')
-            ->everyMinute()
-            // ->dailyAt('05:00')
+            //->everyMinute()
+            ->dailyAt('05:00')
             ->appendOutputTo(storage_path('logs/cron.log'));
 
 
