@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             // Email al que quieres enviar la prueba
             SendCronTestEmailJob::dispatch('correo@ejemplo.com');
-        })->dailyAt('10:50')
+        })->dailyAt('10:59')
             ->appendOutputTo(storage_path('logs/cron.log'));
 
         $schedule->command(HelloCron::class, ['--no-ansi'])
