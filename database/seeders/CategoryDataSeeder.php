@@ -17,26 +17,51 @@ class CategoryDataSeeder extends Seeder
         // Array con las categorías
         $categories = [
             [
-                'name' => 'Equipos de Boxeo',
-                'description' => 'Categoría que agrupa todos los equipos necesarios para practicar boxeo.',
+                'name' => 'Corte de Cabello',
+                'description' => 'Servicios profesionales de corte y estilizado para todo tipo de cabello.',
             ],
             [
-                'name' => 'Guantes de Boxeo',
-                'description' => 'Categoría dedicada a los guantes para la práctica de boxeo, en diferentes tamaños y estilos.',
+                'name' => 'Peinados y Estilizados',
+                'description' => 'Peinados para ocasiones especiales, eventos y el día a día.',
             ],
             [
-                'name' => 'Ropa Deportiva',
-                'description' => 'Categoría que incluye toda la ropa diseñada para la práctica de deportes, como camisetas, pantalones, etc.',
+                'name' => 'Manicura',
+                'description' => 'Cuidado y embellecimiento de las uñas con diversos estilos y tratamientos.',
             ],
             [
-                'name' => 'Accesorios de Entrenamiento',
-                'description' => 'Categoría de accesorios adicionales como sacos de boxeo, manoplas y otros implementos de entrenamiento.',
+                'name' => 'Pedicura',
+                'description' => 'Tratamientos especializados para el cuidado y estética de los pies.',
             ],
             [
-                'name' => 'Artes Marciales Mixtas (MMA)',
-                'description' => 'Categoría destinada a los equipos y accesorios relacionados con las artes marciales mixtas.',
+                'name' => 'Trenzas y Peinados Étnicos',
+                'description' => 'Trenzas, cornrows y estilos tradicionales y modernos para todo tipo de cabello.',
+            ],
+            [
+                'name' => 'Uñas Acrílicas y Gel',
+                'description' => 'Aplicación de uñas acrílicas, gel y diseños personalizados para uñas largas y resistentes.',
+            ],
+            [
+                'name' => 'Decoración de Uñas',
+                'description' => 'Diseños artísticos, nail art, esmaltes especiales y accesorios para uñas.',
+            ],
+            [
+                'name' => 'Extensiones de Cabello',
+                'description' => 'Colocación de extensiones para dar volumen y longitud al cabello.',
+            ],
+            [
+                'name' => 'Alisados y Rizos',
+                'description' => 'Tratamientos para alisar o definir rizos de forma profesional y duradera.',
+            ],
+            [
+                'name' => 'Tintura y Coloración',
+                'description' => 'Cambio de color, mechas y reflejos para personalizar tu look.',
+            ],
+            [
+                'name' => 'Otros',
+                'description' => 'Servicios adicionales como asesorías, cuidado facial básico y otras atenciones personalizadas.',
             ],
         ];
+
 
         // Recorrer el array y crear las categorías
         foreach ($categories as $category) {

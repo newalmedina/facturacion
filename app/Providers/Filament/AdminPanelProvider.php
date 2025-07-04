@@ -79,7 +79,7 @@ class AdminPanelProvider extends PanelProvider
                 OtherExpensesStats::class,
                 VentasMensualesChart::class,
                 OtherExpensesChart::class,
-                VentasVsGastosPorDiaChart::class
+                // VentasVsGastosPorDiaChart::class
             ])
             ->middleware([
                 EncryptCookies::class,
