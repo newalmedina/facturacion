@@ -6,7 +6,7 @@ namespace App\Jobs;
 use App\Mail\CronTestEmail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;  // <- Importar Log
+use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,17 +16,17 @@ class SendCronTestEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $email;
-
-    public function __construct($email)
+    public function __construct()
     {
-        $this->email = $email;
+        //
     }
 
     public function handle()
     {
-        Mail::to($this->email)->send(new CronTestEmail());
+        $email = 'ing.newal.medina@gmail.com';
 
-        Log::info("Correo automático enviado a {$this->email} para probar que el cron funciona perfectamente.");
+        Mail::to($email)->send(new CronTestEmail());
+
+        Log::info("Correo automático enviado a {$email} para probar que el cron funciona perfectamente.");
     }
 }

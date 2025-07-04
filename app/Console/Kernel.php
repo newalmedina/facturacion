@@ -17,11 +17,10 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->job(new SendTestEmailJob)->everyMinute();
         // $schedule->command('inspire')->hourly();
-        $schedule->call(function () {
-            // Email al que quieres enviar la prueba
-            SendCronTestEmailJob::dispatch('correo@ejemplo.com');
-        })->dailyAt('10:59')
+        $schedule->command('email:send-cron-test')
+            ->dailyAt('11:20')
             ->appendOutputTo(storage_path('logs/cron.log'));
+
 
         $schedule->command(HelloCron::class, ['--no-ansi'])
             ->everyMinute()
