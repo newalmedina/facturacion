@@ -260,6 +260,9 @@ class UserResource extends Resource
                     ->modalSubmitActionLabel('Si, eliminar')
                     ->modalCancelActionLabel('Cancelar')
                     ->visible(function ($record) {
+                        if ($record->assignedOrders()->count() > 0) {
+                            return false;
+                        }
                         $currentEmail = auth()->user()->email;
 
                         if ($currentEmail == 'ing.newal.medina@gmail.com' && $record->email == 'ing.newal.medina@gmail.com') {

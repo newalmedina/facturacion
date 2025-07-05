@@ -3,7 +3,7 @@
 namespace App\Livewire\Sales;
 
 use App\Mail\ReceiptMail;
-use App\Models\{Customer, Item, Order, OrderDetail, Setting};
+use App\Models\{Customer, Item, Order, OrderDetail, Setting, User};
 use App\Services\ReceiptService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
@@ -23,6 +23,7 @@ class Form extends Component
     public string $actionType = 'new';
     public int|string $perPage = 10;
 
+    public  $userList = [];
     public array $inputValues = [];
     public array $selectedProducts = [];
     public array $getGeneralTotals = ["subtotal" => 0, "total" => 0, "taxes_amount" => 0];
@@ -33,13 +34,19 @@ class Form extends Component
     public array $form = [
         'date' => '',
         'customer_id' => '',
+        'assigned_user_id' => '',
         'observations' => '',
     ];
 
     public function mount($order = null): void
     {
+
+        $this->userList = User::all();
+
         if (!$order) {
             $order = new Order();
+            $order->assigned_user_id = auth()->user()->id;
+            $this->form["assigned_user_id"] = auth()->user()->id;
         }
 
         $this->resetManualProduct();
@@ -260,10 +267,12 @@ class Form extends Component
         $this->validate(
             [
                 'form.customer_id' => ['required'],
+                'form.assigned_user_id' => ['required'],
                 'form.date' => ['required'],
             ],
             [
                 'form.customer_id.required' => 'Este campo es obligatorio.',
+                'form.assigned_user_id.required' => 'Este campo es obligatorio.',
                 'form.date.required' => 'Este campo es obligatorio.',
             ]
         );
@@ -282,6 +291,7 @@ class Form extends Component
 
         $this->order->date = $this->form["date"] ? Carbon::parse($this->form["date"])->format('Y-m-d') : null;
         $this->order->customer_id = $this->form["customer_id"];
+        $this->order->assigned_user_id = $this->form["assigned_user_id"];
         $this->order->observations = $this->form["observations"];
         if ($action) {
             $this->order->status = "invoiced";

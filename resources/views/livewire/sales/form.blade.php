@@ -277,6 +277,22 @@
                 </div>
                 <div class="col-span-1">
                     <x-filament-forms::field-wrapper.label>
+                        Vendedor
+                    </x-filament-forms::field-wrapper.label>
+                    <x-filament::input.wrapper :valid="! $errors->has('form.assigned_user_id')">
+                        <x-filament::input.select   :disabled="$order->disabled_sales" wire:model="form.assigned_user_id" searchable>
+                            <option value="">Seleccione Vendedor</option>
+                            @foreach ($userList as $user)
+                                <option value="{{$user->id}}">{{$user->name}}</option>
+                            @endforeach
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
+                    @error('form.customer_id')
+                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="col-span-1">
+                    <x-filament-forms::field-wrapper.label>
                         Cliente
                     </x-filament-forms::field-wrapper.label>
                     <x-filament::input.wrapper :valid="! $errors->has('form.customer_id')">

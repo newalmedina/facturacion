@@ -89,6 +89,12 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(Timesheet::class);
     }
+    // User.php
+    public function assignedOrders()
+    {
+        return $this->hasMany(Order::class, 'assigned_user_id');
+    }
+
 
     // app/Models/User.php
 

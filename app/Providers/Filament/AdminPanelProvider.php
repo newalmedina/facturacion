@@ -10,6 +10,7 @@ use App\Filament\Pages\Settings\Settings;
 use App\Filament\Resources\OtherExpenseResource\Widgets\OtherExpenseStats;
 use App\Filament\CustomWidgets\VentasMensualesChart;
 use App\Filament\CustomWidgets\VentasVsGastosPorDiaChart;
+use App\Http\Middleware\AuthenticateAndCheckActive;
 use App\Models\Setting;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -94,6 +95,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                AuthenticateAndCheckActive::class,
             ]);
 
 
