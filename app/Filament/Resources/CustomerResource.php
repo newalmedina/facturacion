@@ -66,31 +66,52 @@ class CustomerResource extends Resource
                                 //     ->hidden(fn($get) => !$get('id')), // Solo mostrar en edición
 
                             ]),
-
                         Section::make('Información general')
-                            ->columnSpan(9) // Ocupa 9 columnas de las 12 disponibles
+                            ->columnSpan(9)
+                            ->columns([
+                                'default' => 1,
+                                'md' => 4,
+                            ])
                             ->schema([
                                 Forms\Components\TextInput::make('name')
                                     ->required()
                                     ->maxLength(255)
                                     ->label('Nombre')
-                                    ->columnSpan(2), // Ocupa 2 columnas
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
 
                                 Forms\Components\TextInput::make('email')
                                     ->email()
                                     ->required()
                                     ->maxLength(255)
-                                    ->columnSpan(2),
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
+
                                 Forms\Components\TextInput::make('phone')
                                     ->maxLength(255)
                                     ->label('Teléfono')
-                                    ->columnSpan(2),
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
 
                                 Forms\Components\DatePicker::make('birth_date')
                                     ->label('Fecha nacimiento')
-                                    ->columnSpan(2),
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
 
-                                Forms\Components\TextInput::make('identification')->columnSpan(2),
+                                Forms\Components\TextInput::make('identification')
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
+
                                 Forms\Components\Radio::make('gender')
                                     ->label('Género')
                                     ->options([
@@ -98,49 +119,77 @@ class CustomerResource extends Resource
                                         'fem' => 'Femenino',
                                     ])
                                     ->inline()
-                                    ->columnSpan(2)
-                                    ->inlineLabel(false),
+                                    ->inlineLabel(false)
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
+
                                 Forms\Components\Select::make('country_id')
-                                    ->relationship('country', 'name', function ($query) {
-                                        $query->where('is_active', true);  // Filtro para que solo se muestren países activos
-                                    })
+                                    ->relationship('country', 'name', fn($query) => $query->where('is_active', true))
                                     ->searchable()
                                     ->label("País")
                                     ->preload()
-                                    ->live()->columnSpan(2)
+                                    ->live()
                                     ->afterStateUpdated(function (Set $set) {
                                         $set('state_id', null);
                                         $set('city_id', null);
-                                    }),
+                                    })
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
+
                                 Forms\Components\Select::make('state_id')
                                     ->options(fn(Get $get): Collection => State::query()
                                         ->where('country_id', $get('country_id'))
                                         ->pluck('name', 'id'))
                                     ->searchable()
-                                    ->label("Estado")->columnSpan(2)
+                                    ->label("Estado")
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(fn(Set $set) => $set('city_id', null)),
+                                    ->afterStateUpdated(fn(Set $set) => $set('city_id', null))
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
+
                                 Forms\Components\Select::make('city_id')
                                     ->options(fn(Get $get): Collection => City::query()
                                         ->where('state_id', $get('state_id'))
                                         ->pluck('name', 'id'))
                                     ->searchable()
-                                    ->label("Ciudad")->columnSpan(2)
-                                    ->preload(),
+                                    ->label("Ciudad")
+                                    ->preload()
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
 
                                 Forms\Components\TextInput::make('postal_code')
-                                    ->label("Código postal")->columnSpan(2),
+                                    ->label("Código postal")
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
+
                                 Forms\Components\TextInput::make('address')
                                     ->label("Dirección")
-                                    ->columnSpan(4),
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 4,  // Ocupa toda la fila en pantallas grandes también
+                                    ]),
+
                                 Forms\Components\Toggle::make('active')
                                     ->label("¿Activo?")
                                     ->inline(false)
-                                    ->columnSpan(2)
-                                    ->required(),
+                                    ->required()
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'md' => 2,
+                                    ]),
                             ])
-                            ->columns(4)
+
                     ]),
             ]);
     }

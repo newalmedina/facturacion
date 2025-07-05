@@ -81,7 +81,7 @@ class Profile extends Page
                                         ->nullable() // Permite que el campo sea opcional
                                         ->dehydrated(fn($state) => filled($state))
                                         ->helperText(new HtmlString('<span style="color:#00B5D8">El campo solo se actualizará si ingresas un nuevo valor.</span>')),
-                                 
+
                                 ]),
                             Section::make('Información personal')
                                 ->columns(2)
@@ -101,7 +101,7 @@ class Profile extends Page
                                     DatePicker::make('birth_date')
                                         ->label('Fecha nacimiento'),
                                     Select::make('country_id')
-                                        ->options(Country::query()->get()->where("is_active",1)->pluck('name', 'id'))
+                                        ->options(Country::query()->get()->where("is_active", 1)->pluck('name', 'id'))
                                         ->searchable()
                                         ->label("País")
                                         ->preload()
@@ -110,7 +110,7 @@ class Profile extends Page
                                             $set('state_id', null);
                                             $set('city_id', null);
                                         }),
-                                    
+
                                     Select::make('state_id')
                                         ->options(fn(Get $get) => State::where('country_id', $get('country_id'))->get()->pluck('name', 'id'))
                                         ->searchable()
@@ -118,7 +118,7 @@ class Profile extends Page
                                         ->preload()
                                         ->live()
                                         ->afterStateUpdated(fn(Set $set) => $set('city_id', null)),
-                                    
+
                                     Select::make('city_id')
                                         ->options(fn(Get $get) => City::where('state_id', $get('state_id'))->get()->pluck('name', 'id'))
                                         ->searchable()
@@ -127,8 +127,7 @@ class Profile extends Page
                                     TextInput::make('postal_code')
                                         ->label("Código postal"),
                                     TextInput::make('address')
-                                        ->label("Dirección")
-                                        ->columnSpan(2),
+                                        ->label("Dirección"),
                                 ]),
                         ])
                 ])

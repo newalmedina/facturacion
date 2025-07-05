@@ -67,10 +67,14 @@ class UserResource extends Resource
                             ]),
 
                         Grid::make(9)
-                            ->columnSpan(9)
+
                             ->schema([
                                 Section::make('Información de acceso')
-                                    ->columns(2)
+                                    ->columnSpan(9)
+                                    ->columns([
+                                        'sm' => 1,  // Pantalla pequeña: 1 columna (inputs a 100%)
+                                        'md' => 2,  // Pantalla mediana o superior: 2 columnas (inputs en 2 columnas)
+                                    ])
                                     ->schema([
 
                                         Forms\Components\TextInput::make('name')
@@ -102,7 +106,11 @@ class UserResource extends Resource
 
                                     ]),
                                 Section::make('Información personal')
-                                    ->columns(2)
+                                    ->columnSpan(9)  // Ocupa todo el grid principal
+                                    ->columns([
+                                        'sm' => 1,  // Pantalla pequeña: inputs ocupan 100%
+                                        'md' => 2,  // Pantalla mediana o superior: 2 columnas
+                                    ])
                                     ->schema([
                                         Forms\Components\TextInput::make('identification'),
                                         Forms\Components\Radio::make('gender')
@@ -150,8 +158,7 @@ class UserResource extends Resource
                                         Forms\Components\TextInput::make('postal_code')
                                             ->label("Código postal"),
                                         Forms\Components\TextInput::make('address')
-                                            ->label("Dirección")
-                                            ->columnSpan(2),
+                                            ->label("Dirección"),   
 
                                     ])->visible(fn($get) => $get('id')) // Solo visible al editar (cuando 'id' está presente)
 
