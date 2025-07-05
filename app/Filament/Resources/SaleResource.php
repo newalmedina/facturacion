@@ -13,6 +13,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OtherExpenseItem;
 use App\Models\Setting;
+use App\Models\User;
 use App\Services\ReceiptService;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -77,7 +78,7 @@ class SaleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->searchPlaceholder('Buscar código, cliente, observaciones')
+            ->searchPlaceholder('Buscar código, cliente, vendedor,observaciones')
             ->query(fn() => \App\Models\Order::query()->withCalculatedTotals()->sales())
 
             ->columns([
@@ -91,10 +92,17 @@ class SaleResource extends Resource
                     ->formatStateUsing(function ($state) {
                         return Carbon::parse($state)->format('d-m-Y');
                     })
+
                     ->sortable(),
                 //Tables\Columns\TextColumn::make('type'),
+                Tables\Columns\TextColumn::make('assignedUser.name')
+                    ->numeric()
+                    ->label("Vendedor")
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->numeric()
+                    ->label("Cliente")
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('products')
@@ -152,6 +160,16 @@ class SaleResource extends Resource
                     ->form([
                         DatePicker::make('date_from')->label("Fecha inicio"),
                         DatePicker::make('date_until')->label("Fecha fin"),
+                        Select::make('assigned_user_ids')
+                            ->label('Vendedores')
+                            ->options(
+                                User::all()->pluck('name', 'id')
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->multiple()
+                            ->native(false)
+                            ->placeholder('Selecciona vendedor (s)'),
                         Select::make('customer_ids')
                             ->label('Clientes')
                             ->options(
@@ -199,12 +217,19 @@ class SaleResource extends Resource
                             $names = Customer::whereIn('id', $data['customer_ids'])->pluck('name')->toArray();
                             $filter["customer_ids"] = 'Clientes: ' . implode(', ', $names);
                         }
+                        if (!empty($data['assigned_user_ids']) && is_array($data['assigned_user_ids'])) {
+                            $names = Customer::whereIn('id', $data['assigned_user_ids'])->pluck('name')->toArray();
+                            $filter["assigned_user_ids"] = 'Vendedores: ' . implode(', ', $names);
+                        }
                         return $filter;
                     })
                     ->query(function ($query, array $data) {
                         // Aplica el filtro en la consulta
                         if (!empty($data['customer_ids']) && is_array($data['customer_ids'])) {
                             $names = Customer::whereIn('id', $data['customer_ids'])->pluck('name')->toArray();
+                        }
+                        if (!empty($data['assigned_user_ids']) && is_array($data['assigned_user_ids'])) {
+                            $names = User::whereIn('id', $data['assigned_user_ids'])->pluck('name')->toArray();
                         }
                         if (isset($data['date_from']) && !empty($data['date_from'])) {
                             $query->where('date', '>=', $data['date_from']);
@@ -227,6 +252,9 @@ class SaleResource extends Resource
                         }
                         if (!empty($data['customer_ids']) && is_array($data['customer_ids'])) {
                             $query->whereIn('customer_id', $data['customer_ids']);
+                        }
+                        if (!empty($data['assigned_user_ids']) && is_array($data['assigned_user_ids'])) {
+                            $query->whereIn('assigned_user_id', $data['assigned_user_ids']);
                         }
 
 

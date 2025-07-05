@@ -23,10 +23,15 @@ class Order extends Model
         'products', // <-- aquí lo agregas
     ];
 
+    public function assignedUser()
+    {
+        return $this->belongsTo(User::class, 'assigned_user_id');
+    }
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
     }
+
 
     public function orderDetails(): HasMany
     {
