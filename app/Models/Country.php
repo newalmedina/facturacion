@@ -23,10 +23,7 @@ class Country extends Model
     {
         return $this->hasMany(Supplier::class);  // A category can have many items
     }
-    public function countries()
-    {
-        return $this->hasMany(Country::class);  // A category can have many items
-    }
+
 
     public function citiesList()
     {
@@ -44,8 +41,8 @@ class Country extends Model
     public function getCanDeleteAttribute(): bool
     {
         return $this->users()->doesntExist()
-            && $this->countries()->doesntExist()
-            && $this->custommers()->doesntExist()
+            // && $this->countries()->doesntExist()
+            && $this->customers()->doesntExist()
             && $this->supliers()->doesntExist()
             && $this->statesList()->doesntExist()
             && $this->citiesList()->doesntExist();
