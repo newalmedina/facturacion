@@ -168,7 +168,7 @@ class Form extends Component
         ];
     }
 
-    public function calculateManualProduct(): void
+    /*public function calculateManualProduct(): void
     {
         if (!$this->isManualProductComplete()) {
             $this->manualProduct['taxes_amount'] = null;
@@ -190,7 +190,35 @@ class Form extends Component
         $this->manualProduct['taxes_amount'] = $taxesAmount;
         $this->manualProduct['price_with_taxes'] = round($subtotal + $taxesAmount, 2);
         $this->manualProduct['total'] = round($subtotal + $taxesAmount, 2);
+    }*/
+    public function calculateManualProduct(): void
+    {
+        $quantity = $this->manualProduct['quantity'] ?? null;
+        $price = $this->manualProduct['price'] ?? null;
+        $tax = $this->manualProduct['taxes'] ?? null;
+
+        // Validación defensiva: que los valores no estén vacíos y sean numéricos
+        if (
+            !$this->isManualProductComplete() ||
+            !is_numeric($quantity) ||
+            !is_numeric($price) ||
+            !is_numeric($tax)
+        ) {
+            $this->manualProduct['taxes_amount'] = null;
+            $this->manualProduct['price_with_taxes'] = null;
+            $this->manualProduct['total'] = null;
+            return;
+        }
+
+        $subtotal = (float)$quantity * (float)$price;
+        $taxes_percent = (float)$tax / 100;
+        $taxesAmount = round($subtotal * $taxes_percent, 2);
+
+        $this->manualProduct['taxes_amount'] = $taxesAmount;
+        $this->manualProduct['price_with_taxes'] = round($subtotal + $taxesAmount, 2);
+        $this->manualProduct['total'] = round($subtotal + $taxesAmount, 2);
     }
+
 
 
     protected function isManualProductComplete(): bool
