@@ -141,9 +141,15 @@ class OtherExpenseResource extends Resource
                     })
                     ->schema([
                         Grid::make(12)->schema([
-                            Select::make('other_expense_item_id')
+                            /*Select::make('other_expense_item_id')
                                 ->label("Items")
                                 ->options(OtherExpenseItem::active()->pluck('name', 'id'))
+                                ->searchable()
+                                ->required()
+                                ->columnSpan(10),*/
+                            Select::make('other_expense_item_id')
+                                ->label('Items')
+                                ->options(fn() => OtherExpenseItem::active()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required()
                                 ->columnSpan(10),
