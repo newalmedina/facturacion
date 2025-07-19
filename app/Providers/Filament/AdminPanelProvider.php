@@ -3,12 +3,19 @@
 namespace App\Providers\Filament;
 
 use App\Filament\AvatarProviders\AutenticatedUserAvatar;
+use App\Filament\CustomWidgets\GananciasStats;
 use App\Filament\CustomWidgets\OtherExpensesChart;
 use App\Filament\CustomWidgets\OtherExpensesStats;
+use App\Filament\CustomWidgets\ProductosMasVendido;
+use App\Filament\CustomWidgets\ProductosMasVendidoPorcentaje;
+use App\Filament\CustomWidgets\ProductosMenosVendido;
+use App\Filament\CustomWidgets\ProductosMenosVendidoPorcentaje;
 use App\Filament\CustomWidgets\VentasStats;
 use App\Filament\Pages\Settings\Settings;
 use App\Filament\Resources\OtherExpenseResource\Widgets\OtherExpenseStats;
 use App\Filament\CustomWidgets\VentasMensualesChart;
+use App\Filament\CustomWidgets\VentasPorVendedorPercentPieChart;
+use App\Filament\CustomWidgets\VentasPorVendedorPieChart;
 use App\Filament\CustomWidgets\VentasVsGastosPorDiaChart;
 use App\Http\Middleware\AuthenticateAndCheckActive;
 use App\Models\Setting;
@@ -78,8 +85,15 @@ class AdminPanelProvider extends PanelProvider
                 //Widgets\FilamentInfoWidget::class,
                 VentasStats::class,
                 OtherExpensesStats::class,
+                GananciasStats::class,
                 VentasMensualesChart::class,
                 OtherExpensesChart::class,
+                VentasPorVendedorPieChart::class,
+                VentasPorVendedorPercentPieChart::class,
+                ProductosMasVendido::class,
+                ProductosMasVendidoPorcentaje::class,
+                ProductosMenosVendido::class,
+                ProductosMenosVendidoPorcentaje::class,
                 // VentasVsGastosPorDiaChart::class
             ])
             ->middleware([
