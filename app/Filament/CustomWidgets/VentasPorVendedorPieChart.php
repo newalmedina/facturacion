@@ -7,7 +7,7 @@ use App\Models\Order;
 
 class VentasPorVendedorPieChart extends PieChartWidget
 {
-    protected static ?string $heading = 'Ventas por Vendedor (Cantidad)';
+    protected static ?string $heading = 'Ventas por Vendedor (€)';
 
     // Aquí defines que el widget ocupe 1 columna (más pequeño)
     protected int|string|array $columnSpan = 1;
