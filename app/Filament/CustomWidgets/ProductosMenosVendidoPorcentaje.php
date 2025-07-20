@@ -4,13 +4,19 @@ namespace App\Filament\CustomWidgets;
 
 use Filament\Widgets\PieChartWidget;
 use App\Models\Order;
+use Filament\Widgets\ChartWidget;
 
-class ProductosMenosVendidoPorcentaje extends PieChartWidget
+class ProductosMenosVendidoPorcentaje extends ChartWidget
 {
     protected static ?string $heading = 'Top 5 productos menos vendidos (%)';
 
     protected int|string|array $columnSpan = 1;
 
+
+    protected function getType(): string
+    {
+        return 'pie';
+    }
     protected function getData(): array
     {
         $ventasPorVendedor = Order::sales()

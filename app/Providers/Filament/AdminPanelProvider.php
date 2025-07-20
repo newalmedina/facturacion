@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\AvatarProviders\AutenticatedUserAvatar;
+use App\Filament\CustomWidgets\GananciasMensualesChart;
 use App\Filament\CustomWidgets\GananciasStats;
 use App\Filament\CustomWidgets\OtherExpensesChart;
 use App\Filament\CustomWidgets\OtherExpensesStats;
@@ -10,6 +11,7 @@ use App\Filament\CustomWidgets\ProductosMasVendido;
 use App\Filament\CustomWidgets\ProductosMasVendidoPorcentaje;
 use App\Filament\CustomWidgets\ProductosMenosVendido;
 use App\Filament\CustomWidgets\ProductosMenosVendidoPorcentaje;
+use App\Filament\CustomWidgets\VentasAnualesChart;
 use App\Filament\CustomWidgets\VentasStats;
 use App\Filament\Pages\Settings\Settings;
 use App\Filament\Resources\OtherExpenseResource\Widgets\OtherExpenseStats;
@@ -88,6 +90,7 @@ class AdminPanelProvider extends PanelProvider
                 GananciasStats::class,
                 VentasMensualesChart::class,
                 OtherExpensesChart::class,
+                GananciasMensualesChart::class,
                 VentasPorVendedorPieChart::class,
                 VentasPorVendedorPercentPieChart::class,
                 ProductosMasVendido::class,

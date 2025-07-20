@@ -2,15 +2,19 @@
 
 namespace App\Filament\CustomWidgets;
 
-use Filament\Widgets\PieChartWidget;
 use App\Models\Order;
+use Filament\Widgets\ChartWidget;
 
-class ProductosMasVendidoPorcentaje extends PieChartWidget
+class ProductosMasVendidoPorcentaje extends ChartWidget
 {
     protected static ?string $heading = 'Top 5 productos más vendidos (%)';
 
     protected int|string|array $columnSpan = 1;
 
+    protected function getType(): string
+    {
+        return 'pie';
+    }
     protected function getData(): array
     {
         $ventasPorVendedor = Order::sales()

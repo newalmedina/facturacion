@@ -6,10 +6,10 @@ use App\Models\Order;
 use App\Models\OtherExpense;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Widgets\LineChartWidget;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
 
-class VentasVsGastosPorDiaChart extends LineChartWidget
+class VentasVsGastosPorDiaChart extends ChartWidget
 {
     use InteractsWithForms;
 
@@ -18,6 +18,10 @@ class VentasVsGastosPorDiaChart extends LineChartWidget
 
     public ?string $fecha_ini = null;
     public ?string $fecha_fin = null;
+    protected function getType(): string
+    {
+        return 'line';
+    }
 
     protected function getFormSchema(): array
     {

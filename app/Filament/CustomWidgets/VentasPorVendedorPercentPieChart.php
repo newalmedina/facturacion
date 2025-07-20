@@ -2,16 +2,21 @@
 
 namespace App\Filament\CustomWidgets;
 
-use Filament\Widgets\PieChartWidget;
 use App\Models\Order;
+use Filament\Widgets\ChartWidget;
 
-class VentasPorVendedorPercentPieChart extends PieChartWidget
+class VentasPorVendedorPercentPieChart extends ChartWidget
 {
     protected static ?string $heading = 'Ventas por Vendedor (%)';
 
     // Tamaño más pequeño, 1 columna
     protected int|string|array $columnSpan = 1;
 
+
+    protected function getType(): string
+    {
+        return 'pie';
+    }
     protected function getData(): array
     {
         $ventasPorVendedor = Order::sales()

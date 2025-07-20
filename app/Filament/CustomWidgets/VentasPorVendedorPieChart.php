@@ -4,14 +4,19 @@ namespace App\Filament\CustomWidgets;
 
 use Filament\Widgets\PieChartWidget;
 use App\Models\Order;
+use Filament\Widgets\ChartWidget;
 
-class VentasPorVendedorPieChart extends PieChartWidget
+class VentasPorVendedorPieChart extends ChartWidget
 {
     protected static ?string $heading = 'Ventas por Vendedor (€)';
 
     // Aquí defines que el widget ocupe 1 columna (más pequeño)
     protected int|string|array $columnSpan = 1;
 
+    protected function getType(): string
+    {
+        return 'pie';
+    }
     protected function getData(): array
     {
         $ventasPorVendedor = Order::sales()

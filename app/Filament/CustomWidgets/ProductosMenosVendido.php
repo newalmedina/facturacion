@@ -2,16 +2,21 @@
 
 namespace App\Filament\CustomWidgets;
 
-use Filament\Widgets\PieChartWidget;
 use App\Models\Order;
+use Filament\Widgets\ChartWidget;
 
-class ProductosMenosVendido extends PieChartWidget
+class ProductosMenosVendido extends ChartWidget
 {
     protected static ?string $heading = 'Top 5 productos menos vendidos (Cantidad)';
 
     // Aquí defines que el widget ocupe 1 columna (más pequeño)
     protected int|string|array $columnSpan = 1;
 
+
+    protected function getType(): string
+    {
+        return 'pie';
+    }
     protected function getData(): array
     {
         $ventasPorVendedor = Order::sales()

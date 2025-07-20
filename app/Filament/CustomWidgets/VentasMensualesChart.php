@@ -2,16 +2,20 @@
 
 namespace App\Filament\CustomWidgets;
 
-use Filament\Widgets\LineChartWidget;
 use App\Models\Order;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
 
-class VentasMensualesChart extends LineChartWidget
+class VentasMensualesChart extends ChartWidget
 {
 
 
     protected static ?string $heading = 'Ventas Mensuales por Año';
 
+    protected function getType(): string
+    {
+        return 'line';
+    }
     protected function getData(): array
     {
         $monthlySales = $this->getMonthlySalesByYear();

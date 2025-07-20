@@ -2,14 +2,18 @@
 
 namespace App\Filament\CustomWidgets;
 
-use Filament\Widgets\LineChartWidget;
 use App\Models\OtherExpense;  // Cambia al modelo correcto
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
 
-class OtherExpensesChart extends LineChartWidget
+class OtherExpensesChart extends ChartWidget
 {
     protected static ?string $heading = 'Gastos Mensuales por Año';
 
+    protected function getType(): string
+    {
+        return 'line';
+    }
     protected function getData(): array
     {
         $monthlyExpenses = $this->getMonthlyExpensesByYear();
