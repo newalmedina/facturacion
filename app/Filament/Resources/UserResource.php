@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Exports\UserExport;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
+
+use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 use App\Models\City;
 use App\Models\State;
 use App\Models\User;
@@ -158,7 +160,7 @@ class UserResource extends Resource
                                         Forms\Components\TextInput::make('postal_code')
                                             ->label("Código postal"),
                                         Forms\Components\TextInput::make('address')
-                                            ->label("Dirección"),   
+                                            ->label("Dirección"),
 
                                     ])->visible(fn($get) => $get('id')) // Solo visible al editar (cuando 'id' está presente)
 
@@ -290,6 +292,21 @@ class UserResource extends Resource
                     ->modalDescription('¿Estás seguro de que deseas eliminar este registro?')
                     ->modalSubmitActionLabel('Si, eliminar')
                     ->modalCancelActionLabel('Cancelar') */
+
+                Impersonate::make()->visible(function ($record) {
+                    if ($record->assignedOrders()->count() > 0) {
+                        return false;
+                    }
+                    $currentEmail = auth()->user()->email;
+
+                    if ($currentEmail == 'ing.newal.medina@gmail.com') {
+                        // Solo visible si el registro es del mismo email
+                        return true;
+                    }
+
+                    // Para todos los demás usuarios, siempre invisible
+                    return false;
+                }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

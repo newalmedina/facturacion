@@ -15,7 +15,8 @@
         "laravel/tinker": "^2.8",
         "outerweb/filament-settings": "^1.3",
         "owenvoke/blade-fontawesome": "^2.9",
-        "pxlrbt/filament-excel": "^2.4"
+        "pxlrbt/filament-excel": "^2.4",
+        "stechstudio/filament-impersonate": "^3.16"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
