@@ -293,7 +293,8 @@ class UserResource extends Resource
                     ->modalSubmitActionLabel('Si, eliminar')
                     ->modalCancelActionLabel('Cancelar') */
 
-                Impersonate::make()->visible(function ($record) {
+                Impersonate::make()
+                /*->visible(function ($record) {
                     if ($record->assignedOrders()->count() > 0) {
                         return false;
                     }
@@ -306,7 +307,7 @@ class UserResource extends Resource
 
                     // Para todos los demás usuarios, siempre invisible
                     return false;
-                }),
+                })*/,
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
