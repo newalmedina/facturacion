@@ -8,15 +8,19 @@ use Filament\Widgets\ChartWidget;
 
 class ProductosMasVendido extends ChartWidget
 {
-    protected static ?string $heading = 'Top 5 productos más vendidos (Cantidad) ';
+    //  protected static ?string $heading = 'Top 5 productos más vendidos (Cantidad) ';
 
     // Aquí defines que el widget ocupe 1 columna (más pequeño)
     protected int|string|array $columnSpan = 1;
-
+    private $total = 0;
     protected static ?string $maxHeight = '400px';
     protected function getType(): string
     {
-        return 'pie';
+        return 'doughnut';
+    }
+    public function getHeading(): ?string
+    {
+        return 'Top 5 productos más vendidos  (' . number_format($this->total, 2) . ' Unidades)';
     }
 
 
@@ -37,6 +41,7 @@ class ProductosMasVendido extends ChartWidget
                     $data[$nombre] = 0;
                 }
                 $data[$nombre] += $detail->quantity;
+                $this->total +=  $detail->quantity;
             }
         }
 
@@ -64,7 +69,28 @@ class ProductosMasVendido extends ChartWidget
         ];
     }
 
+    protected function getOptions(): array
+    {
+        $totalFormatted = '€' . number_format($this->total, 2);
 
+        return [
+            'plugins' => [
+                'legend' => [
+                    'position' => 'top',
+                ],
+            ],
+            'scales' => [
+                'x' => [
+                    'display' => false,
+                    'grid' => ['display' => false],
+                ],
+                'y' => [
+                    'display' => false,
+                    'grid' => ['display' => false],
+                ],
+            ],
+        ];
+    }
     private function nameToColor(string $name): string
     {
         // Genera un color HEX a partir del hash MD5 del nombre

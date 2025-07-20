@@ -70,6 +70,27 @@ class ProductosMenosVendidoPorcentaje extends ChartWidget
         ];
     }
 
+    protected function getOptions(): array
+    {
+
+        return [
+            'plugins' => [
+                'legend' => [
+                    'position' => 'top',
+                ],
+            ],
+            'scales' => [
+                'x' => [
+                    'display' => false,
+                    'grid' => ['display' => false],
+                ],
+                'y' => [
+                    'display' => false,
+                    'grid' => ['display' => false],
+                ],
+            ],
+        ];
+    }
     private function nameToColor(string $name): string
     {
         $hash = md5($name);

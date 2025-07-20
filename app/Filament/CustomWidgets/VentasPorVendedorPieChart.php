@@ -8,15 +8,23 @@ use Filament\Widgets\ChartWidget;
 
 class VentasPorVendedorPieChart extends ChartWidget
 {
-    protected static ?string $heading = 'Ventas por Vendedor (€)';
+
 
     // Aquí defines que el widget ocupe 1 columna (más pequeño)
     protected int|string|array $columnSpan = 1;
     protected static ?string $maxHeight = '400px';
+    private $total = 0;
     protected function getType(): string
     {
-        return 'pie';
+        return 'doughnut';
     }
+
+    public function getHeading(): ?string
+    {
+        return 'Ventas por Vendedor (€' . number_format($this->total, 2) . ')';
+    }
+
+
     protected function getData(): array
     {
         $ventasPorVendedor = Order::sales()
@@ -33,6 +41,7 @@ class VentasPorVendedorPieChart extends ChartWidget
             }
 
             $data[$nombre] = round($data[$nombre] + $venta->total, 2);
+            $this->total +=  $venta->total;
         }
 
         // Aquí etiquetas con el monto y €
@@ -52,6 +61,42 @@ class VentasPorVendedorPieChart extends ChartWidget
                 [
                     'data' => array_values($data),
                     'backgroundColor' => $backgroundColors,
+                ],
+            ],
+        ];
+    }
+    /*protected function getOptions(): array
+    {
+        $totalFormatted = '€' . number_format($this->total, 2);
+
+        return [
+            'plugins' => [
+                'customCenterText' => [
+                    'text' => $totalFormatted,
+                ],
+            ],
+        ];
+    }*/
+
+    protected function getOptions(): array
+    {
+        $totalFormatted = '€' . number_format($this->total, 2);
+
+        return [
+            'plugins' => [
+                'legend' => [
+                    'position' => 'top',
+                ],
+
+            ],
+            'scales' => [
+                'x' => [
+                    'display' => false,
+                    'grid' => ['display' => false],
+                ],
+                'y' => [
+                    'display' => false,
+                    'grid' => ['display' => false],
                 ],
             ],
         ];

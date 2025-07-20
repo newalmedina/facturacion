@@ -2,46 +2,53 @@
 
 namespace App\Filament\CustomWidgets;
 
+use Filament\Widgets\PieChartWidget;
 use App\Models\Order;
+use App\Models\OtherExpense;
 use Filament\Widgets\ChartWidget;
 
-class VentasPorVendedorPercentPieChart extends ChartWidget
+class GastosPieChart extends ChartWidget
 {
-    protected static ?string $heading = 'Ventas por Vendedor (%)';
 
-    // Tamaño más pequeño, 1 columna
+
+    // Aquí defines que el widget ocupe 1 columna (más pequeño)
     protected int|string|array $columnSpan = 1;
     protected static ?string $maxHeight = '400px';
-
+    private $total = 0;
     protected function getType(): string
     {
-        return 'pie';
+        return 'doughnut';
     }
+
+    public function getHeading(): ?string
+    {
+        return 'Productos con mas Gastos (€' . number_format($this->total, 2) . ')';
+    }
+
+
     protected function getData(): array
     {
-        $ventasPorVendedor = Order::sales()
-            ->invoiced()
-            ->with('assignedUser')
-            ->get();
+        $gastos = OtherExpense::all();
 
         $data = [];
-        foreach ($ventasPorVendedor as $venta) {
-            $nombre = $venta->assignedUser?->name ?? 'Sin vendedor';
+        foreach ($gastos as $gasto) {
+            foreach ($gasto->details as $detail) {
 
-            if (!isset($data[$nombre])) {
-                $data[$nombre] = 0;
+                $nombre = $detail->item?->name ?? 'Sin nombre';
+
+                if (!isset($data[$nombre])) {
+                    $data[$nombre] = 0;
+                }
+
+                $data[$nombre] = round($data[$nombre] + $detail->price, 2);
+                $this->total +=  $detail->price;
             }
-
-            $data[$nombre] = round($data[$nombre] + $venta->total, 2);
         }
 
-        $totalVentas = array_sum($data);
-
-        // Labels con nombre y porcentaje
+        // Aquí etiquetas con el monto y €
         $labels = [];
         foreach ($data as $nombre => $monto) {
-            $porcentaje = $totalVentas > 0 ? round(($monto / $totalVentas) * 100, 2) : 0;
-            $labels[] = "{$nombre} ({$porcentaje}%)";
+            $labels[] = "{$nombre} (€{$monto})";
         }
 
         $backgroundColors = [];
@@ -49,25 +56,23 @@ class VentasPorVendedorPercentPieChart extends ChartWidget
             $backgroundColors[] = $this->nameToColor($nombre);
         }
 
-        // Datos en porcentaje para que el gráfico represente proporciones
-        $dataPercent = [];
-        foreach ($data as $monto) {
-            $dataPercent[] = $totalVentas > 0 ? round(($monto / $totalVentas) * 100, 2) : 0;
-        }
-
         return [
             'labels' => $labels,
             'datasets' => [
                 [
-                    'data' => $dataPercent,
+                    'data' => array_values($data),
                     'backgroundColor' => $backgroundColors,
                 ],
             ],
         ];
     }
 
+
+
     protected function getOptions(): array
     {
+        $totalFormatted = '€' . number_format($this->total, 2);
+
         return [
             'plugins' => [
                 'legend' => [
@@ -86,8 +91,11 @@ class VentasPorVendedorPercentPieChart extends ChartWidget
             ],
         ];
     }
+
+
     private function nameToColor(string $name): string
     {
+        // Genera un color HEX a partir del hash MD5 del nombre
         $hash = md5($name);
         return '#' . substr($hash, 0, 6);
     }

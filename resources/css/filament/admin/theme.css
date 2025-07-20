@@ -1,3 +1,7 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 
 @config 'tailwind.config.js';
+
+#ganancias-mensuales-chart {
+    min-height: 400px !important;
+}
