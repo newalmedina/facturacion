@@ -11,7 +11,7 @@ class VentasPorVendedorPercentPieChart extends ChartWidget
 
     // Tamaño más pequeño, 1 columna
     protected int|string|array $columnSpan = 1;
-
+    protected static ?string $maxHeight = '400px';
 
     protected function getType(): string
     {

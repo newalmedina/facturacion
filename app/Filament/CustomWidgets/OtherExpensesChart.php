@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 class OtherExpensesChart extends ChartWidget
 {
     protected static ?string $heading = 'Gastos Mensuales por Año';
-
+    protected static ?string $maxHeight = '400px';
     protected function getType(): string
     {
         return 'line';

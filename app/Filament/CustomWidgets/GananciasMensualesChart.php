@@ -14,7 +14,7 @@ class GananciasMensualesChart extends ChartWidget
 {
     protected static ?string $heading = 'Ganancias por Mes';
     protected string|int|array $columnSpan = 'full';
-
+    protected static ?string $maxHeight = '400px';
 
     protected static bool $isLazy = false;
     protected static bool $shouldRegisterNavigation = false;

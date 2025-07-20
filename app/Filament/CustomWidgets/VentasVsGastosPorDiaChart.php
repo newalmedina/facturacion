@@ -14,7 +14,7 @@ class VentasVsGastosPorDiaChart extends ChartWidget
     use InteractsWithForms;
 
     protected static ?string $heading = 'Ventas vs Gastos (por día)';
-    protected static ?string $maxHeight = '300px';
+    protected static ?string $maxHeight = '400px';
 
     public ?string $fecha_ini = null;
     public ?string $fecha_fin = null;

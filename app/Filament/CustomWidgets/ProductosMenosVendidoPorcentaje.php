@@ -11,7 +11,7 @@ class ProductosMenosVendidoPorcentaje extends ChartWidget
     protected static ?string $heading = 'Top 5 productos menos vendidos (%)';
 
     protected int|string|array $columnSpan = 1;
-
+    protected static ?string $maxHeight = '400px';
 
     protected function getType(): string
     {

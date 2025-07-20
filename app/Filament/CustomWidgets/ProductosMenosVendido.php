@@ -12,7 +12,7 @@ class ProductosMenosVendido extends ChartWidget
     // Aquí defines que el widget ocupe 1 columna (más pequeño)
     protected int|string|array $columnSpan = 1;
 
-
+    protected static ?string $maxHeight = '400px';
     protected function getType(): string
     {
         return 'pie';
