@@ -52,7 +52,7 @@ class VentasPorVendedorPieChart extends ChartWidget
 
         $backgroundColors = [];
         foreach ($data as $nombre => $_) {
-            $backgroundColors[] = $this->nameToColor($nombre);
+            $backgroundColors[] = \App\Services\UtilsService::generateColorByName($nombre);
         }
 
         return [
@@ -100,13 +100,5 @@ class VentasPorVendedorPieChart extends ChartWidget
                 ],
             ],
         ];
-    }
-
-
-    private function nameToColor(string $name): string
-    {
-        // Genera un color HEX a partir del hash MD5 del nombre
-        $hash = md5($name);
-        return '#' . substr($hash, 0, 6);
     }
 }

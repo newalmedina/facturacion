@@ -57,7 +57,7 @@ class GastosPercentPieChart extends ChartWidget
 
         $backgroundColors = [];
         foreach ($data as $nombre => $_) {
-            $backgroundColors[] = $this->nameToColor($nombre);
+            $backgroundColors[] = \App\Services\UtilsService::generateColorByName($nombre);
         }
 
         return [

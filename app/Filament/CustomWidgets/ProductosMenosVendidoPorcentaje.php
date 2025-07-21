@@ -56,7 +56,7 @@ class ProductosMenosVendidoPorcentaje extends ChartWidget
 
         $backgroundColors = [];
         foreach (array_keys($data) as $nombre) {
-            $backgroundColors[] = $this->nameToColor($nombre);
+            $backgroundColors[] = \App\Services\UtilsService::generateColorByName($nombre);
         }
 
         return [

@@ -46,7 +46,7 @@ class VentasPorVendedorPercentPieChart extends ChartWidget
 
         $backgroundColors = [];
         foreach ($data as $nombre => $_) {
-            $backgroundColors[] = $this->nameToColor($nombre);
+            $backgroundColors[] = \App\Services\UtilsService::generateColorByName($nombre);
         }
 
         // Datos en porcentaje para que el gráfico represente proporciones
