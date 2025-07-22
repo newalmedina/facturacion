@@ -20,10 +20,10 @@ class Kernel extends ConsoleKernel
         // $schedule->command('backup:run --only-db --disable-notifications')->dailyAt('1:30')->environments(['production']);
         // $schedule->job(new SendTestEmailJob)->everyMinute();
         // $schedule->command('inspire')->hourly();
-        /*$schedule->command('email:send-cron-test')
+        $schedule->command('email:send-cron-test')
             //->everyMinute()
             ->dailyAt('05:00')
-            ->appendOutputTo(storage_path('logs/cron.log'));*/
+            ->appendOutputTo(storage_path('logs/cron.log'));
 
 
         /*$schedule->command(HelloCron::class, ['--no-ansi'])
