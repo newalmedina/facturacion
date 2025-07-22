@@ -43,7 +43,6 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
-TTTTFfffffff         v CTZZZZZA
 
     ],
 
