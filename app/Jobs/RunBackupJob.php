@@ -18,15 +18,22 @@ class RunBackupJob implements ShouldQueue
     public function handle()
     {
         try {
+            \Log::info('🟡 Iniciando ejecución del comando backup:run');
+
             // Ejecutar el comando de backup
             $exitCode = Artisan::call('backup:run');
 
+            \Log::info("🟢 Comando backup:run ejecutado con código de salida: {$exitCode}");
+
             if ($exitCode === 0) {
+                \Log::info('✅ Backup finalizado correctamente, se enviará notificación de éxito.');
                 $this->sendNotification('Éxito', 'El backup se completó correctamente.');
             } else {
+                \Log::warning("⚠️ Backup con errores, código: {$exitCode}. Se enviará notificación de error.");
                 $this->sendNotification('Error', 'El backup finalizó con código de error: ' . $exitCode);
             }
         } catch (\Exception $e) {
+            \Log::error("❌ Excepción al ejecutar backup: " . $e->getMessage());
             $this->sendNotification('Error', 'Excepción al ejecutar el backup: ' . $e->getMessage());
         }
     }
