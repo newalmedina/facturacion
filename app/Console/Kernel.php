@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->job(new RunBackupJob)->dailyAt('03:00');
+        $schedule->command('backup:run')->dailyAt('05:00');
         // $schedule->command('backup:run --only-db --disable-notifications')->dailyAt('1:30')->environments(['production']);
         // $schedule->job(new SendTestEmailJob)->everyMinute();
         // $schedule->command('inspire')->hourly();
