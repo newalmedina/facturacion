@@ -27,13 +27,16 @@ use Outerweb\FilamentSettings\Filament\Pages\Settings as BaseSettings;
 
 class Settings extends BaseSettings
 {
+
+    protected static ?string $navigationGroup = 'Configuraciones';
+    protected static ?int $navigationSort = 80;
     public static function getNavigationLabel(): string
     {
-        return 'Configuración';
+        return 'Información del sitio';
     }
     public function getTitle(): string
     {
-        return 'Configuración';
+        return 'Información del sitio';
     }
     public function getFormActions(): array
     {

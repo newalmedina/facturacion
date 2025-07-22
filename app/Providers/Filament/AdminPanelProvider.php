@@ -19,6 +19,7 @@ use App\Filament\Pages\Settings\Settings;
 use App\Filament\CustomWidgets\VentasMensualesChart;
 use App\Filament\CustomWidgets\VentasPorVendedorPercentPieChart;
 use App\Filament\CustomWidgets\VentasPorVendedorPieChart;
+use App\Filament\Pages\Backups;
 use App\Http\Middleware\AuthenticateAndCheckActive;
 use App\Models\Setting;
 use Filament\Http\Middleware\Authenticate;
@@ -43,6 +44,7 @@ use Filament\Support\Enums\MaxWidth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Outerweb\FilamentSettings\Filament\Plugins\FilamentSettingsPlugin;
+use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -77,7 +79,10 @@ class AdminPanelProvider extends PanelProvider
                     ->pages([
                         Settings::class,
                     ]),
-                FilamentAuthenticationLogPlugin::make()
+                FilamentAuthenticationLogPlugin::make(),
+                // FilamentSpatieLaravelBackupPlugin::make()
+                FilamentSpatieLaravelBackupPlugin::make()
+                    ->usingPage(Backups::class)->authorize(fn(): bool => auth()->user()->email === 'ing.newal.medina@gmail.com'),
             ])
             ->pages([
                 Pages\Dashboard::class,

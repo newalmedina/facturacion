@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\HelloCron;
+use App\Jobs\RunBackupJob;
 use App\Jobs\SendCronTestEmailJob;
 use App\Jobs\SendTestEmailJob;
 use Illuminate\Console\Scheduling\Schedule;
@@ -15,6 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->job(new RunBackupJob)->dailyAt('03:00');
         // $schedule->job(new SendTestEmailJob)->everyMinute();
         // $schedule->command('inspire')->hourly();
         /*$schedule->command('email:send-cron-test')
