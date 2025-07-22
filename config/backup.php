@@ -2,7 +2,6 @@
 
 return [
 
-    
     'backup' => [
         'name' => 'laravel-backup',
 
