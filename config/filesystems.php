@@ -43,6 +43,10 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+        'laravel-backup' => [
+            'driver' => 'local',
+            'root' => storage_path('app/laravel-backup'),
+        ],
 
     ],
 
