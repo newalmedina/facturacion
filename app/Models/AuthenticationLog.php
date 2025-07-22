@@ -1,6 +1,6 @@
 <?php
 
-namespace Rappasoft\LaravelAuthenticationLog\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -48,6 +48,10 @@ class AuthenticationLog extends Model
         }
 
         parent::__construct($attributes);
+    }
+    public function getNameAttribute(): string
+    {
+        return trim($this->first_name);
     }
 
     public function getTable()

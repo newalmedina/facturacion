@@ -1,9 +1,12 @@
 <?php
 
+use App\Filament\Resources\AuthenticationLogResource;
+
 return [
 
     'resources' => [
-        'AutenticationLogResource' => \Tapp\FilamentAuthenticationLog\Resources\AuthenticationLogResource::class,
+        // 'AutenticationLogResource' => \Tapp\FilamentAuthenticationLog\Resources\AuthenticationLogResource::class,
+        'AutenticationLogResource' => AuthenticationLogResource::class,
     ],
 
     'authenticable-resources' => [
@@ -11,7 +14,7 @@ return [
     ],
 
     'authenticatable' => [
-        'field-to-display' => null,
+        'field-to-display' => "name",
     ],
 
     'navigation' => [
