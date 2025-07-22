@@ -11,7 +11,10 @@ class Backups extends BaseBackups
     protected static ?string $navigationGroup = 'Configuraciones';
     protected static ?int $navigationSort = 81;
 
-
+    protected function monitoredBackupName(): string
+    {
+        return 'databasebackup';
+    }
     public static function getNavigationGroup(): ?string
     {
         return 'Configuraciones';
