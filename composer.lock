@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe5b23f25f249f8c4e9334516e6fb969",
+    "content-hash": "5374293f0187f7d11bc3e3bdf96f53b8",
     "packages": [
         {
             "name": "altwaireb/laravel-world",
@@ -6078,6 +6078,77 @@
             "time": "2024-04-27T21:32:50+00:00"
         },
         {
+            "name": "rappasoft/laravel-authentication-log",
+            "version": "v4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rappasoft/laravel-authentication-log.git",
+                "reference": "a916caaa979b1d18d679d8b063325fe547f691c6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rappasoft/laravel-authentication-log/zipball/a916caaa979b1d18d679d8b063325fe547f691c6",
+                "reference": "a916caaa979b1d18d679d8b063325fe547f691c6",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^10.0|^11.0",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.4.3"
+            },
+            "require-dev": {
+                "nunomaduro/collision": "^6.0",
+                "orchestra/testbench": "^7.0",
+                "pestphp/pest": "^1.21",
+                "pestphp/pest-plugin-laravel": "^1.2",
+                "spatie/laravel-ray": "^1.29",
+                "vimeo/psalm": "^4.20"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Rappasoft\\LaravelAuthenticationLog\\LaravelAuthenticationLogServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Rappasoft\\LaravelAuthenticationLog\\": "src",
+                    "Rappasoft\\LaravelAuthenticationLog\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Anthony Rappa",
+                    "email": "rappa819@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Log user authentication details and send new device notifications.",
+            "homepage": "https://github.com/rappasoft/laravel-authentication-log",
+            "keywords": [
+                "laravel",
+                "laravel-authentication-log",
+                "rappasoft"
+            ],
+            "support": {
+                "issues": "https://github.com/rappasoft/laravel-authentication-log/issues",
+                "source": "https://github.com/rappasoft/laravel-authentication-log/tree/v4.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/rappasoft",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-03-30T01:12:44+00:00"
+        },
+        {
             "name": "ryangjchandler/blade-capture-directive",
             "version": "v1.1.0",
             "source": {
@@ -8669,6 +8740,74 @@
             "time": "2025-01-17T11:26:11+00:00"
         },
         {
+            "name": "tapp/filament-authentication-log",
+            "version": "v3.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TappNetwork/filament-authentication-log.git",
+                "reference": "9ac5073c6b659f87ce26dd9564eafce746d665ee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TappNetwork/filament-authentication-log/zipball/9ac5073c6b659f87ce26dd9564eafce746d665ee",
+                "reference": "9ac5073c6b659f87ce26dd9564eafce746d665ee",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0-stable",
+                "php": "^8.1",
+                "rappasoft/laravel-authentication-log": "^4.0",
+                "spatie/laravel-package-tools": "^1.9"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.11"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Tapp\\FilamentAuthenticationLog\\FilamentAuthenticationLogServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Tapp\\FilamentAuthenticationLog\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tapp Network",
+                    "email": "steve@tappnetwork.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Tapp Network",
+                    "email": "andreia.bohner@tappnetwork.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Filament authentication log plugin.",
+            "homepage": "https://github.com/TappNetwork/filament-authentication-log",
+            "keywords": [
+                "Authentication",
+                "filament",
+                "log",
+                "relation manager",
+                "resource",
+                "tapp network"
+            ],
+            "support": {
+                "issues": "https://github.com/TappNetwork/filament-authentication-log/issues",
+                "source": "https://github.com/TappNetwork/filament-authentication-log"
+            },
+            "time": "2025-01-19T02:15:43+00:00"
+        },
+        {
             "name": "tijsverkoyen/css-to-inline-styles",
             "version": "v2.3.0",
             "source": {
@@ -8722,6 +8861,86 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/v2.3.0"
             },
             "time": "2024-12-21T16:25:41+00:00"
+        },
+        {
+            "name": "torann/geoip",
+            "version": "3.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Torann/laravel-geoip.git",
+                "reference": "1ea60c7e1a1608de3885e8cd76389cfe5c8424de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Torann/laravel-geoip/zipball/1ea60c7e1a1608de3885e8cd76389cfe5c8424de",
+                "reference": "1ea60c7e1a1608de3885e8cd76389cfe5c8424de",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/cache": "^8.0|^9.0|^10.0|^11.0|^12.0",
+                "illuminate/console": "^8.0|^9.0|^10.0|^11.0|^12.0",
+                "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
+                "php": "^8.0|^8.1|^8.2|^8.3"
+            },
+            "require-dev": {
+                "geoip2/geoip2": "~2.1|~3.0",
+                "mockery/mockery": "^1.3",
+                "phpstan/phpstan": "^0.12.14|^1.9",
+                "phpunit/phpunit": "^8.0|^9.0|^10.0|^11.0",
+                "squizlabs/php_codesniffer": "^3.5",
+                "vlucas/phpdotenv": "^5.0"
+            },
+            "suggest": {
+                "geoip2/geoip2": "Required to use the MaxMind database or web service with GeoIP (~2.1).",
+                "monolog/monolog": "Allows for storing location not found errors to the log"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "GeoIP": "Torann\\GeoIP\\Facades\\GeoIP"
+                    },
+                    "providers": [
+                        "Torann\\GeoIP\\GeoIPServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "Torann\\GeoIP\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel Stainback",
+                    "email": "torann@gmail.com"
+                }
+            ],
+            "description": "Support for multiple Geographical Location services.",
+            "keywords": [
+                "IP API",
+                "geographical",
+                "geoip",
+                "geolocation",
+                "infoDB",
+                "laravel",
+                "location"
+            ],
+            "support": {
+                "issues": "https://github.com/Torann/laravel-geoip/issues",
+                "source": "https://github.com/Torann/laravel-geoip/tree/3.0.9"
+            },
+            "time": "2025-02-25T18:24:54+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -12381,12 +12600,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }
