@@ -3,7 +3,7 @@
 return [
 
     'backup' => [
-        'name' => 'databasebackup',
+        'name' => 'laravel-backup',
 
         'source' => [
             'files' => [
@@ -34,7 +34,7 @@ return [
             'compression_level' => 9,
             'filename_prefix' => '',
             'disks' => [
-                'base-datos-backup',
+                'laravel-backup',
             ],
         ],
 
@@ -58,7 +58,7 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
 
         'mail' => [
-            'to' => 'your@example.com',
+            'to' => 'ing.newal.medina@gmail.com',
             'from' => [
                 'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
                 'name' => env('MAIL_FROM_NAME', 'Example'),
@@ -81,8 +81,8 @@ return [
 
     'monitor_backups' => [
         [
-            'name' => 'databasebackup',
-            'disks' => ['base-datos-backup'],
+            'name' => 'laravel-backup',
+            'disks' => ['laravel-backup'],
             'health_checks' => [
                 \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays::class => 1,
                 \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes::class => 5000,

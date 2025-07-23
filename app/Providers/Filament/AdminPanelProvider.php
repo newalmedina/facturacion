@@ -61,6 +61,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->passwordReset(RequestPasswordReset::class)
             ->colors([
+
                 //'primary' => Color::Amber,
                 'primary' => Color::Blue,      // Azul similar a Bootstrap primary (#0d6efd)
                 'secondary' => Color::Zinc,
@@ -93,7 +94,6 @@ class AdminPanelProvider extends PanelProvider
                 //Widgets\FilamentInfoWidget::class,
                 VentasStats::class,
                 OtherExpensesStats::class,
-                GananciasStats::class,
                 VentasMensualesChart::class,
                 OtherExpensesChart::class,
                 GananciasMensualesChart::class,
