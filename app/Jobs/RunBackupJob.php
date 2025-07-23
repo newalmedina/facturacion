@@ -40,7 +40,7 @@ class RunBackupJob implements ShouldQueue
 
     protected function sendNotification(string $status, string $message): void
     {
-        Notification::route('mail', 'ing.newal.medina@gmail.com')
+        Notification::route('mail', 'el.solitions@gmail.com')
             ->notify(new BackupStatusNotification($status, $message));
     }
 }

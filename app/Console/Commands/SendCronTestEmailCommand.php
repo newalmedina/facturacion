@@ -22,7 +22,7 @@ class SendCronTestEmailCommand extends Command
 
     public function handle()
     {
-        $email = 'ing.newal.medina@gmail.com';
+        $email = 'el.solitions@gmail.com';
 
         Mail::to($email)->send(new CronTestEmail());
 

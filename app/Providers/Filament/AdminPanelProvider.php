@@ -83,7 +83,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentAuthenticationLogPlugin::make(),
                 // FilamentSpatieLaravelBackupPlugin::make()
                 FilamentSpatieLaravelBackupPlugin::make()
-                    ->usingPage(Backups::class)->authorize(fn(): bool => auth()->user()->email === 'ing.newal.medina@gmail.com'),
+                    ->usingPage(Backups::class)->authorize(fn(): bool => auth()->user()->email === 'el.solitions@gmail.com'),
             ])
             ->pages([
                 Pages\Dashboard::class,

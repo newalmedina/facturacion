@@ -247,11 +247,11 @@ class UserResource extends Resource
                     ->visible(function ($record) {
                         $currentEmail = auth()->user()->email;
 
-                        if ($currentEmail == 'ing.newal.medina@gmail.com' && $record->email == 'ing.newal.medina@gmail.com') {
+                        if ($currentEmail == 'el.solitions@gmail.com' && $record->email == 'el.solitions@gmail.com') {
                             // Solo visible si el registro es del mismo email
                             return true;
                         }
-                        if ($record->email != 'ing.newal.medina@gmail.com') {
+                        if ($record->email != 'el.solitions@gmail.com') {
 
                             return true;
                         }
@@ -274,11 +274,11 @@ class UserResource extends Resource
                         }
                         $currentEmail = auth()->user()->email;
 
-                        if ($currentEmail == 'ing.newal.medina@gmail.com' && $record->email == 'ing.newal.medina@gmail.com') {
+                        if ($currentEmail == 'el.solitions@gmail.com' && $record->email == 'el.solitions@gmail.com') {
                             // Solo visible si el registro es del mismo email
                             return true;
                         }
-                        if ($record->email != 'ing.newal.medina@gmail.com') {
+                        if ($record->email != 'el.solitions@gmail.com') {
 
                             return true;
                         }
@@ -300,7 +300,7 @@ class UserResource extends Resource
                     }
                     $currentEmail = auth()->user()->email;
 
-                    if ($currentEmail == 'ing.newal.medina@gmail.com') {
+                    if ($currentEmail == 'el.solitions@gmail.com') {
                         // Solo visible si el registro es del mismo email
                         return true;
                     }
