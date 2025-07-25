@@ -5,6 +5,10 @@ namespace App\Filament\Pages;
 use App\Jobs\RunBackupJob;
 use ShuvroRoy\FilamentSpatieLaravelBackup\Pages\Backups as BaseBackups;
 
+use ShuvroRoy\FilamentSpatieLaravelBackup\Enums\Option;
+use ShuvroRoy\FilamentSpatieLaravelBackup\Jobs\CreateBackupJob;
+use Filament\Notifications\Notification;
+
 class Backups extends BaseBackups
 {
     protected static ?string $navigationIcon = 'heroicon-o-cpu-chip';
@@ -19,10 +23,21 @@ class Backups extends BaseBackups
     {
         return 'Configuraciones';
     }
-    public function runBackup()
+    // Sobrescribes para que el botón lance directo el backup de base de datos
+    public function openOptionModal(): void
     {
-        RunBackupJob::dispatch();
+        $this->create('database');
+    }
 
-        $this->notify('success', 'El backup se está ejecutando en segundo plano.');
+    // Opcionalmente, puedes sobrescribir create para personalizar notificación o job
+    public function create(string $option = ''): void
+    {
+        CreateBackupJob::dispatch(Option::ONLY_DB, 300)
+            ->onQueue('default')
+            ->afterResponse();
+        Notification::make()
+            ->title('El backup solo de base de datos se está ejecutando.')
+            ->success()
+            ->send();
     }
 }
