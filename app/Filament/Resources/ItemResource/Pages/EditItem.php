@@ -31,6 +31,7 @@ class EditItem extends EditRecord
     // Este método se llama antes de guardar el registro editado
     protected function mutateFormDataBeforeSave(array $data): array
     {
+
         if ($data['type'] === 'service') {
             // Limpiar campos que no se usan en servicios
             $data['brand_id'] = null;
@@ -49,6 +50,10 @@ class EditItem extends EditRecord
         } else {
             // Si es producto, no usar tiempo
             $data['time'] = null;
+        }
+        // Eliminar time_formatted para que no intente guardarlo en la base de datos
+        if (array_key_exists('time_formatted', $data)) {
+            unset($data['time_formatted']);
         }
 
         return $data;

@@ -96,7 +96,7 @@ class ItemResource extends Resource
                                             ->placeholder('Ej. 01:30')
                                             ->mask('99:99')
                                             ->helperText('Introduce el tiempo en horas:minutos')
-                                            ->dehydrated(false)
+                                            // ->dehydrated(false) // ⚠️ Muy importante para que no intente guardar en la BD
                                             ->required(fn($get) => $get('type') === 'service')
                                             ->hidden(fn($get) => $get('type') !== 'service')
                                             ->afterStateHydrated(function ($state, callable $set, $get) {
@@ -120,9 +120,13 @@ class ItemResource extends Resource
                                         Forms\Components\TextInput::make('time')
                                             ->label('Tiempo en minutos')
                                             ->numeric()
-                                            ->hidden(fn($get) => $get('type') !== 'service')
-                                            ->dehydrated()
+                                            ->hidden()
+                                            // ->dehydrated()
                                             ->disabled(),
+
+
+
+
                                     ])
                                     ->visible(fn($get) => $get('type') === 'service'),
 

@@ -42,6 +42,10 @@ class CreateItem extends CreateRecord
             // Si es producto, no usar tiempo
             $data['time'] = null;
         }
+        // Eliminar time_formatted para que no intente guardarlo en la base de datos
+        if (array_key_exists('time_formatted', $data)) {
+            unset($data['time_formatted']);
+        }
 
         return $data;
     }
