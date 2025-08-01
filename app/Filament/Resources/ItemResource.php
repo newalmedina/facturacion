@@ -261,6 +261,14 @@ class ItemResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label("nombre")
                     ->searchable(),
+                Tables\Columns\TextColumn::make('time')
+                    ->label('Tiempo')
+                    ->formatStateUsing(
+                        fn($state) => ($state !== null && $state > 0)
+                            ? sprintf('%02d:%02d h', floor($state / 60), $state % 60)
+                            : ''
+                    ),
+
 
                 Tables\Columns\TextColumn::make('price')
                     ->label("Precio")

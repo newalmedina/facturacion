@@ -28,7 +28,8 @@ class AppointmentResource extends Resource
     protected static ?string $model = Appointment::class;
 
 
-    protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
+
     protected static ?string $navigationGroup = 'Gestión de citas';
     protected static ?int $navigationSort = 50;
     // protected static ?string $navigationLabel = 'Ciudadedsadss';
