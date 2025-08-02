@@ -11,6 +11,7 @@ use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -86,7 +87,50 @@ class ItemResource extends Resource
                                     ->required()
                                     ->hidden(fn($get) => empty($get('type')))
                                     ->maxLength(255),
+                                // Campo Marca (Solo visible cuando 'type' es 'product')
 
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('time_formatted')
+                                            ->label('Duración (HH:MM)')
+                                            ->placeholder('Ej. 01:30')
+                                            ->mask('99:99')
+                                            ->helperText('Introduce el tiempo en horas:minutos')
+                                            // ->dehydrated(false) // ⚠️ Muy importante para que no intente guardar en la BD
+                                            ->required(fn($get) => $get('type') === 'service')
+                                            ->hidden(fn($get) => $get('type') !== 'service')
+                                            ->afterStateHydrated(function ($state, callable $set, $get) {
+                                                $minutes = $get('time');
+                                                if ($minutes !== null) {
+                                                    $hours = floor($minutes / 60);
+                                                    $mins = $minutes % 60;
+                                                    $set('time_formatted', sprintf('%02d:%02d', $hours, $mins));
+                                                }
+                                            })
+                                            ->afterStateUpdated(function ($state, callable $set) {
+                                                if (preg_match('/^(\d{1,2}):(\d{2})$/', $state, $matches)) {
+                                                    $hours = (int) $matches[1];
+                                                    $minutes = (int) $matches[2];
+                                                    $set('time', $hours * 60 + $minutes);
+                                                } else {
+                                                    $set('time', null);
+                                                }
+                                            }),
+
+                                        Forms\Components\TextInput::make('time')
+                                            ->label('Tiempo en minutos')
+                                            ->numeric()
+                                            ->hidden()
+                                            // ->dehydrated()
+                                            ->disabled(),
+
+
+
+
+                                    ])
+                                    ->visible(fn($get) => $get('type') === 'service'),
+
+                                // ->required(),
                                 // Campo Descripción
                                 Forms\Components\Textarea::make('description')
                                     ->label("Descripción")
@@ -221,6 +265,14 @@ class ItemResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label("nombre")
                     ->searchable(),
+                Tables\Columns\TextColumn::make('time')
+                    ->label('Tiempo')
+                    ->formatStateUsing(
+                        fn($state) => ($state !== null && $state > 0)
+                            ? sprintf('%02d:%02d h', floor($state / 60), $state % 60)
+                            : ''
+                    ),
+
 
                 Tables\Columns\TextColumn::make('price')
                     ->label("Precio")
