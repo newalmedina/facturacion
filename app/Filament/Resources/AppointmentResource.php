@@ -35,7 +35,7 @@ class AppointmentResource extends Resource
     // protected static ?string $navigationLabel = 'Ciudadedsadss';
     public static function getModelLabel(): string
     {
-        return 'Citas';
+        return 'Cita';
     }
 
     public static function getPluralModelLabel(): string
@@ -93,6 +93,10 @@ class AppointmentResource extends Resource
                 Textarea::make('comments')
                     ->label('Comentarios')
                     ->columnSpanFull(),
+                Forms\Components\Toggle::make('active')
+                    ->inline(false)
+                    ->label("¿Activo?")
+                    ->required(),
             ]);
     }
 
@@ -157,6 +161,9 @@ class AppointmentResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true), // Se puede ocultar/mostrar por defecto oculto
+                Tables\Columns\IconColumn::make('active')
+                    ->boolean()
+                    ->label("¿Activo?"),
 
                 // Tables\Columns\TextColumn::make('updated_at')
                 //     ->dateTime()
