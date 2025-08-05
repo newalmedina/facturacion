@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('appointment_templates', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('worker_id')->constrained('users')->onDelete('cascade')->nullable(); // worker
+            // $table->foreignId('worker_id')->constrained('users')->onDelete('cascade')->nullable(); // worker
+            $table->unsignedBigInteger('worker_id')->nullable(); // primero defines la columna
+            $table->foreign('worker_id')->references('id')->on('users')->onDelete('cascade'); // luego defines la relación
+
             $table->boolean('active')->default(true);
             $table->boolean('is_general')->default(false);
             $table->timestamps();

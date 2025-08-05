@@ -27,4 +27,9 @@ class Appointment extends Model
     {
         return !is_null($this->status) && $this->status !== 'cancelled';
     }
+    // Template de la cita
+    public function template()
+    {
+        return $this->belongsTo(AppointmentTemplate::class, 'template_id');
+    }
 }

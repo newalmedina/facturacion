@@ -150,7 +150,6 @@ class AppointmentResource extends Resource
                         };
                     }),
 
-
                 Tables\Columns\TextColumn::make('requester_email')->label("Correo solicitante")
                     ->searchable(),   // Buscable
 
@@ -164,7 +163,12 @@ class AppointmentResource extends Resource
                 Tables\Columns\IconColumn::make('active')
                     ->boolean()
                     ->label("¿Activo?"),
-
+                Tables\Columns\TextColumn::make('template.name')
+                    ->numeric()
+                    ->label('Plantilla')   // Etiqueta de la columna
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)       // Se puede buscar en esta columna
+                    ->sortable(),
                 // Tables\Columns\TextColumn::make('updated_at')
                 //     ->dateTime()
                 //     ->sortable()
