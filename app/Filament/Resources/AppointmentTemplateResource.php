@@ -3,9 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AppointmentTemplateResource\Pages;
-use App\Filament\Resources\AppointmentTemplateResource\RelationManagers;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use App\Models\AppointmentTemplate;
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Grid;
@@ -22,6 +22,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Get;
+use Filament\Notifications\Notification;
+use Filament\Tables\Filters\Filter;
 
 class AppointmentTemplateResource extends Resource
 {
@@ -48,6 +50,59 @@ class AppointmentTemplateResource extends Resource
         return $form
             ->schema([
                 // Primera fila con los campos principales
+                Actions::make([
+                    Action::make('createOtherExpenseItem')
+                        ->label("Duplicar plantilla")
+                        ->icon('heroicon-o-clipboard-document') // icono de "copiar"
+                        ->color('success') // color verde
+                        ->action(function (array $data, Get $get) {
+                            $original = AppointmentTemplate::findOrFail($get('id'));
+
+                            // Crear la plantilla duplicada
+                            $duplicated = AppointmentTemplate::create([
+                                'name' => $data['duplicate_name'],
+                                'worker_id' => $data['duplicate_worker_id'],
+                                'active' => $data['duplicate_active'],
+                                'is_general' => $data['iduplicate_s_general'],
+                            ]);
+
+                            // Duplicar slots
+                            foreach ($original->slots as $slot) {
+                                $duplicated->slots()->create([
+                                    'day_of_week' => $slot->day_of_week,
+                                    'start_time' => $slot->start_time,
+                                    'end_time' => $slot->end_time,
+                                    'group' => $slot->group,
+                                ]);
+                            }
+                            Notification::make()
+                                ->title('Registro duplicado ')
+                                ->success()
+                                ->send();
+                            // Redirigir a la vista de edición (ajusta la ruta si usas resource diferente)
+                            return redirect()->route('filament.admin.resources.appointment-templates.edit', [
+                                'record' => $duplicated->id,
+                            ]);
+                        })
+                        ->form([
+                            TextInput::make('duplicate_name')
+                                ->required()
+                                ->label('Nombre de la Plantilla'),
+                            Select::make('duplicate_worker_id')
+                                ->label('Trabajador')
+                                ->relationship('worker', 'name') // Usa el campo "name" del modelo User
+                                ->searchable()->preload(),
+
+                            Toggle::make('duplicate_active')->inline(false)
+                                ->label('Activa'),
+
+                            Toggle::make('iduplicate_s_general')->inline(false)
+                                ->label('Plantilla General'),
+                        ])
+                        ->modalHeading('Nuevo Gasto Extra')
+                        ->modalSubmitActionLabel('Guardar')
+                        ->modalWidth('md'),
+                ])->visible(fn(Get $get) => $get('id') !== null),
                 Forms\Components\Grid::make(3)
                     ->schema([
                         TextInput::make('name')
@@ -145,11 +200,108 @@ class AppointmentTemplateResource extends Resource
                     ->label('N° de Horarios'),
             ])
             ->filters([
-                //
+                Filter::make('custom_filter')
+                    ->form([
+                        Select::make('worker_id')
+                            ->label('Empleado')
+                            ->relationship('worker', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->placeholder('Selecciona un empleado'),
+
+                        Select::make('active')
+                            ->label('¿Activo?')
+                            ->options([
+                                '1' => 'Sí',
+                                '0' => 'No',
+                            ])
+                            ->nullable()
+                            ->placeholder('Todos'),
+
+                        Select::make('is_general')
+                            ->label('¿Plantilla general?')
+                            ->options([
+                                '1' => 'Sí',
+                                '0' => 'No',
+                            ])
+                            ->nullable()
+                            ->placeholder('Todos'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        if (!empty($data['worker_id'])) {
+                            $query->where('worker_id', $data['worker_id']);
+                        }
+
+                        if ($data['active'] !== null && $data['active'] !== '') {
+                            $query->where('active', $data['active']);
+                        }
+
+                        if ($data['is_general'] !== null && $data['is_general'] !== '') {
+                            $query->where('is_general', $data['is_general']);
+                        }
+
+                        return $query;
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
+                Tables\Actions\Action::make('duplicateTemplate')
+                    ->tooltip('Duplicar')
+                    ->label('')
+                    ->icon('heroicon-o-clipboard-document')
+                    ->color('success')
+                    ->requiresConfirmation() // Opcional si quieres confirmación antes
+                    ->form([
+                        TextInput::make('duplicate_name')
+                            ->label('Nombre de la plantilla')
+                            ->required(),
 
+                        Select::make('duplicate_worker_id')
+                            ->label('Empleado')
+                            ->relationship('worker', 'name')
+                            ->searchable()
+                            ->preload(),
+
+                        Toggle::make('duplicate_active')
+                            ->label('¿Activa?')
+                            ->inline(false),
+
+                        Toggle::make('iduplicate_s_general')
+                            ->label('¿Plantilla general?')
+                            ->inline(false),
+                    ])
+                    ->modalHeading('Duplicar plantilla')
+                    ->modalSubmitActionLabel('Duplicar')
+                    ->modalWidth('md')
+                    ->action(function (array $data, Tables\Actions\Action $action) {
+                        $original = \App\Models\AppointmentTemplate::findOrFail($action->getRecord()->id);
+
+                        $duplicated = \App\Models\AppointmentTemplate::create([
+                            'name' => $data['duplicate_name'],
+                            'worker_id' => $data['duplicate_worker_id'],
+                            'active' => $data['duplicate_active'],
+                            'is_general' => $data['iduplicate_s_general'],
+                        ]);
+
+                        foreach ($original->slots as $slot) {
+                            $duplicated->slots()->create([
+                                'day_of_week' => $slot->day_of_week,
+                                'start_time' => $slot->start_time,
+                                'end_time' => $slot->end_time,
+                                'group' => $slot->group,
+                            ]);
+                        }
+
+                        Notification::make()
+                            ->title('Plantilla duplicada correctamente')
+                            ->success()
+                            ->send();
+
+                        // Redirige a la edición del nuevo registro
+                        return redirect()->route('filament.admin.resources.appointment-templates.edit', [
+                            'record' => $duplicated->id,
+                        ]);
+                    }),
                 Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')
             ])
             ->bulkActions([

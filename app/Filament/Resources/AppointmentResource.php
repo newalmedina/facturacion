@@ -14,6 +14,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
@@ -229,8 +230,34 @@ class AppointmentResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    //Tables\Actions\DeleteBulkAction::make(),
+                    // Aquí puedes activar DeleteBulkAction si lo necesitas
+                    // Tables\Actions\DeleteBulkAction::make(),
 
+                    BulkAction::make('change_active_status')
+                        ->label('Cambiar estado de actividad')
+                        //->icon('heroicon-o-toggle-right')
+                        ->color('warning')
+                        ->form([
+                            Select::make('active')
+                                ->label('¿Activar o desactivar?')
+                                ->options([
+                                    '1' => 'Activar',
+                                    '0' => 'Desactivar',
+                                ])
+                                ->required(),
+                        ])
+                        ->action(function ($records, array $data) {
+                            foreach ($records as $record) {
+                                $record->update([
+                                    'active' => $data['active'],
+                                ]);
+                            }
+
+                            Notification::make()
+                                ->title('Estado actualizado correctamente')
+                                ->success()
+                                ->send();
+                        }),
                 ]),
                 BulkAction::make('export')->label('Exportar ' . self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
                     ->action(function ($records) {

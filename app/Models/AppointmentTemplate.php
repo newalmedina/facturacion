@@ -13,6 +13,7 @@ class AppointmentTemplate extends Model
         'name',
         'active',
         'is_general',
+        'worker_id',
     ];
 
     /**
@@ -25,5 +26,10 @@ class AppointmentTemplate extends Model
     public function worker()
     {
         return $this->belongsTo(User::class, 'worker_id');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
     }
 }
