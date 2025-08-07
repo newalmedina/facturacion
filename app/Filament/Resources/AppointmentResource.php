@@ -75,7 +75,7 @@ class AppointmentResource extends Resource
                         'available' => 'Disponible',
                         'confirmed' => 'Confirmado',
                         'cancelled' => 'Cancelada',
-                        'expired' => 'Expirada',
+                        // 'expired' => 'Expirada',
                     ])
                     ->default('available')
                     ->required(),
