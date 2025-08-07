@@ -72,14 +72,13 @@ class AppointmentResource extends Resource
                 Select::make('status')
                     ->label('Estado')
                     ->options([
-                        'pending' => 'Pendiente',
+                        'available' => 'Disponible',
                         'confirmed' => 'Confirmado',
-                        //'accepted' => 'Aceptada',
                         'cancelled' => 'Cancelada',
+                        'expired' => 'Expirada',
                     ])
-                    ->nullable()
-                    ->default(null)
-                    ->placeholder('Sin estado'),
+                    ->default('available')
+                    ->required(),
 
                 TextInput::make('requester_email')
                     ->label('Correo del solicitante')
@@ -140,15 +139,23 @@ class AppointmentResource extends Resource
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Estado')
+                    ->badge()
                     ->formatStateUsing(function (?string $state) {
                         return match ($state) {
-                            'pending' => 'Pendiente',
+                            'available' => 'Disponible',
                             'confirmed' => 'Confirmado',
-                            //'accepted' => 'Aceptada',
                             'cancelled' => 'Cancelada',
+                            'expired' => 'Expirada',
                             null, '' => 'Sin estado',
-                            default => $state,
+                            default => ucfirst($state),
                         };
+                    })
+                    ->color(fn(?string $state) => match ($state) {
+                        'available' => 'info',      // Azul
+                        'confirmed' => 'success',   // Verde
+                        'cancelled' => 'danger',    // Rojo
+                        'expired' => 'gray',        // Gris
+                        default => 'secondary',     // Por si acaso (neutro)
                     }),
 
                 Tables\Columns\TextColumn::make('requester_email')->label("Correo solicitante")
@@ -195,13 +202,14 @@ class AppointmentResource extends Resource
                         Select::make('status')
                             ->label('Estado')
                             ->options([
-                                'pending' => 'Pendiente',
+                                '' => 'Todos', // opción sin filtro
+                                'available' => 'Disponible',
                                 'confirmed' => 'Confirmado',
-                                //'accepted' => 'Aceptada',
                                 'cancelled' => 'Cancelada',
+                                'expired' => 'Expirada',
                             ])
-                            ->nullable()
-                            ->placeholder('Sin estado'),
+                            ->placeholder('Todos'),
+
                     ])
                     ->query(function ($query, array $data) {
                         if (!empty($data['worker_id'])) {
@@ -226,7 +234,11 @@ class AppointmentResource extends Resource
 
             ->actions([
                 Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
-                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->visible(fn($record) => $record->status === null || $record->status === 'cancelled'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('')
+                    ->tooltip('Eliminar')
+                    ->visible(fn($record) => $record->status === null || $record->status === 'available'),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

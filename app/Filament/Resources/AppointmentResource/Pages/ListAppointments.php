@@ -39,6 +39,12 @@ class ListAppointments extends ListRecords
                         ->searchable()
                         ->preload()
                         ->required(),
+                    Select::make('worker_id')
+                        ->label('Empleado')
+                        ->relationship('worker', 'name')
+                        ->searchable()
+                        ->preload()
+                        ->placeholder('Selecciona empleado'),
                     Toggle::make('active')
                         ->label('Activar')
                         ->inline(false)
