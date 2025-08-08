@@ -61,9 +61,10 @@ class AppointmentTemplateResource extends Resource
                             // Crear la plantilla duplicada
                             $duplicated = AppointmentTemplate::create([
                                 'name' => $data['duplicate_name'],
-                                'worker_id' => $data['duplicate_worker_id'],
+                                'worker_id' => $data['duplicate_worker_id'] ?? null,
+
                                 'active' => $data['duplicate_active'],
-                                'is_general' => $data['iduplicate_s_general'],
+                                'is_general' => $data['duplicate_general'],
                             ]);
 
                             // Duplicar slots
@@ -86,18 +87,35 @@ class AppointmentTemplateResource extends Resource
                         })
                         ->form([
                             TextInput::make('duplicate_name')
-                                ->required()
-                                ->label('Nombre de la Plantilla'),
+                                ->label('Nombre de la plantilla')
+                                ->required(),
+
                             Select::make('duplicate_worker_id')
-                                ->label('Trabajador')
-                                ->relationship('worker', 'name') // Usa el campo "name" del modelo User
-                                ->searchable()->preload(),
+                                ->label('Empleado')
+                                ->relationship('worker', 'name')
+                                ->searchable()
+                                ->preload()
+                                ->visible(fn(callable $get) => $get('duplicate_general') === false)
 
-                            Toggle::make('duplicate_active')->inline(false)
-                                ->label('Activa'),
+                                ->dehydrated(fn(callable $get) => $get('duplicate_general') === false)    // solo enviar si NO es general
+                                ->required(fn(callable $get) => $get('duplicate_general') === false)      // obligatorio si NO es general
+                                ->reactive(),
 
-                            Toggle::make('iduplicate_s_general')->inline(false)
-                                ->label('Plantilla General'),
+                            Toggle::make('duplicate_active')
+                                ->label('¿Activa?')
+                                ->inline(false),
+
+                            Toggle::make('duplicate_general')
+                                ->label('¿Plantilla general?')
+                                ->inline(false)
+                                ->reactive()
+                                ->afterStateUpdated(function (callable $set, $state) {
+                                    if ($state) {
+                                        // limpiar el empleado cuando se marca como plantilla general
+                                        $set('duplicate_worker_id', null);
+                                    }
+                                }),
+
                         ])
                         ->modalHeading('Nuevo Gasto Extra')
                         ->modalSubmitActionLabel('Guardar')
@@ -111,13 +129,22 @@ class AppointmentTemplateResource extends Resource
                         Select::make('worker_id')
                             ->label('Trabajador')
                             ->relationship('worker', 'name') // Usa el campo "name" del modelo User
-                            ->searchable()->preload(),
+                            ->searchable()->preload()
+                            ->visible(fn(callable $get) => $get('is_general') === false)
+                            ->dehydrated(fn(callable $get) => $get('is_general') === false) // no enviar valor si está deshabilitado
+                            ->required(fn(callable $get) => $get('is_general') === false) // requerido si NO es general
+                            ->reactive(), // para que se actualice dinámicamente,
 
                         Toggle::make('active')->inline(false)
                             ->label('Activa'),
 
                         Toggle::make('is_general')->inline(false)
-                            ->label('Plantilla General'),
+                            ->label('Plantilla General')->reactive()
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                if ($state) {
+                                    $set('worker_id', null); // limpia el campo si es general
+                                }
+                            }),
                     ]),
 
                 // Segunda fila: Repeater ocupa 100%
@@ -207,7 +234,10 @@ class AppointmentTemplateResource extends Resource
                             ->relationship('worker', 'name')
                             ->searchable()
                             ->preload()
-                            ->placeholder('Selecciona un empleado'),
+                            ->placeholder('Selecciona un empleado')
+                            ->visible(fn(callable $get) => $get('is_general') !== '1')  // visible solo si is_general NO es '1'
+                            ->required(fn(callable $get) => $get('is_general') === '0') // requerido solo si is_general es '0'
+                            ->reactive(),
 
                         Select::make('active')
                             ->label('¿Activo?')
@@ -225,7 +255,14 @@ class AppointmentTemplateResource extends Resource
                                 '0' => 'No',
                             ])
                             ->nullable()
-                            ->placeholder('Todos'),
+                            ->placeholder('Todos')
+                            ->reactive() // permite que los cambios en este campo actualicen otros campos
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                if ($state === '1') {
+                                    $set('worker_id', null);  // limpia worker_id si is_general es '1'
+                                }
+                            }),
+
                     ])
                     ->query(function ($query, array $data) {
                         if (!empty($data['worker_id'])) {
@@ -260,15 +297,27 @@ class AppointmentTemplateResource extends Resource
                             ->label('Empleado')
                             ->relationship('worker', 'name')
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->visible(fn(callable $get) => $get('duplicate_general') === false)
+
+                            ->dehydrated(fn(callable $get) => $get('duplicate_general') === false)    // solo enviar si NO es general
+                            ->required(fn(callable $get) => $get('duplicate_general') === false)      // obligatorio si NO es general
+                            ->reactive(),
 
                         Toggle::make('duplicate_active')
                             ->label('¿Activa?')
                             ->inline(false),
 
-                        Toggle::make('iduplicate_s_general')
+                        Toggle::make('duplicate_general')
                             ->label('¿Plantilla general?')
-                            ->inline(false),
+                            ->inline(false)
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                if ($state) {
+                                    // limpiar el empleado cuando se marca como plantilla general
+                                    $set('duplicate_worker_id', null);
+                                }
+                            }),
                     ])
                     ->modalHeading('Duplicar plantilla')
                     ->modalSubmitActionLabel('Duplicar')
@@ -278,9 +327,10 @@ class AppointmentTemplateResource extends Resource
 
                         $duplicated = \App\Models\AppointmentTemplate::create([
                             'name' => $data['duplicate_name'],
-                            'worker_id' => $data['duplicate_worker_id'],
+                            'worker_id' => $data['duplicate_worker_id'] ?? null,
+
                             'active' => $data['duplicate_active'],
-                            'is_general' => $data['iduplicate_s_general'],
+                            'is_general' => $data['duplicate_general'],
                         ]);
 
                         foreach ($original->slots as $slot) {

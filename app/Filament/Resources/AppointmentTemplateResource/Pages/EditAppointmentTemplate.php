@@ -53,6 +53,9 @@ class EditAppointmentTemplate extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        if ($data["is_general"]) {
+            $data["worker_id"] = null;
+        }
         // Guardar en una propiedad temporal para usar en afterSave
         $this->slotsData = $data['slots'] ?? [];
 
