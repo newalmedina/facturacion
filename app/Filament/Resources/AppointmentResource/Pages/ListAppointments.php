@@ -3,12 +3,14 @@
 namespace App\Filament\Resources\AppointmentResource\Pages;
 
 use App\Filament\Resources\AppointmentResource;
+use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Str;
 
 class ListAppointments extends ListRecords
 {
@@ -44,6 +46,8 @@ class ListAppointments extends ListRecords
                         ->relationship('worker', 'name')
                         ->searchable()
                         ->preload()
+                        ->required()
+
                         ->placeholder('Selecciona empleado'),
                     Toggle::make('active')
                         ->label('Activar')
@@ -55,30 +59,45 @@ class ListAppointments extends ListRecords
                 ->modalSubmitActionLabel('Generar')
                 ->modalWidth('md')
                 ->action(function (array $data) {
-                    dd($data);
                     $template = \App\Models\AppointmentTemplate::with('slots')->findOrFail($data['template_id']);
 
-                    $startDate = \Carbon\Carbon::parse($data['start_date']);
-                    $endDate = \Carbon\Carbon::parse($data['end_date']);
+                    $startDate = Carbon::parse($data['start_date']);
+                    $endDate = Carbon::parse($data['end_date']);
+                    $workerId = $data['worker_id'];
+                    $active = $data['active'] ?? true;
 
-                    // Asegúrate de que tengas el modelo Appointment o cambia esto por tu lógica real
                     $appointmentsCreated = 0;
 
-                    while ($startDate->lte($endDate)) {
-                        $dayOfWeek = $startDate->dayOfWeek; // 0 (domingo) a 6 (sábado)
+                    for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+                        $dayOfWeek = strtolower($date->format('l')); // monday, tuesday, ...
 
-                        foreach ($template->slots->where('day_of_week', $dayOfWeek) as $slot) {
-                            \App\Models\Appointment::create([
-                                'worker_id' => $template->worker_id,
-                                'date' => $startDate->toDateString(),
-                                'start_time' => $slot->start_time,
-                                'end_time' => $slot->end_time,
-                                'status' => 'pending', // puedes personalizar esto
-                            ]);
-                            $appointmentsCreated++;
+                        // Filtrar slots que correspondan al día de la semana actual
+                        $daySlots = $template->slots->where('day_of_week', $dayOfWeek);
+
+                        foreach ($daySlots as $slot) {
+                            // Verificar solapamiento
+                            $overlap = \App\Models\Appointment::where('worker_id', $workerId)
+                                ->where('date', $date->format('Y-m-d'))
+                                ->where(function ($query) use ($slot) {
+                                    $query->where('start_time', '<', $slot->end_time)
+                                        ->where('end_time', '>', $slot->start_time);
+                                })
+                                ->exists();
+
+                            if (!$overlap) {
+                                \App\Models\Appointment::create([
+                                    'worker_id' => $workerId,
+                                    'template_id' => $template->id,
+                                    'date' => $date->format('Y-m-d'),
+                                    'start_time' => $slot->start_time,
+                                    'end_time' => $slot->end_time,
+                                    'active' => $active,
+                                    'slug' => (string) Str::uuid(),
+                                ]);
+
+                                $appointmentsCreated++;
+                            }
                         }
-
-                        $startDate->addDay();
                     }
 
                     Notification::make()
@@ -86,6 +105,7 @@ class ListAppointments extends ListRecords
                         ->success()
                         ->send();
                 }),
+
 
             Actions\CreateAction::make(),
 
