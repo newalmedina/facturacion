@@ -27,4 +27,57 @@ class Appointment extends Model
     {
         return !is_null($this->status) && $this->status !== 'cancelled';
     }
+    // Template de la cita
+    public function template()
+    {
+        return $this->belongsTo(AppointmentTemplate::class, 'template_id');
+    }
+
+    public function getStatusNameFormattedAttribute(): string
+    {
+        $labels = [
+            'available' => 'Disponible',
+            'confirmed' => 'Confirmado',
+            //'accepted' => 'Aceptada',
+            'cancelled' => 'Cancelada',
+            null => 'Sin estado',
+            '' => 'Sin estado',
+        ];
+
+        return $labels[$this->status] ?? ucfirst($this->status ?? 'Sin estado');
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        $colors = [
+            'available' => '#6c757d',   // gris (bootstrap secondary)
+            'confirmed' => '#28a745', // verde (bootstrap success)
+            'cancelled' => '#dc3545', // rojo (bootstrap danger)
+            null => '#6c757d',        // gris
+            '' => '#6c757d',          // gris
+        ];
+
+        return $colors[$this->status] ?? '#6c757d'; // gris por defecto
+    }
+    protected static function booted()
+    {
+        static::creating(function ($appointment) {
+            if (empty($appointment->slug)) {
+                $appointment->slug = \Illuminate\Support\Str::uuid()->toString();
+            }
+        });
+        static::saving(function ($appointment) {
+            // Si alguno es null o vacío, duration en 0
+            if (empty($appointment->start_time) || empty($appointment->end_time)) {
+                $appointment->duration_minutes = 0;
+            } else {
+                // start_time y end_time son casted a Carbon (datetime)
+                $start = $appointment->start_time;
+                $end = $appointment->end_time;
+
+                // Calcular diferencia en minutos
+                $appointment->duration_minutes = $end->diffInMinutes($start);
+            }
+        });
+    }
 }
