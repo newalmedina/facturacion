@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\BackupDownloadController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,3 +20,8 @@ Route::get('/', function () {
 
     return view('welcome');
 });
+
+
+Route::middleware('auth')->get('/admin/backups/download/{filepath}', [BackupDownloadController::class, 'download'])
+    ->where('filepath', '.*')
+    ->name('filament.backups.download');
