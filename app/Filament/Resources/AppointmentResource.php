@@ -141,7 +141,24 @@ class AppointmentResource extends Resource
                 //     ->numeric()
                 //     ->sortable(),
 
+                Tables\Columns\TextColumn::make('status')
+                ->label('Estado')
+                ->getStateUsing(fn($record) => $record->status_name_formatted)
+                ->html()
+                ->formatStateUsing(function ($state, $record) {
+                    $color = $record->status_color ?? '#6c757d';
 
+                    return "<span style='
+        display: inline-block;
+        padding: 0.05rem 0.25rem;
+        font-size: 0.55rem;
+        font-weight: 600;
+        color: white;
+        background-color: {$color};
+        border-radius: 9999px;
+        text-transform: uppercase;
+    '>{$state}</span>";
+                }),
                 Tables\Columns\TextColumn::make('worker.name')
                     ->numeric()
                     ->label('Empleado')   // Etiqueta de la columna
@@ -198,24 +215,7 @@ class AppointmentResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)       // Se puede buscar en esta columna
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->label('Estado')
-                    ->getStateUsing(fn($record) => $record->status_name_formatted)
-                    ->html()
-                    ->formatStateUsing(function ($state, $record) {
-                        $color = $record->status_color ?? '#6c757d';
-
-                        return "<span style='
-            display: inline-block;
-            padding: 0.05rem 0.25rem;
-            font-size: 0.55rem;
-            font-weight: 600;
-            color: white;
-            background-color: {$color};
-            border-radius: 9999px;
-            text-transform: uppercase;
-        '>{$state}</span>";
-                    }),
+                
                 // Tables\Columns\TextColumn::make('updated_at')
                 //     ->dateTime()
                 //     ->sortable()
