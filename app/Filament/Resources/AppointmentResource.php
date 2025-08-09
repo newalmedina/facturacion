@@ -211,10 +211,12 @@ class AppointmentResource extends Resource
                             ->placeholder('Selecciona empleado'),
 
                         DatePicker::make('date_from')
-                            ->label('Fecha inicio'),
+                            ->label('Fecha inicio')
+                            ->default(Carbon::now()->startOfWeek()),
 
                         DatePicker::make('date_until')
-                            ->label('Fecha fin'),
+                            ->label('Fecha fin')
+                            ->default(Carbon::now()->endOfWeek()),
 
                         Select::make('status')
                             ->label('Estado')
