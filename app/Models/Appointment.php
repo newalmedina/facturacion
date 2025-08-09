@@ -66,5 +66,18 @@ class Appointment extends Model
                 $appointment->slug = \Illuminate\Support\Str::uuid()->toString();
             }
         });
+        static::saving(function ($appointment) {
+            // Si alguno es null o vacío, duration en 0
+            if (empty($appointment->start_time) || empty($appointment->end_time)) {
+                $appointment->duration_minutes = 0;
+            } else {
+                // start_time y end_time son casted a Carbon (datetime)
+                $start = $appointment->start_time;
+                $end = $appointment->end_time;
+
+                // Calcular diferencia en minutos
+                $appointment->duration_minutes = $end->diffInMinutes($start);
+            }
+        });
     }
 }

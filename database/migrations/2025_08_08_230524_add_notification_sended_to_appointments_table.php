@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::table('appointments', function (Blueprint $table) {
             $table->boolean('notification_sended')->after("active")->default(false);
             $table->string('requester_name')->after("status")->nullable();
+            $table->integer('duration_minutes')->after("end_time")->nullable();
         });
     }
 
@@ -24,6 +25,7 @@ return new class extends Migration
         Schema::table('appointments', function (Blueprint $table) {
             $table->dropColumn('notification_sended');
             $table->dropColumn('requester_name');
+            $table->dropColumn('duration_minutes');
         });
     }
 };

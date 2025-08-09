@@ -69,8 +69,8 @@
         | ahead and set this to a sensible default for you out of the box.
         |
         */
+        'timezone' => env('APP_TIMEZONE', 'UTC'),
 
-        'timezone' => 'UTC',
 
         /*
         |--------------------------------------------------------------------------
@@ -83,7 +83,8 @@
         |
         */
 
-        'locale' => 'es',
+        'locale' => env('APP_LOCALE', 'es'),
+
 
         /*
         |--------------------------------------------------------------------------

@@ -8,8 +8,8 @@
         <h2>Hola {{ $appointment->requester_name }},</h2>
 
         <p>
-            Te informamos que tu cita para el peinado programada para el día {{ $appointment->date->format('d/m/Y') }},
-            desde las {{ $appointment->start_time->format('H:i') }} hasta las {{ $appointment->end_time->format('H:i') }},
+            Te informamos que tu cita programada para el día <strong>{{ $appointment->date->format('d/m/Y') }}</strong>,
+            desde las <strong>{{ $appointment->start_time->format('H:i') }}</strong> hasta las <strong>{{ $appointment->end_time->format('H:i') }}</strong>,
             ha cambiado de estado y ahora se encuentra como:
             <span style="
                 background-color: {{ $appointment->status_color }};
@@ -22,6 +22,7 @@
                 {{ $appointment->status_name_formatted }}
             </span>.
         </p>
+        
 <hr>
         <p>Si tienes alguna duda o necesitas asistencia, no dudes en contactarnos.</p>
     </td>

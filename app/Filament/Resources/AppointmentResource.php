@@ -65,12 +65,32 @@ class AppointmentResource extends Resource
                     ->required(),
 
                 TimePicker::make('start_time')
-                    ->label('Hora de inicio')->seconds(false)
-                    ->required(),
+                    ->label('Hora de inicio')
+                    ->required()
+                    ->seconds(false)
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $endTime = $get('end_time');
+
+                        if ($endTime && $state > $endTime) {
+                            // Ajustar end_time para que sea al menos igual que start_time
+                            $set('end_time', $state);
+                        }
+                    }),
 
                 TimePicker::make('end_time')
-                    ->label('Hora de fin')->seconds(false)
-                    ->required(),
+                    ->label('Hora de fin')
+                    ->required()
+                    ->seconds(false)
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $startTime = $get('start_time');
+
+                        if ($startTime && $state < $startTime) {
+                            // Ajustar start_time para que sea como mínimo igual a end_time
+                            $set('start_time', $state);
+                        }
+                    }),
 
                 Select::make('status')
                     ->label('Estado')
@@ -120,6 +140,8 @@ class AppointmentResource extends Resource
                 // Tables\Columns\TextColumn::make('user_id')
                 //     ->numeric()
                 //     ->sortable(),
+
+
                 Tables\Columns\TextColumn::make('worker.name')
                     ->numeric()
                     ->label('Empleado')   // Etiqueta de la columna
@@ -150,25 +172,7 @@ class AppointmentResource extends Resource
                         return Carbon::parse($state)->format('H:i'); // Formato hora:minutos (24h)
                     }),
 
-                Tables\Columns\TextColumn::make('status')
-                    ->label('Estado')
-                    ->getStateUsing(fn($record) => $record->status_name_formatted) // usamos el accesor para el label
-                    ->html()
-                    ->formatStateUsing(function ($state, $record) {
-                        // El estado ya viene formateado (label), pero para el color usamos el accesor
-                        $color = $record->status_color ?? '#6c757d';
 
-                        return "<span style='
-                            display: inline-block;
-                            padding: 0.25rem 0.75rem;
-                            font-size: 0.75rem;
-                            font-weight: 600;
-                            color: white;
-                            background-color: {$color};
-                            border-radius: 9999px;
-                            text-transform: uppercase;
-                        '>{$state}</span>";
-                    }),
 
                 Tables\Columns\TextColumn::make('requester_name')->label("Nombre solicitante")
                     ->searchable(),   // Buscable
@@ -194,6 +198,24 @@ class AppointmentResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)       // Se puede buscar en esta columna
                     ->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Estado')
+                    ->getStateUsing(fn($record) => $record->status_name_formatted)
+                    ->html()
+                    ->formatStateUsing(function ($state, $record) {
+                        $color = $record->status_color ?? '#6c757d';
+
+                        return "<span style='
+            display: inline-block;
+            padding: 0.05rem 0.25rem;
+            font-size: 0.55rem;
+            font-weight: 600;
+            color: white;
+            background-color: {$color};
+            border-radius: 9999px;
+            text-transform: uppercase;
+        '>{$state}</span>";
+                    }),
                 // Tables\Columns\TextColumn::make('updated_at')
                 //     ->dateTime()
                 //     ->sortable()
