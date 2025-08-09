@@ -96,6 +96,7 @@ class AppointmentResource extends Resource
                     ->label('Estado')
                     ->options([
                         'available' => 'Disponible',
+                        'pending_confirmation' => 'Pendiente confirmación',
                         'confirmed' => 'Confirmado',
                         //'accepted' => 'Aceptada',
                         'cancelled' => 'Cancelada',
@@ -142,13 +143,13 @@ class AppointmentResource extends Resource
                 //     ->sortable(),
 
                 Tables\Columns\TextColumn::make('status')
-                ->label('Estado')
-                ->getStateUsing(fn($record) => $record->status_name_formatted)
-                ->html()
-                ->formatStateUsing(function ($state, $record) {
-                    $color = $record->status_color ?? '#6c757d';
+                    ->label('Estado')
+                    ->getStateUsing(fn($record) => $record->status_name_formatted)
+                    ->html()
+                    ->formatStateUsing(function ($state, $record) {
+                        $color = $record->status_color ?? '#6c757d';
 
-                    return "<span style='
+                        return "<span style='
         display: inline-block;
         padding: 0.05rem 0.25rem;
         font-size: 0.55rem;
@@ -158,7 +159,7 @@ class AppointmentResource extends Resource
         border-radius: 9999px;
         text-transform: uppercase;
     '>{$state}</span>";
-                }),
+                    }),
                 Tables\Columns\TextColumn::make('worker.name')
                     ->numeric()
                     ->label('Empleado')   // Etiqueta de la columna
@@ -215,7 +216,7 @@ class AppointmentResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)       // Se puede buscar en esta columna
                     ->sortable(),
-                
+
                 // Tables\Columns\TextColumn::make('updated_at')
                 //     ->dateTime()
                 //     ->sortable()
@@ -245,6 +246,7 @@ class AppointmentResource extends Resource
                             ->options([
                                 'available' => 'Disponible',
                                 'confirmed' => 'Confirmado',
+                                'pending_confirmation' => 'Pendiente confirmación',
                                 //'accepted' => 'Aceptada',
                                 'cancelled' => 'Cancelada',
                             ])
@@ -283,7 +285,21 @@ class AppointmentResource extends Resource
                         }
 
                         if (isset($data['status']) && $data['status'] !== null) {
-                            $filter['status'] = "Estado: " . $data['status'];
+                            // $filter['status'] = "Estado: " . $data['status'];
+                            if (isset($data['status']) && $data['status'] !== null) {
+                                $statusTranslations = [
+                                    'available' => 'Disponible',
+                                    'pending_confirmation' => 'Pendiente confirmación',
+                                    'confirmed' => 'Confirmado',
+                                    //'accepted' => 'Aceptada',
+                                    'cancelled' => 'Cancelada',
+                                    'expired' => 'Expirada', // si lo usas
+                                ];
+
+                                $statusLabel = $statusTranslations[$data['status']] ?? $data['status'];
+
+                                $filter['status'] = "Estado: " . $statusLabel;
+                            }
                         }
 
                         if (isset($data['active']) && $data['active'] !== null) {
