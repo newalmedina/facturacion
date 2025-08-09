@@ -46,6 +46,7 @@ class AppointmentResource extends Resource
         return 'Citas';
     }
 
+
     public static function form(Form $form): Form
     {
         return $form
@@ -79,9 +80,8 @@ class AppointmentResource extends Resource
                         //'accepted' => 'Aceptada',
                         'cancelled' => 'Cancelada',
                     ])
-                    ->nullable()
-                    ->default(null)
-                    ->placeholder('Sin estado'),
+                    ->required()
+                    ->default("available"),
 
                 TextInput::make('requester_name')
                     ->label('Nombre del solicitante')

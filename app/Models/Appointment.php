@@ -59,4 +59,12 @@ class Appointment extends Model
 
         return $colors[$this->status] ?? '#6c757d'; // gris por defecto
     }
+    protected static function booted()
+    {
+        static::creating(function ($appointment) {
+            if (empty($appointment->slug)) {
+                $appointment->slug = \Illuminate\Support\Str::uuid()->toString();
+            }
+        });
+    }
 }
