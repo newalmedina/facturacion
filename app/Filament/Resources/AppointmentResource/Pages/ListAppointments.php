@@ -26,11 +26,13 @@ class ListAppointments extends ListRecords
                 ->form([
                     DatePicker::make('start_date')
                         ->label('Fecha inicio')
-                        ->required(),
+                        ->required()
+                        ->minDate(Carbon::today()), // no menor que hoy
 
                     DatePicker::make('end_date')
                         ->label('Fecha fin')
-                        ->required(),
+                        ->required()
+                        ->minDate(fn(callable $get) => $get('start_date') ?? Carbon::today()), // no menor que start_date, o hoy si no hay start_date
 
                     Select::make('template_id')
                         ->label('Plantilla')

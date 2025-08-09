@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Exports\AppointmentExport;
 use App\Filament\Resources\AppointmentResource\Pages;
 use App\Filament\Resources\AppointmentResource\RelationManagers;
+use App\Mail\AppointmentChangeStatusMail;
 use App\Models\Appointment;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -22,6 +23,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Filters\Filter;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 
 class AppointmentResource extends Resource
@@ -74,16 +76,27 @@ class AppointmentResource extends Resource
                     ->options([
                         'available' => 'Disponible',
                         'confirmed' => 'Confirmado',
+                        //'accepted' => 'Aceptada',
                         'cancelled' => 'Cancelada',
-                        // 'expired' => 'Expirada',
                     ])
-                    ->default('available')
-                    ->required(),
+                    ->nullable()
+                    ->default(null)
+                    ->placeholder('Sin estado'),
+
+                TextInput::make('requester_name')
+                    ->label('Nombre del solicitante')
+                    ->maxLength(255)
+                    ->required(fn(callable $get) => filled($get('requester_email')))
+                    ->reactive(), // importante para que detecte cambios en tiempo real
 
                 TextInput::make('requester_email')
                     ->label('Correo del solicitante')
                     ->email()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->required(fn(callable $get) => filled($get('requester_name')))
+                    ->reactive(),
+
+
 
                 TextInput::make('requester_phone')
                     ->label('Teléfono del solicitante')
@@ -139,31 +152,32 @@ class AppointmentResource extends Resource
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Estado')
-                    ->badge()
-                    ->formatStateUsing(function (?string $state) {
-                        return match ($state) {
-                            'available' => 'Disponible',
-                            'confirmed' => 'Confirmado',
-                            'cancelled' => 'Cancelada',
-                            'expired' => 'Expirada',
-                            null, '' => 'Sin estado',
-                            default => ucfirst($state),
-                        };
-                    })
-                    ->color(fn(?string $state) => match ($state) {
-                        'available' => 'info',      // Azul
-                        'confirmed' => 'success',   // Verde
-                        'cancelled' => 'danger',    // Rojo
-                        'expired' => 'gray',        // Gris
-                        default => 'secondary',     // Por si acaso (neutro)
+                    ->getStateUsing(fn($record) => $record->status_name_formatted) // usamos el accesor para el label
+                    ->html()
+                    ->formatStateUsing(function ($state, $record) {
+                        // El estado ya viene formateado (label), pero para el color usamos el accesor
+                        $color = $record->status_color ?? '#6c757d';
+
+                        return "<span style='
+                            display: inline-block;
+                            padding: 0.25rem 0.75rem;
+                            font-size: 0.75rem;
+                            font-weight: 600;
+                            color: white;
+                            background-color: {$color};
+                            border-radius: 9999px;
+                            text-transform: uppercase;
+                        '>{$state}</span>";
                     }),
 
+                Tables\Columns\TextColumn::make('requester_name')->label("Nombre solicitante")
+                    ->searchable(),   // Buscable
                 Tables\Columns\TextColumn::make('requester_email')->label("Correo solicitante")
                     ->searchable(),   // Buscable
 
                 Tables\Columns\TextColumn::make('requester_phone')->label("telefono solicitante")
-                    ->searchable(),   // Buscable
-
+                    ->searchable() // Buscable
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -171,6 +185,9 @@ class AppointmentResource extends Resource
                 Tables\Columns\IconColumn::make('active')
                     ->boolean()
                     ->label("¿Activo?"),
+                Tables\Columns\IconColumn::make('notification_sended')
+                    ->boolean()
+                    ->label("¿Aviso enviado?"),
                 Tables\Columns\TextColumn::make('template.name')
                     ->numeric()
                     ->label('Plantilla')   // Etiqueta de la columna
@@ -202,15 +219,59 @@ class AppointmentResource extends Resource
                         Select::make('status')
                             ->label('Estado')
                             ->options([
-                                '' => 'Todos', // opción sin filtro
                                 'available' => 'Disponible',
                                 'confirmed' => 'Confirmado',
+                                //'accepted' => 'Aceptada',
                                 'cancelled' => 'Cancelada',
-                                'expired' => 'Expirada',
                             ])
+                            ->nullable()
+                            ->placeholder('Sin estado'),
+                        Select::make('active')
+                            ->label('Activo')
+                            ->options([
+                                1 => "Activo",
+                                0 => "No activo",
+                            ])
+                            ->nullable()
                             ->placeholder('Todos'),
-
+                        Select::make('notification_sended')
+                            ->label('Aviso enviado')
+                            ->options([
+                                1 => "Si",
+                                0 => "No",
+                            ])
+                            ->nullable()
+                            ->placeholder('Todos'),
                     ])
+                    ->indicateUsing(function (array $data): array {
+                        $filter = [];
+
+                        if (!empty($data['worker_id'])) {
+                            $filter['worker_id'] = "Trabajador: " . $data['worker_id']; // Si tienes nombres, mejor mostrar nombre
+                        }
+
+                        if (!empty($data['date_from'])) {
+                            $filter['date_from'] = "Desde " . \Carbon\Carbon::parse($data['date_from'])->format('d-m-Y');
+                        }
+
+                        if (!empty($data['date_until'])) {
+                            $filter['date_until'] = "Hasta " . \Carbon\Carbon::parse($data['date_until'])->format('d-m-Y');
+                        }
+
+                        if (isset($data['status']) && $data['status'] !== null) {
+                            $filter['status'] = "Estado: " . $data['status'];
+                        }
+
+                        if (isset($data['active']) && $data['active'] !== null) {
+                            $filter['active'] = $data['active'] ? 'Activo' : 'Inactivo';
+                        }
+                        if (isset($data['notification_sended']) && $data['notification_sended'] !== null) {
+                            $filter['notification_sended'] = $data['notification_sended'] ? 'Aviso enviado' : 'Aviso no enviado';
+                        }
+
+                        return $filter;
+                    })
+
                     ->query(function ($query, array $data) {
                         if (!empty($data['worker_id'])) {
                             $query->where('worker_id', $data['worker_id']);
@@ -227,18 +288,40 @@ class AppointmentResource extends Resource
                         if (isset($data['status']) && $data['status'] !== null) {
                             $query->where('status', $data['status']);
                         }
+                        if (isset($data['active']) && $data['active'] !== null) {
+                            $query->where('active', $data['active']);
+                        }
+                        if (isset($data['notification_sended']) && $data['notification_sended'] !== null) {
+                            $query->where('notification_sended', $data['notification_sended']);
+                        }
 
                         return $query;
                     }),
             ])
 
             ->actions([
-                Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
-                Tables\Actions\DeleteAction::make()
+                Tables\Actions\Action::make('sendNotification')
                     ->label('')
-                    ->tooltip('Eliminar')
-                    ->visible(fn($record) => $record->status === null || $record->status === 'available'),
+                    ->icon('heroicon-o-envelope')
+                    ->color('success') // azul
+                    ->tooltip('Enviar notificación por correo electrónico')
+                    ->visible(fn($record) => in_array($record->status, ['confirmed', 'cancelled']) && $record->active == 1 && $record->requester_email)
 
+                    ->action(function ($record) {
+                        Mail::to($record->requester_email)
+                            ->send(new AppointmentChangeStatusMail($record));
+
+                        $record->notification_sended = true;
+                        $record->save();
+
+                        Notification::make()
+                            ->title('Notificación enviada por correo')
+                            ->success()
+                            ->send();
+                    }),
+
+                Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
+                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->visible(fn($record) => $record->status === null || $record->status === 'cancelled'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

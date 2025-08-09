@@ -32,4 +32,31 @@ class Appointment extends Model
     {
         return $this->belongsTo(AppointmentTemplate::class, 'template_id');
     }
+
+    public function getStatusNameFormattedAttribute(): string
+    {
+        $labels = [
+            'available' => 'Disponible',
+            'confirmed' => 'Confirmado',
+            //'accepted' => 'Aceptada',
+            'cancelled' => 'Cancelada',
+            null => 'Sin estado',
+            '' => 'Sin estado',
+        ];
+
+        return $labels[$this->status] ?? ucfirst($this->status ?? 'Sin estado');
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        $colors = [
+            'available' => '#6c757d',   // gris (bootstrap secondary)
+            'confirmed' => '#28a745', // verde (bootstrap success)
+            'cancelled' => '#dc3545', // rojo (bootstrap danger)
+            null => '#6c757d',        // gris
+            '' => '#6c757d',          // gris
+        ];
+
+        return $colors[$this->status] ?? '#6c757d'; // gris por defecto
+    }
 }

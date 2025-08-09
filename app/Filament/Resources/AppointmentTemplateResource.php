@@ -264,6 +264,28 @@ class AppointmentTemplateResource extends Resource
                             }),
 
                     ])
+                    ->indicateUsing(function (array $data): array {
+                        $filter = [];
+                    
+                        if (!empty($data['worker_id'])) {
+                            // Si quieres mostrar el ID directamente:
+                            $filter['worker_id'] = "Trabajador ID: " . $data['worker_id'];
+                            
+                            // O si tienes un array $workers para mostrar nombre en vez de ID:
+                            // $filter['worker_id'] = "Trabajador: " . ($workers[$data['worker_id']] ?? $data['worker_id']);
+                        }
+                    
+                        if (isset($data['active']) && $data['active'] !== null && $data['active'] !== '') {
+                            $filter['active'] = $data['active'] ? 'Activo' : 'Inactivo';
+                        }
+                    
+                        if (isset($data['is_general']) && $data['is_general'] !== null && $data['is_general'] !== '') {
+                            $filter['is_general'] = $data['is_general'] ? 'General' : 'No General';
+                        }
+                    
+                        return $filter;
+                    })
+                    
                     ->query(function ($query, array $data) {
                         if (!empty($data['worker_id'])) {
                             $query->where('worker_id', $data['worker_id']);
