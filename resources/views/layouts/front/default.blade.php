@@ -42,10 +42,11 @@
     <!-- JAVASCRIPT FILES -->
  
 
-    <script src="http://facturacion.test/assets/front/js/jquery.min.js"></script>
-        <script src="http://facturacion.test/assets/front/js/bootstrap.min.js"></script>
-        <script src="http://facturacion.test/assets/front/js/click-scroll.js"></script>
-        <script src="http://facturacion.test/assets/front/js/custom.js"></script>
+    <script src="{{ asset('assets/front/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/front/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/front/js/click-scroll.js') }}"></script>
+    <script src="{{ asset('assets/front/js/custom.js') }}"></script>
+        
 
     
 
