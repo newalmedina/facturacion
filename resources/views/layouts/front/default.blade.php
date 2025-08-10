@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', config('app.name'))</title>
+    
+    <!-- CSS FILES -->        
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500&display=swap" rel="stylesheet">
+
+    <link href="{{ asset('assets/front/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/front/css/bootstrap-icons.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/front/css/templatemo-barber-shop.css') }}" rel="stylesheet">
+    @stack('styles')
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+                    </div>
+    </div>
+    <!-- Header -->
+    
+    <div class="container-fluid">
+        <div class="row">
+
+            @include('layouts.front.partials.sidebar')
+            
+            <div class="col-md-8 ms-sm-auto col-lg-9 p-0">
+
+                @yield('content')
+
+                @include('layouts.front.partials.footer')  
+              
+            
+        </div>
+
+    <!-- JAVASCRIPT FILES -->
+ 
+
+    <script src="http://facturacion.test/assets/front/js/jquery.min.js"></script>
+        <script src="http://facturacion.test/assets/front/js/bootstrap.min.js"></script>
+        <script src="http://facturacion.test/assets/front/js/click-scroll.js"></script>
+        <script src="http://facturacion.test/assets/front/js/custom.js"></script>
+
+    
+
+    </div>
+</div>
+</body>
+</html>
