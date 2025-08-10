@@ -179,31 +179,22 @@ strong {
   transform: scale(1.05);
 }
 
-
-.custom-block-bg-overlay-wrap {
-  overflow: hidden;
-  /* recorta lo que se salga */
-}
-
 .custom-block-bg-overlay-image {
   border-radius: var(--border-radius-medium);
   display: block;
   margin: auto;
-  max-width: 100%;
-  /* asegura que no supere el ancho del contenedor */
-  height: auto;
-  /* mantiene proporción */
+  height: 100%;
   object-fit: cover;
   transform: rotate(8deg);
 }
 
 @media (max-width: 768px) {
+
+  /* o el ancho que definas como "móvil" */
   .custom-block-bg-overlay-image {
     max-width: 90%;
-    /* solo en móvil */
   }
 }
-
 
 .custom-block-bg-overlay-wrap:hover .team-info {
   bottom: 10px;
