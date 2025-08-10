@@ -193,7 +193,7 @@ strong {
 
   /* o el ancho que definas como "móvil" */
   .custom-block-bg-overlay-image {
-    max-width: 70% !important;
+    max-width: 40% !important;
     height: auto !important;
   }
 }
