@@ -24,6 +24,10 @@ Route::get('/landing', function () {
 
     return view('welcome');
 });
+Route::get('/landing', function () {
+
+    return view('welcome');
+});
 
 
 Route::middleware('auth')->get('/admin/backups/download/{filepath}', [BackupDownloadController::class, 'download'])

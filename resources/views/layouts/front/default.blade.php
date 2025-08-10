@@ -48,9 +48,5 @@
     <script src="{{ asset('assets/front/js/custom.js') }}"></script>
         
 
-    
-
-    </div>
-</div>
 </body>
 </html>
