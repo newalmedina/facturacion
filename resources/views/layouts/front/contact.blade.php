@@ -4,7 +4,7 @@
             <div class="row">   
 
                 <div class="col-lg-8 col-12 mx-auto">
-                    <h2 class="text-center">Say hello</h2>
+                    <h2 class="text-center">Conecta con nosotros</h2>
                 </div>
             </div>
         </div>
@@ -15,7 +15,7 @@
             <div class="row">
 
                 <div class="col-lg-6 col-12">
-                    <h5 class="mb-3"><strong>Contact</strong> Information</h5>
+                    <h5 class="mb-3"><strong>Información</strong> de contacto</h5>
 
                     <p class="text-white d-flex mb-1">
                         <a href="tel: 120-240-3600" class="site-footer-link">
