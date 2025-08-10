@@ -188,6 +188,14 @@ strong {
   transform: rotate(8deg);
 }
 
+@media (max-width: 768px) {
+
+  /* o el ancho que definas como "móvil" */
+  .custom-block-bg-overlay-image {
+    max-width: 90%;
+  }
+}
+
 .custom-block-bg-overlay-wrap:hover .team-info {
   bottom: 10px;
 }

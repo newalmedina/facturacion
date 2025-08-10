@@ -58,7 +58,10 @@
                 </div>
             </div>
 
-          
+            <div class="col-lg-4 col-12 custom-block-bg-overlay-wrap mt-5 mb-5 mb-lg-0 mt-lg-0 pt-3 pt-lg-0">
+                <img src =" {{ asset('assets/front/images/vintage-chair-barbershop.png') }}"class="custom-block-bg-overlay-image img-fluid" alt="">
+            </div>
+
         </div>
     </div>
 </section>
