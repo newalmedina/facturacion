@@ -179,6 +179,7 @@ strong {
   transform: scale(1.05);
 }
 
+
 .custom-block-bg-overlay-image {
   border-radius: var(--border-radius-medium);
   display: block;
