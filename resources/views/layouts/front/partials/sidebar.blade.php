@@ -6,7 +6,7 @@
 
     <div class="position-sticky sidebar-sticky d-flex flex-column justify-content-center align-items-center">
         <a class="navbar-brand" href="index.html">
-            <img src="http://facturacion.test/assets/front/images/templatemo-barber-logo.png" class="logo-image img-fluid" align="">
+            <img src =" {{ asset('assets/front/images/templatemo-barber-logo.png') }}" style="width: 100%" class="logo-image img-fluid" align="">
         </a>
 
         <ul class="nav flex-column">

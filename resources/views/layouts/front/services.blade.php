@@ -8,7 +8,7 @@
 
             <div class="col-lg-6 col-12 mb-4">
                 <div class="services-thumb">
-                    <img src="http://facturacion.test/assets/front/images/services/woman-cutting-hair-man-salon.jpg" class="services-image img-fluid" alt="">
+                    <img src =" {{ asset('assets/front/images/services/woman-cutting-hair-man-salon.jpg') }}" class="services-image img-fluid" alt="">
 
                     <div class="services-info d-flex align-items-end">
                         <h4 class="mb-0">Hair cut</h4>
@@ -20,7 +20,7 @@
 
             <div class="col-lg-6 col-12 mb-4">
                 <div class="services-thumb">
-                    <img src="http://facturacion.test/assets/front/images/services/hairdresser-grooming-their-client.jpg" class="services-image img-fluid" alt="">
+                    <img src =" {{ asset('assets/front/images/services/hairdresser-grooming-their-client.jpg') }}" class="services-image img-fluid" alt="">
 
                     <div class="services-info d-flex align-items-end">
                         <h4 class="mb-0">Washing</h4>
@@ -32,7 +32,7 @@
 
             <div class="col-lg-6 col-12 mb-4 mb-lg-0">
                 <div class="services-thumb">
-                    <img src="http://facturacion.test/assets/front/images/services/hairdresser-grooming-client.jpg" class="services-image img-fluid" alt="">
+                    <img src =" {{ asset('assets/front/images/services/hairdresser-grooming-client.jpg') }}" class="services-image img-fluid" alt="">
 
                     <div class="services-info d-flex align-items-end">
                         <h4 class="mb-0">Shaves</h4>
@@ -44,7 +44,7 @@
 
             <div class="col-lg-6 col-12">
                 <div class="services-thumb">
-                    <img src="http://facturacion.test/assets/front/images/services/boy-getting-haircut-salon-front-view.jpg" class="services-image img-fluid" alt="">
+                    <img src =" {{ asset('assets/front/images/services/boy-getting-haircut-salon-front-view.jpg') }}" class="services-image img-fluid" alt="">
 
                     <div class="services-info d-flex align-items-end">
                         <h4 class="mb-0">Kids</h4>

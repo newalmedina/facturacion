@@ -15,7 +15,7 @@
     </div>
 
     <div class="custom-block d-lg-flex flex-column justify-content-center align-items-center">
-        <img src="http://facturacion.test/assets/front/images/vintage-chair-barbershop.jpg" class="custom-block-image img-fluid" alt="">
+        <img src =" {{ asset('assets/front/images/vintage-chair-barbershop.jpg') }}" class="custom-block-image img-fluid" alt="">
 
         <h4><strong class="text-white">¡Date prisa! Reserva tu trenza perfecta.</strong></h4>
 
