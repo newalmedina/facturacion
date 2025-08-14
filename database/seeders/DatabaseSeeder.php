@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UnitOfMeasureSeeder::class);
         $this->call(SettingDataSeeder::class);
         $this->call(CategoryDataSeeder::class);
+        $this->call(CmsContentSeeder::class);
         /* $this->call(InsertDataSeeder::class);
         $this->call(UnitOfMeasureSeeder::class);
         $this->call(BrandDataSeeder::class);
