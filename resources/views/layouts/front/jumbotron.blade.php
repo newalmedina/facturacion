@@ -17,6 +17,8 @@
     <div class="custom-block d-lg-flex flex-column justify-content-center align-items-center">
         <img src ="{{ asset('assets/front/images/templatemo-barber-logo.png') }}" class="custom-block-image img-fluid" alt="">
 
+
+        
         <h4><strong class="text-white">¡Date prisa! Reserva tu trenza perfecta.</strong></h4>
 
         <a href="#booking-section" class="smoothscroll btn custom-btn custom-btn-italic mt-3">Reserva tu cita</a>
