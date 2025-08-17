@@ -1,4 +1,22 @@
-<section class="booking-section section-padding" id="booking-section">
+{{-- @dd($generalSettings) --}}
+@if($generalSettings->allow_appointment)
+    <section class="booking-section section-padding bg-dark" id="booking-section" >
+    <div class="container text-center text-white">
+        <h2 class="mb-3" style="color:white">¿Quieres reservar tu cita?</h2>
+        <p class="mb-4 text-cita">
+            Hazlo de forma rápida y sencilla. Solo pulsa el botón y concierta tu cita en unos segundos.
+            </p>
+
+            <button class="btn btn-cita px-4 py-2 rounded-pill">
+            Concertar cita
+            </button>
+    </div>
+    </section>
+    
+@endif
+
+
+{{-- <section class="booking-section section-padding" id="booking-section">
     <div class="container">
         <div class="row">
 
@@ -53,4 +71,4 @@
         </div>
     </div>
     </div>
-</section>
+</section> --}}

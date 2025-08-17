@@ -40,15 +40,33 @@ class Setting extends Model
 
         $data = $settings->toArray();
 
-        // Convertir a objeto y añadir el atributo 'image_base64'
         if (!empty($data)) {
-            $object = (object) array_merge([], $data);
+            // Limpiar valores y convertir tipos
+            $cleanData = [];
+            foreach ($data as $key => $value) {
+                // Eliminar comillas dobles al inicio y al final
+                $value = trim($value, '"');
+
+                // Convertir "true"/"false" a booleanos
+                if ($value === 'true') {
+                    $value = true;
+                } elseif ($value === 'false') {
+                    $value = false;
+                }
+                // Convertir números enteros si es posible
+                elseif (ctype_digit($value)) {
+                    $value = (int) $value;
+                }
+
+                $cleanData[$key] = $value;
+            }
+
+            $object = (object) $cleanData;
 
             // Convertir imagen a base64 si existe
             if (!empty($object->image)) {
-                $imagePath = storage_path('app/public/' . str_replace('"', '', $object->image));
+                $imagePath = storage_path('app/public/' . $object->image);
 
-                // Verifica que el archivo realmente sea un archivo y no un directorio
                 if (is_file($imagePath)) {
                     $imageData = base64_encode(file_get_contents($imagePath));
                     $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
@@ -59,12 +77,13 @@ class Setting extends Model
             } else {
                 $object->image_base64 = null;
             }
-
+            // dd($object);
             return $object;
         }
 
         return null;
     }
+
 
 
     /*$settings = Setting::first();

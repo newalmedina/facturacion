@@ -1,4 +1,54 @@
+@if($aboutUs->active)
 <section class="about-section section-padding" id="section_2">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-12 col-12 mx-auto">
+                <h2 class="mb-4">{!! $aboutUs->title !!}</h2>
+
+                <div class="border-bottom pb-3 mb-5">
+                    {!! $aboutUs->body !!}
+                </div>
+            </div>
+            @if ($aboutUs->activeImages->count()>0)
+                <h6 class="mb-5">Conoce a Nuestro Equipo de Expertas</h6>
+
+                @foreach ($aboutUs->activeImages as $item)
+                    <div class="col-lg-5 col-12 custom-block-bg-overlay-wrap me-lg-5 mb-5 mb-lg-0 mt-5">
+                        @if ($item->image_path)
+                        <img src ="{{ asset('storage/' . $item->image_path)}}" class="custom-block-bg-overlay-image img-fluid" alt="{{  $item->title }}">
+                            
+                        @endif
+
+                        <div class="team-info d-flex align-items-center flex-wrap">
+                            <p class="mb-0"><strong>{!! $item->title !!}</strong> – {!! $item->alt_text !!}</p>
+
+                            {{-- <ul class="social-icon ms-auto">
+                                <li class="social-icon-item">
+                                    <a href="#" class="social-icon-link bi-facebook" aria-label="Facebook Estrella"></a>
+                                </li>
+
+                                <li class="social-icon-item">
+                                    <a href="#" class="social-icon-link bi-instagram" aria-label="Instagram Estrella"></a>
+                                </li>
+
+                                <li class="social-icon-item">
+                                    <a href="#" class="social-icon-link bi-whatsapp" aria-label="WhatsApp Estrella"></a>
+                                </li>
+                            </ul> --}}
+                        </div>
+                    </div>
+                    
+                @endforeach
+                
+            @endif
+
+        </div>
+    </div>
+</section>
+@endif
+
+{{-- <section class="about-section section-padding" id="section_2">
     <div class="container">
         <div class="row">
 
@@ -55,4 +105,4 @@
 
         </div>
     </div>
-</section>
+</section> --}}

@@ -13,7 +13,9 @@ return new class extends Migration {
             $table->foreignId('cms_content_id')->constrained('cms_contents')->onDelete('cascade');
             $table->string('image_path')->nullable(); // ruta de la imagen
             $table->string('title')->nullable();      // título descriptivo
+            $table->string('subtitle')->nullable();      // título descriptivo
             $table->string('alt_text')->nullable();   // texto alternativo
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

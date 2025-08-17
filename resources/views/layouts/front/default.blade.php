@@ -15,9 +15,75 @@
     <link href="{{ asset('assets/front/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/front/css/bootstrap-icons.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/front/css/templatemo-barber-shop.css') }}" rel="stylesheet">
+    <style>
+#floating-booking-btn {
+    position: fixed;          /* Siempre visible */
+    right: 20px;              /* Separado del borde derecho */
+    top: 50%;                 /* Centrado verticalmente */
+    transform: translateY(-50%);
+    z-index: 9999;
+    width: 60px;              /* Tamaño circular */
+    height: 60px;
+    border-radius: 50%;       /* Hace el círculo */
+    background-color: #dd93ec; /* Color Bootstrap primary */
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;          /* Tamaño del icono o emoji */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-decoration: none;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#floating-booking-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+    background-color: #581177; /* Color más oscuro al pasar el mouse */
+}
+
+/*---------------------------------------
+  FLOATING WHATSAPP BUTTON
+-----------------------------------------*/
+#floating-whatsapp-btn {
+    position: fixed;
+    right: 20px;
+    top: calc(50% + 80px);   /* 80px debajo del botón de cita */
+    transform: translateY(-50%);
+    z-index: 9999;
+
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+
+    background: #25D366;       /* Color oficial de WhatsApp */
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+
+    text-decoration: none;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#floating-whatsapp-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+    background: #1ebe57;       /* Verde más oscuro al hover */
+}
+
+
+
+    </style>
     @stack('styles')
 </head>
 <body>
+    @php
+    use App\Models\Setting;
+
+$settings = Setting::first();
+$generalSettings = $settings?->general;
+@endphp
 
     <div class="container-fluid">
         <div class="row">
@@ -41,6 +107,7 @@
 
     <!-- JAVASCRIPT FILES -->
  
+
 
     <script src="{{ asset('assets/front/js/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/front/js/bootstrap.min.js') }}"></script>

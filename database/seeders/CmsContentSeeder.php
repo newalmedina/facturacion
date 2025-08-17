@@ -55,10 +55,22 @@ class CmsContentSeeder extends Seeder
                 'active' => true,
                 'slug' => 'price-catalog', // cambiado a inglés
             ],
+            [
+                'title' => null, // nombre del negocio para el jumbotron
+                'subtitle' => null,
+                'component_description' => null,
+                'body' => null,
+                'secondary_text' => null,
+                'active' => true,
+                'slug' => 'contact-form', // cambiado a inglés
+            ],
         ];
 
         foreach ($contents as $content) {
-            CmsContent::create($content);
+            CmsContent::firstOrCreate(
+                ['slug' => $content['slug']], // condición para verificar existencia
+                $content // valores a crear si no existe
+            );
         }
     }
 }

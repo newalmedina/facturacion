@@ -13,6 +13,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use App\Filament\Resources\CmsContentResource\Form\HeaderJumbotronForm;
 use App\Filament\Resources\CmsContentResource\Form\AboutUsForm;
+use App\Filament\Resources\CmsContentResource\Form\ContactForm;
 use App\Filament\Resources\CmsContentResource\Form\DiscountsForm;
 use App\Filament\Resources\CmsContentResource\Form\ServicesForm;
 use App\Filament\Resources\CmsContentResource\Form\PriceCatalogForm;
@@ -43,6 +44,7 @@ class CmsContentResource extends Resource
             'discounts' => DiscountsForm::schema(),
             'services' => ServicesForm::schema(),
             'price-catalog' => PriceCatalogForm::schema(),
+            'contact-form' => ContactForm::schema(),
         };
 
         return $form->schema(array_merge(

@@ -1,4 +1,129 @@
+
+@if($contactForm->active)
 <section class="contact-section" id="section_5">
+    <div class="section-padding section-bg">
+        <div class="container">
+            <div class="row">   
+
+                <div class="col-lg-8 col-12 mx-auto">
+                    <h2 class="text-center">{{ $contactForm->title }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-padding">
+        <div class="container">
+            <div class="row">
+
+                <div class="col-lg-6 col-12">
+                    <h5 class="mb-3"><strong> {{ Str::before($contactForm->subtitle, ' ') }} </strong>{{ Str::after($contactForm->subtitle, ' ') }}</></h5>
+
+                   <p class="text-white d-flex mb-1">
+                        <a href="tel:{{ trim($generalSettings->phone, '"') }}" class="site-footer-link">
+                            {{ trim($generalSettings->phone, '"') }}
+                        </a>
+                    </p>
+
+                    <p class="text-white d-flex">
+                        <a href="mailto:{{ trim($generalSettings->email, '"') }}" class="site-footer-link">
+                            {{ trim($generalSettings->email, '"') }}
+                        </a>
+                    </p>
+
+
+                    <ul class="social-icon">
+                         @if(!empty($contactForm->facebook_url))
+                            <li class="social-icon-item">
+                                <a target="_blank" href="{{ $contactForm->facebook_url }}" class="social-icon-link bi-facebook"></a>
+                            </li>
+                        @endif
+
+                        @if(!empty($contactForm->twitter_url))
+                            <li class="social-icon-item">
+                                <a target="_blank" href="{{ $contactForm->twitter_url }}" class="social-icon-link bi-twitter"></a>
+                            </li>
+                        @endif
+
+                        @if(!empty($contactForm->instagram_url))
+                            <li class="social-icon-item">
+                                <a target="_blank" href="{{ $contactForm->instagram_url }}" class="social-icon-link bi-instagram"></a>
+                            </li>
+                        @endif
+
+                        @if(!empty($contactForm->youtube_url))
+                            <li class="social-icon-item">
+                                <a target="_blank" href="{{ $contactForm->youtube_url }}" class="social-icon-link bi-youtube"></a>
+                            </li>
+                        @endif
+
+                        @if(!empty($contactForm->whatsapp_url))
+                            <li class="social-icon-item">
+                                <a 
+                                    target="_blank" 
+                                    href="https://wa.me/{{ preg_replace('/\D/', '', $contactForm->whatsapp_url) }}" 
+                                    class="social-icon-link bi-whatsapp">
+                                </a>
+                            </li>
+                        @endif
+
+
+                    </ul>
+                </div>
+
+                <div class="col-lg-5 col-12 contact-block-wrap mt-5 mt-lg-0 pt-4 pt-lg-0 mx-auto">
+                    <div class="contact-block">
+                        <h6 class="mb-0">
+                            <i class="custom-icon bi-shop me-3"></i>
+
+                            <strong>{{ $contactForm->secondary_text }}</strong>
+
+                            <span class="ms-auto">{{ $contactForm->tertiary_text }}</span>
+                        </h6>
+                    </div>
+                </div>
+
+              <div class="col-lg-12 col-12 mx-auto mt-5 pt-5">
+               @if(!empty($contactForm->body))
+                    <iframe 
+                        class="google-map" 
+                        src="{!! trim($contactForm->body, '"') !!}" 
+                        width="100%" 
+                        height="500" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                @endif
+
+            </div>
+
+
+            </div>
+        </div>
+    </div>
+</section>
+@endif
+
+@if($generalSettings->allow_appointment)
+<!-- Botón flotante circular -->
+<a href="#booking-section" 
+   id="floating-booking-btn" 
+   title="Pedir Cita">
+    📅
+</a>
+@endif
+     @if(!empty($contactForm->whatsapp_url))
+    <a 
+    id="floating-whatsapp-btn" 
+    target="_blank" 
+    href="https://wa.me/{{ preg_replace('/\D/', '', $contactForm->whatsapp_url) }}" 
+    title="Chatear por WhatsApp">
+        <i class="bi-whatsapp"></i>
+    </a>
+@endif
+{{-- <section class="contact-section" id="section_5">
     <div class="section-padding section-bg">
         <div class="container">
             <div class="row">   
@@ -77,4 +202,4 @@
             </div>
         </div>
     </div>
-</section>
+</section> --}}

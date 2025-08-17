@@ -18,6 +18,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Notifications\Notification;
@@ -171,6 +172,10 @@ class Settings extends BaseSettings
                                     TextInput::make('general.address')
                                         ->label("Dirección")
                                         ->columnSpan(2), // Ocupa 2 columnas
+                                    Toggle::make('general.allow_appointment')
+                                        ->inline(false)
+                                        ->label("Permitir citas")
+                                        ->required(),
                                 ]),
                         ]),
 

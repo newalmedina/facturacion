@@ -132,6 +132,26 @@ strong {
   font-weight: var(--font-weight-bold);
 }
 
+/*----------------------------------------
+  BOTON CITALANDING PAGE
+-----------------------------------------*/
+.text-cita {
+  color: var(--primary-color);
+}
+
+.btn-cita {
+  background: var(--custom-btn-bg-color);
+  ;
+  color: #fff;
+  border: none;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.btn-cita:hover {
+  background: var(--custom-btn-bg-hover-color);
+  /* color al hacer hover */
+  color: #fff;
+}
 
 /*---------------------------------------
   SECTION               
@@ -198,6 +218,51 @@ strong {
 
 .custom-block-bg-overlay-wrap:hover .team-info {
   bottom: 10px;
+}
+
+
+
+/*---------------------------------------
+pedir cita btn   
+-----------------------------------------*/
+
+/*---------------------------------------
+  FLOATING BOOKING BUTTON
+-----------------------------------------*/
+#floating-booking-btn {
+  position: fixed;
+  /* Siempre visible */
+  right: 20px;
+  /* Separado del borde derecho */
+  top: 50%;
+  /* Centrado verticalmente */
+  transform: translateY(-50%);
+  z-index: 9999;
+
+  width: 60px;
+  /* Tamaño circular */
+  height: 60px;
+  border-radius: 50%;
+  /* Hace el círculo */
+
+  background: #0d6efd;
+  /* Color principal */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  /* Tamaño del icono o emoji */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  text-decoration: none;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+#floating-booking-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  background: #0056b3;
+  /* Color más oscuro al pasar el mouse */
 }
 
 

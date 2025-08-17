@@ -14,8 +14,20 @@ return new class extends Migration {
             $table->text('component_description')->nullable();
             $table->text('body')->nullable();
             $table->text('secondary_text')->nullable();
+            $table->string('tertiary_text')->nullable();
             $table->string('slug')->unique();
+            $table->string('image_path')->nullable(); // ruta de la imagen
+            $table->string('image_title')->nullable();      // título descriptivo
+            $table->string('image_alt_text')->nullable();   // texto alternativo
             $table->boolean('active')->default(true);
+
+            $table->text('facebook_url')->nullable();
+            $table->text('twitter_url')->nullable();
+            $table->text('instagram_url')->nullable();
+            $table->text('youtube_url')->nullable();
+            $table->text('whatsapp_url')->nullable();
+
+            $table->string('first_text')->nullable();
             $table->timestamps();
         });
     }

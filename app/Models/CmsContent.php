@@ -15,6 +15,20 @@ class CmsContent extends Model
 
     public function images()
     {
-        return $this->hasMany(CmsContentImage::class);
+        return $this->hasMany(CmsContentImage::class)->orderBy('sort');;
+    }
+    public function activeImages()
+    {
+        return $this->hasMany(CmsContentImage::class)
+            ->where('active', 1)->orderBy('sort');;
+    }
+    public function lastImage()
+    {
+        return $this->hasOne(CmsContentImage::class)
+            ->latestOfMany('id'); // o cualquier otra columna
+    }
+    public static function findBySlug(string $slug): ?self
+    {
+        return self::where('slug', $slug)->first();
     }
 }

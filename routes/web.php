@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BackupDownloadController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,10 +25,7 @@ Route::get('/landing', function () {
 
     return view('welcome');
 });
-Route::get('/landing', function () {
-
-    return view('welcome');
-});
+Route::get('/landing', [WelcomeController::class, 'index'])->name('welcome');
 
 
 Route::middleware('auth')->get('/admin/backups/download/{filepath}', [BackupDownloadController::class, 'download'])
