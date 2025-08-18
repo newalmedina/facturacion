@@ -15,7 +15,27 @@
     <link href="{{ asset('assets/front/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/front/css/bootstrap-icons.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/front/css/templatemo-barber-shop.css') }}" rel="stylesheet">
+    <!-- SWIPER CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
     <style>
+        /* ... tu CSS existente de botones flotantes ... */
+
+/* Swiper styles */
+.swiper-button-next,
+.swiper-button-prev {
+    color: #b462e2 !important;
+    height: 50px;
+    background-size: 50% 50%;
+}
+.swiper-pagination-bullet {
+    background: #b462e2 !important;
+    width: 16px;
+    height: 16px;
+}
+.swiper-pagination-bullet-active {
+    background: #b462e2 !important;
+}
 #floating-booking-btn {
     position: fixed;          /* Siempre visible */
     right: 20px;              /* Separado del borde derecho */
@@ -114,8 +134,10 @@ $generalSettings = $settings?->general;
     <script src="{{ asset('assets/front/js/click-scroll.js') }}"></script>
     <script src="{{ asset('assets/front/js/custom.js') }}"></script>
         
+<!-- SWIPER JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
 
-    
+        @stack('scripts')
 
     </div>
 </div>
