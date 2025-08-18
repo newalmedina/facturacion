@@ -15,6 +15,7 @@ use App\Filament\Resources\CmsContentResource\Form\HeaderJumbotronForm;
 use App\Filament\Resources\CmsContentResource\Form\AboutUsForm;
 use App\Filament\Resources\CmsContentResource\Form\ContactForm;
 use App\Filament\Resources\CmsContentResource\Form\DiscountsForm;
+use App\Filament\Resources\CmsContentResource\Form\GalleryForm;
 use App\Filament\Resources\CmsContentResource\Form\ServicesForm;
 use App\Filament\Resources\CmsContentResource\Form\PriceCatalogForm;
 
@@ -45,6 +46,7 @@ class CmsContentResource extends Resource
             'services' => ServicesForm::schema(),
             'price-catalog' => PriceCatalogForm::schema(),
             'contact-form' => ContactForm::schema(),
+            'gallery' => GalleryForm::schema(),
         };
 
         return $form->schema(array_merge(

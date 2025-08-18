@@ -18,6 +18,7 @@ class WelcomeController extends Controller
         $service = CmsContent::findBySlug('services');
         $priceList = CmsContent::findBySlug('price-catalog');
         $contactForm = CmsContent::findBySlug('contact-form');
+        $gallery = CmsContent::findBySlug('gallery');
 
         $settings = Setting::first();
         $generalSettings = $settings?->general;
@@ -32,6 +33,7 @@ class WelcomeController extends Controller
             'discounts' => $discounts,
             'contactForm' => $contactForm,
             'priceList' => $priceList,
+            'gallery' => $gallery,
             'generalSettings' => $generalSettings,
             'state' => $state,
             'city' => $city,

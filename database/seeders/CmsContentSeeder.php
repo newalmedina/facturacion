@@ -64,6 +64,15 @@ class CmsContentSeeder extends Seeder
                 'active' => true,
                 'slug' => 'contact-form', // cambiado a inglés
             ],
+            [
+                'title' => null, // nombre del negocio para el jumbotron
+                'subtitle' => null,
+                'component_description' => null,
+                'body' => null,
+                'secondary_text' => null,
+                'active' => true,
+                'slug' => 'gallery', // cambiado a inglés
+            ],
         ];
 
         foreach ($contents as $content) {

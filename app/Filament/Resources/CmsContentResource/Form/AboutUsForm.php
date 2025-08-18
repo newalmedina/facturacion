@@ -81,6 +81,7 @@ class AboutUsForm
                         ->collapsed()
                         ->collapsible()
                         ->columns(3)
+                        ->orderColumn('sort')
                         ->reorderable()
                         ->columnSpan(4)
 

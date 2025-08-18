@@ -8,9 +8,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 
-class ServicesForm
+class GalleryForm
 {
     public static function schema(): array
     {
@@ -21,34 +20,42 @@ class ServicesForm
                         ->label('Descripción componente')
                         ->columnSpan(4), // ocupa todo el ancho
                     TextInput::make('title')
-                        ->label('Título sección')
+                        ->label('Título')
                         ->required()
-                        ->maxLength(100)
-                        ->columnSpan(4), // ocupa la mitad del row
-
-
+                        ->maxLength(30)
+                        ->columnSpan(2),
+                    TextInput::make('subtitle')
+                        ->label('Subtítulo')
+                        // ->required()
+                        ->maxLength(150)
+                        ->columnSpan(2),
+                    // ->helperText('En la home solo se mostrarán las 5 primeras fotos'), // ocupa la mitad del row
+                    // Textarea::make('subtitle')
+                    //     ->label('Subtítulo')
+                    //     ->maxLength(100)
+                    //     ->columnSpan(4), // ocupa todo el ancho
 
                     Repeater::make('images')
-                        ->label('Servicios')
+                        ->label('Imágenes')
                         ->relationship('images') // nombre de la relación en CmsContent
                         ->schema([
                             FileUpload::make('image_path')
                                 ->label('Imagen')
-                                ->helperText('Resolución recomendada: 1000 × 667 píxeles')
+                                ->helperText('Resolución recomendada: 666 × 579 píxeles')
                                 ->image()
-                                ->directory('services')
+                                ->directory('about-us')
                                 ->visibility('public')
+                                ->required()
                                 ->imageEditor()                        // habilita editor
                                 ->imageResizeMode('cover')              // recorta para llenar el tamaño
-                                ->imageCropAspectRatio('3:2')          // relación 1000x667 ≈ 3:2
-                                ->imageResizeTargetWidth(1000)         // ancho final
-                                ->imageResizeTargetHeight(667),      // alto final
-
+                                ->imageCropAspectRatio('23:20')
+                                ->imageResizeTargetWidth(666)
+                                ->imageResizeTargetHeight(579),
                             TextInput::make('title')
-                                ->label('Título')
-                                ->maxLength(30),
+                                ->label('Nombre (opcional, solo posicionamiento)')
+                                ->maxLength(15),
                             TextInput::make('alt_text')
-                                ->label('Precio')
+                                ->label('Descripcion corta (opcional, solo posicionamiento)')
                                 ->maxLength(20),
                             Forms\Components\Toggle::make('active')
                                 ->inline(false)
