@@ -1,6 +1,6 @@
 {{-- @dd($generalSettings) --}}
 @if($generalSettings->allow_appointment)
-    <section class="booking-section section-padding bg-dark" id="booking-section" >
+    <section class="booking-section section-padding bg-dark" id="booking_section" >
     <div class="container text-center text-white">
         <h2 class="mb-3" style="color:white">¿Quieres reservar tu cita?</h2>
         <p class="mb-4 text-cita">

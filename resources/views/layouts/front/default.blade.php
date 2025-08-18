@@ -20,7 +20,7 @@
 
     <style>
         /* ... tu CSS existente de botones flotantes ... */
-
+/* 
 /* Swiper styles */
 .swiper-button-next,
 .swiper-button-prev {
@@ -35,7 +35,7 @@
 }
 .swiper-pagination-bullet-active {
     background: #b462e2 !important;
-}
+} */
 #floating-booking-btn {
     position: fixed;          /* Siempre visible */
     right: 20px;              /* Separado del borde derecho */

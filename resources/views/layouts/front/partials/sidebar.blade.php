@@ -1,3 +1,5 @@
+
+
 <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
 </button>
@@ -10,25 +12,44 @@
         </a>
 
         <ul class="nav flex-column">
+            @if($jumbotron->active)
             <li class="nav-item">
                 <a class="nav-link click-scroll active" href="#section_1">Home</a>
             </li>
-
+            @endif
+            @if($aboutUs->active)
             <li class="nav-item">
                 <a class="nav-link click-scroll inactive" href="#section_2">Sobre nosotros</a>
             </li>
+            @endif
 
+            @if($service->active)
             <li class="nav-item">
                 <a class="nav-link click-scroll inactive" href="#section_3">Servicios</a>
             </li>
+            @endif
+            {{-- @if($generalSettings->allow_appointment)
+            <li class="nav-item">
+                <a class="nav-link click-scroll inactive" href="#booking_section">Reserva cita</a>
+            </li>
+            @endif
 
+            @if($gallery->active )
+            <li class="nav-item">
+                <a class="nav-link click-scroll inactive" href="#gallery_section">Galería de imágenes</a>
+            </li>
+            @endif --}}
+            @if($priceList->active)
             <li class="nav-item">
                 <a class="nav-link click-scroll inactive" href="#section_4">Algunos precios</a>
             </li>
+            @endif
 
+            @if($contactForm->active)
             <li class="nav-item">
                 <a class="nav-link click-scroll inactive" href="#section_5">Contactenos</a>
             </li>
+            @endif
         </ul>
     </div>
 </nav>

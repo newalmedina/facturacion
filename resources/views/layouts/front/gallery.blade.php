@@ -1,5 +1,5 @@
-@if($gallery->active && $gallery->activeImages->count() > 0)
-<section class="about-section section-padding" id="section_2">
+@if($gallery->active )
+<section class="about-section section-padding" id="gallery_section">
     <div class="container">
         <div class="row">
             <div class="col-lg-12 col-12 mx-auto">
