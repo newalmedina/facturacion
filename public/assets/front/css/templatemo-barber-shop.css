@@ -465,6 +465,49 @@ pedir cita btn
   z-index: 2;
 }
 
+.hero-section-simple {
+  background-image: url('../images/client-doing-hair-cut-barber-shop-salon.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  padding: 30px 20px;
+  /* menos padding */
+  min-height: 200px;
+  /* más pequeño en móvil */
+  border-bottom: 10px solid var(--primary-color);
+}
+
+/* En pantallas grandes ocupará 30% de la ventana */
+@media screen and (min-width: 991px) {
+  .hero-section-simple {
+    height: 30vh;
+    /* más pequeño: solo 30% del viewport */
+    min-height: 220px;
+    /* para no quedar demasiado chico */
+  }
+}
+
+.hero-section-simple::after {
+  content: "";
+  background: linear-gradient(90deg, #581177 0%, #dd93ec 50%, #1a1a1a 100%);
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0.85;
+  /* más oscuro que antes (0.65 → 0.85) */
+}
+
+.hero-section-simple .container {
+  position: relative;
+  z-index: 2;
+}
+
+
 .custom-block {
   border: 10px solid var(--primary-color);
   border-radius: 100%;
@@ -498,6 +541,22 @@ pedir cita btn
   object-fit: cover;
 }
 
+
+/*---------------------------------------
+  general              
+-----------------------------------------*/
+.general-section h6 {
+  color: var(--secondary-color);
+}
+
+.general-section .custom-block-bg-overlay-image {
+  width: 100%;
+  max-height: 250px;
+}
+
+.general-section .custom-block-bg-overlay-wrap {
+  position: relative;
+}
 
 /*---------------------------------------
   ABOUT              
@@ -862,6 +921,11 @@ pedir cita btn
 
   .section-padding,
   .hero-section {
+    padding: 50px 25px;
+  }
+
+  .section-padding,
+  .hero-section-simple {
     padding: 50px 25px;
   }
 

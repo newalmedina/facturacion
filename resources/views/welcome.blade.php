@@ -2,11 +2,11 @@
 
 @extends('layouts.front.default')
 
-@section('title', 'Página de Bienvenida')
+@section('title', $generalSettings->brand_name. " - Home")
 
     @section('content')
     @include('layouts.front.jumbotron')
-    @include('layouts.front.appointments')
+    @include('layouts.front.booking')
     @include('layouts.front.about')
     @include('layouts.front.discounts')
     @include('layouts.front.services')

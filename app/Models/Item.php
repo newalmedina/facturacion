@@ -50,10 +50,7 @@ class Item extends Model
     {
         return round((float) $this->price + $this->taxes_amount, 2);
     }
-    public function scopeActive($query)
-    {
-        return $query->where('active', true);
-    }
+
     public function getImageUrlAttribute()
     {
         if (!$this->image) {
@@ -69,5 +66,22 @@ class Item extends Model
 
         // Retorna la URL pública del archivo
         return Storage::url($path);
+    }
+
+
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
+    }
+    // Scope para show_booking = true
+    public function scopeShowBooking($query)
+    {
+        return $query->where('show_booking', true);
+    }
+
+    // Scope para show_booking_others = true
+    public function scopeShowBookingOthers($query)
+    {
+        return $query->where('show_booking_others', true);
     }
 }

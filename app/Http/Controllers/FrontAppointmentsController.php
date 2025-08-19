@@ -8,7 +8,7 @@ use App\Models\Setting;
 use App\Models\State;
 use Illuminate\Http\Request;
 
-class WelcomeController extends Controller
+class FrontAppointmentsController extends Controller
 {
     public function index()
     {
@@ -22,12 +22,11 @@ class WelcomeController extends Controller
 
         $settings = Setting::first();
         $generalSettings = $settings?->general;
-        // dd($generalSettings);
         // $generalSettings?->brand_name = $generalSettings?->brand_name ?? config('app.name', 'Mi Empresa');
         $state = State::find(trim($generalSettings->state_id, '"'));
         $city = City::find(trim($generalSettings->city_id, '"'));
 
-        return view('welcome', [
+        return view('front.appointments', [
             'jumbotron' => $jumbotron,
             'aboutUs' => $aboutUs,
             'service' => $service,
@@ -38,6 +37,7 @@ class WelcomeController extends Controller
             'generalSettings' => $generalSettings,
             'state' => $state,
             'city' => $city,
+            'pageTitle' => "Pedir cita",
         ]);
     }
 }

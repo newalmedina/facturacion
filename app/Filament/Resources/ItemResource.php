@@ -137,12 +137,24 @@ class ItemResource extends Resource
                                     ->hidden(fn($get) => empty($get('type')))
                                     ->columnSpanFull(),
 
-                                // Campo Activo
                                 Forms\Components\Toggle::make('active')
                                     ->inline(false)
                                     ->label("¿Activo?")
                                     ->hidden(fn($get) => empty($get('type')))
                                     ->required(),
+                                // Campo Activo
+                                Forms\Components\Toggle::make('show_booking')
+                                    ->inline(false)
+                                    ->label("Mostrar en reservas")
+                                    ->hidden(fn($get) => empty($get('type')))
+                                    ->required(),
+
+                                Forms\Components\Toggle::make('show_booking_others')
+                                    ->inline(false)
+                                    ->label("Mostrar en reservas de otros")
+                                    ->hidden(fn($get) => empty($get('type')))
+                                    ->required(),
+
 
                                 // Campo Categoría (Solo visible cuando 'type' es 'service')
                                 Forms\Components\Select::make('category_id')
@@ -312,6 +324,14 @@ class ItemResource extends Resource
                     ->label("¿Activo?")
 
                     ->boolean(),
+                Tables\Columns\IconColumn::make('show_booking')
+                    ->label("Mostrar en reservas")
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->boolean(),
+                Tables\Columns\IconColumn::make('show_booking_others')
+                    ->label("Mostrar en reservas de otros")
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('brand.name')
                     ->label("Marca")
                     // ->numeric()
@@ -341,6 +361,24 @@ class ItemResource extends Resource
                 //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('active')
+                    ->label("¿Activo?")
+                    ->options([
+                        '1' => 'Activo',
+                        '0' => 'No activo',
+                    ]),
+                SelectFilter::make('show_booking')
+                    ->label("Mostrar en reservas")
+                    ->options([
+                        '1' => 'Mostrar',
+                        '0' => 'No mostrar',
+                    ]),
+                SelectFilter::make('show_booking_others')
+                    ->label("Mostrar en reservas de otros")
+                    ->options([
+                        '1' => 'Mostrar',
+                        '0' => 'No mostrar',
+                    ]),
                 SelectFilter::make('type')
                     ->label("Tipo")
                     ->options([
