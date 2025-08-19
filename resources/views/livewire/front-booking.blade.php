@@ -4,12 +4,18 @@
     <style>
     #calendar-container {
       width: 100%;
-      padding: 15px;       /* más padding alrededor */
+      padding: 15px;
       box-sizing: border-box;
     }
-    .flatpickr-calendar {
+
+    /* Forzar que el calendario muestre los 7 días completos */
+    #calendar-container .flatpickr-calendar {
+      min-width: 320px;   /* ancho mínimo para que entren todos los días */
+      max-width: 100%;
+      margin: 0 auto;
       width: 100% !important;
     }
+
     input.form-control, select.form-control, textarea.form-control {
       width: 100% !important;
     }
@@ -21,9 +27,22 @@
       border-color: #581177 !important;
       color: #fff !important;
     }
-    </style>
 
-@endpush
+    /* Ajustes para pantallas pequeñas */
+    @media (max-width: 768px) {
+      #calendar-container .flatpickr-calendar {
+        width: 100% !important;
+        min-width: auto;
+        font-size: 14px;
+      }
+      .flatpickr-day {
+        max-width: 34px;
+        height: 34px;
+        line-height: 34px;
+      }
+    }
+    </style>
+    @endpush
 
     <h3 class="mb-4 text-center text-primary" style="color:#b462e2 !important">Reserva tu cita</h3>
 
@@ -37,11 +56,11 @@
 
         <div class="row">
             <!-- Calendario -->
-            <div class="col-12 col-md-4 mb-3">
+            <div class="col-12 col-md-6 mb-3">
                 <div id="calendar-container"></div>
             </div>
 
-            <div class="col-12 col-md-8">
+            <div class="col-12 col-md-6">
                 <!-- Nombre -->
                 <div class="mb-3">
                     <input type="text" wire:model="Apppointment.requester_name" class="form-control w-100" placeholder="Nombre completo">
@@ -55,6 +74,25 @@
                 </div>
 
                 <!-- Teléfono -->
+                <div class="mb-3">
+                    <label class="form-label">Código país</label>
+                    <select wire:model="phoneCode" class="form-control w-100">
+                        @foreach($countries as $country)
+                            <option value="{{ $country->id }}">
+                                {{ $country->name }} ( +{{ $country->phonecode }} )
+                            </option>
+                        @endforeach
+                    </select>
+
+                    @error('appointment.phone_code') 
+                        <small class="text-danger">{{ $message }}</small> 
+                    @enderror
+
+                    <small class="form-text text-muted">
+                        📌 Importante: selecciona el código correcto para poder contactar por WhatsApp.
+                    </small>
+                </div>
+
                 <div class="mb-3">
                     <input type="text" wire:model="Apppointment.requester_phone" class="form-control w-100" placeholder="Teléfono">
                     @error('Apppointment.requester_phone') <small class="text-danger">{{ $message }}</small> @enderror
@@ -71,22 +109,21 @@
                     </select>
                     @error('Apppointment.item_id') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
+
                 <div class="mb-3">
-            <textarea wire:model="Apppointment.comments" class="form-control w-100" rows="3" placeholder="Mensaje opcional"></textarea>
-            @error('Apppointment.comments') <small class="text-danger">{{ $message }}</small> @enderror
-        </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="text-center">
-            <button type="submit" class="btn btn-cita px-4 py-2 rounded-pill">Reservar cita</button>
-        </div>
+                    <textarea wire:model="Apppointment.comments" class="form-control w-100" rows="3" placeholder="Mensaje opcional"></textarea>
+                    @error('Apppointment.comments') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
             </div>
         </div>
 
-        <!-- Mensaje -->
-        
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center">
+                    <button type="submit" class="btn btn-cita px-4 py-2 rounded-pill">Reservar cita</button>
+                </div>
+            </div>
+        </div>
 
         <hr>
 
@@ -115,34 +152,28 @@
                 <i class="fas fa-exclamation-circle me-2 fa-2x"></i>
                 <div>
                     Para concertar cita con uno de estos servicios, por favor contacta al teléfono <strong>
-                        <a style="color:blue" href="https://wa.me/{{ preg_replace('/\D/', '', trim($generalSettings->phone, '"')) }}" target="_blank">
-                            {{ trim($generalSettings->phone, '"') }}
-                        </a>
-                    </strong> (llamada o WhatsApp).
+                        {{ trim($generalSettings->phone, '"') }}
+                    </strong> 
                 </div>
             </div>
         </div>
-
-        <!-- Botón -->
-        
     </form>
 
-
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-<script>
-  flatpickr("#calendar-container", {
-    inline: true,
-    defaultDate: "today",
-    minDate: "today",  // solo fechas desde hoy en adelante
-    locale: "es",      // español
-    onChange: function(selectedDates, dateStr, instance) {
-        @this.set('date', dateStr); // Livewire
-    }
-  });
-</script>
-@endpush
-
-
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script>
+      flatpickr("#calendar-container", {
+  inline: true,
+  defaultDate: "today",
+  minDate: "today",  
+  locale: "es",
+  dateFormat: "d-m-Y",   // formato para que incluya el año
+  monthSelectorType: "static", // muestra el año junto al mes
+  onChange: function(selectedDates, dateStr, instance) {
+      @this.set('date', dateStr);
+  }
+});
+    </script>
+    @endpush
 </div>

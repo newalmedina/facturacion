@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Appointment;
+use App\Models\Country;
 use App\Models\Item;
 use Livewire\Component;
 
@@ -16,6 +17,8 @@ class FrontBooking extends Component
     public $message;
     public $showItems = [];
     public $showItemsOthers = [];
+    public $countries = [];
+    public $phoneCode = 207;
     public $generalSettings; // <--- Recibirá la configuración
     protected $rules = [
         'Apppointment.item_id' => 'required|integer|exists:items,id',
@@ -54,6 +57,12 @@ class FrontBooking extends Component
         $this->Apppointment = new Appointment();
         $this->showItems = Item::showBooking()->orderBy('price', 'asc')->get();
         $this->showItemsOthers = Item::showBookingOthers()->orderBy('price', 'asc')->get();
+        $this->countries = Country::activos()
+            ->select('id', 'name', 'phonecode')
+            ->orderBy('name', 'asc')
+            ->get();
+
+        $this->phoneCode = 207;
     }
 
     public function submit()

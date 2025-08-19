@@ -159,7 +159,15 @@ $generalSettings = $settings?->general;
     
     @stack('scripts')
     @livewireScripts
-
+ @if(!empty($contactForm->whatsapp_url))
+    <a 
+    id="floating-whatsapp-btn" 
+    target="_blank" 
+    href="https://wa.me/{{ preg_replace('/\D/', '', $contactForm->whatsapp_url) }}" 
+    title="Chatear por WhatsApp">
+        <i class="bi-whatsapp"></i>
+    </a>
+@endif
     </div>
 </div>
 </body>

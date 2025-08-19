@@ -8,7 +8,6 @@
 
 
 <section class="general-section section-padding" id="">
-    <div class="container">
         <div class="row">
 
             
@@ -19,7 +18,8 @@
                 </div>
             </div>
 
-        </div>
     </div>
 </section>
+
+
 @endsection

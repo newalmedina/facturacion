@@ -245,7 +245,7 @@ pedir cita btn
   border-radius: 50%;
   /* Hace el círculo */
 
-  background: #0d6efd;
+  background: var(--custom-btn-bg-hover-color);
   /* Color principal */
   color: #fff;
   display: flex;
@@ -261,7 +261,7 @@ pedir cita btn
 
 #floating-booking-btn:hover {
   transform: translateY(-50%) scale(1.1);
-  background: #0056b3;
+  background: var(--custom-btn-bg-color);
   /* Color más oscuro al pasar el mouse */
 }
 
