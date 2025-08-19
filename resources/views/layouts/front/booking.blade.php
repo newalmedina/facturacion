@@ -7,7 +7,7 @@
             Hazlo de forma rápida y sencilla. Solo pulsa el botón y concierta tu cita en unos segundos.
             </p>
 
-            <a  href="{{ route('landiging.appointments') }}" class="btn btn-cita px-4 py-2 rounded-pill">
+            <a  href="{{ route('booking') }}" class="btn btn-cita px-4 py-2 rounded-pill">
             Concertar cita
             </a>
     </div>

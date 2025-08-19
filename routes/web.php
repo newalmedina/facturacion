@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\BackupDownloadController;
-use App\Http\Controllers\FrontAppointmentsController;
+use App\Http\Controllers\FrontBookingController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +27,7 @@ Route::get('/', function () {
 //     return view('welcome');
 // });
 Route::get('/landing', [WelcomeController::class, 'index'])->name('welcome');
-Route::get('/appointments', [FrontAppointmentsController::class, 'index'])->name('landiging.appointments');
+Route::get('/booking', [FrontBookingController::class, 'index'])->name('booking');
 
 
 Route::middleware('auth')->get('/admin/backups/download/{filepath}', [BackupDownloadController::class, 'download'])

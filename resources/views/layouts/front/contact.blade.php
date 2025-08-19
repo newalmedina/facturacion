@@ -108,7 +108,7 @@
 
 @if($generalSettings->allow_appointment)
 <!-- Botón flotante circular -->
-<a href="{{ route('landiging.appointments') }}" 
+<a href="{{ route('booking') }}" 
    id="floating-booking-btn" 
    title="Pedir Cita">
     📅

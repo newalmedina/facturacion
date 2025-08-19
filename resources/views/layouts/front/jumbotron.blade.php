@@ -23,7 +23,7 @@
 
             
             <h4><strong class="text-white">{{ $jumbotron->secondary_text }}</strong></h4>
-<a href="{{ route('landiging.appointments') }}" class="smoothscroll btn custom-btn custom-btn-italic mt-3">
+<a href="{{ route('booking') }}" class="smoothscroll btn custom-btn custom-btn-italic mt-3">
     Reserva tu cita
 </a>
 

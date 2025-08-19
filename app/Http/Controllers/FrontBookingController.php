@@ -8,7 +8,7 @@ use App\Models\Setting;
 use App\Models\State;
 use Illuminate\Http\Request;
 
-class FrontAppointmentsController extends Controller
+class FrontBookingController extends Controller
 {
     public function index()
     {
