@@ -80,4 +80,14 @@ class Appointment extends Model
             }
         });
     }
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
+    }
+
+    // Scope para items con estado pendiente (o cualquier status pasado como parámetro)
+    public function scopeStatusAvailable($query)
+    {
+        return $query->where('status', 'available');
+    }
 }

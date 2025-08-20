@@ -2,6 +2,33 @@
     @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
+
+.appointment-card {
+    
+    border: 2px solid #ccc; /* borde por defecto */
+    border-radius: 0.5rem;
+    transition: border-color 0.3s;
+    width: 100%; /* todas las cards ocupan el mismo ancho */
+}
+
+.appointment-card input:checked + .card {
+    border-color: #581177; 
+    background: #dd93ec;
+    color: #fff; 
+    font-weight: bold;
+}
+
+.appointment-card input:checked + .card .card-body,
+.appointment-card input:checked + .card .card-body label,
+.appointment-card input:checked + .card .card-body p {
+    color: #fff !important;
+    font-weight: bold;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
     #calendar-container {
       width: 100%;
       padding: 15px;
@@ -56,20 +83,51 @@
 
         <div class="row">
             <!-- Calendario -->
-            <div class="col-12 col-md-6 mb-3">
+            <div class="col-12 mb-3">
                 <div id="calendar-container"></div>
             </div>
 
-            <div class="col-12 col-md-6">
+           
+            <div class="col-12  mb-3 pt-5">
+                @error('date') <small class="text-danger">{{ $message }}</small> @enderror
+                <div class="row g-3">
+                    <div class="row g-3">
+                        @foreach($apppointmentList as $appointment)
+                        <div class="col-12 col-md-3 d-flex">
+                            <label class="appointment-card d-block cursor-pointer flex-fill h-100"
+                                   wire:click="selectAppointment({{ $appointment->id }})">
+                                
+                                <input type="radio" name="selectedAppointment" 
+                                       wire:model="selectedAppointment" 
+                                       value="{{ $appointment->id }}" class="d-none">
+                                
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                                        <span style="font-size: 15px">{{ $appointment->worker->name }}</span>
+                                        <p style="font-size: 15px">{{ $appointment->start_time->format('H:i') }} - {{ $appointment->end_time->format('H:i') }}</p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    @endforeach
+                    
+                    </div>
+                    
+                </div>
+            </div>
+           
+        </div>
+        <div class="row mt-4">
+            <div class="col-12 ">
                 <!-- Nombre -->
                 <div class="mb-3">
-                    <input type="text" wire:model="Apppointment.requester_name" class="form-control w-100" placeholder="Nombre completo">
+                    <input type="text" wire:model="form.requester_name" class="form-control w-100" placeholder="Nombre completo">
                     @error('Apppointment.requester_name') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <!-- Email -->
                 <div class="mb-3">
-                    <input type="email" wire:model="Apppointment.email" class="form-control w-100" placeholder="Correo electrónico">
+                    <input type="email" wire:model="form.email" class="form-control w-100" placeholder="Correo electrónico">
                     @error('Apppointment.email') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
@@ -94,14 +152,14 @@
                 </div>
 
                 <div class="mb-3">
-                    <input type="text" wire:model="Apppointment.requester_phone" class="form-control w-100" placeholder="Teléfono">
+                    <input type="text" wire:model="form.requester_phone" class="form-control w-100" placeholder="Teléfono">
                     @error('Apppointment.requester_phone') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <!-- Selección de items -->
                 <div class="mb-3">
                     <label class="form-label">Selecciona un Servicio</label>
-                    <select wire:model="Apppointment.item_id" class="form-control w-100">
+                    <select wire:model="form.item_id" class="form-control w-100">
                         <option value="">-- Seleccionar --</option>
                         @foreach($showItems as $item)
                             <option value="{{ $item->id }}">{{ $item->name . ' -- '.$item->total_price. '€' }}</option>
@@ -111,13 +169,13 @@
                 </div>
 
                 <div class="mb-3">
-                    <textarea wire:model="Apppointment.comments" class="form-control w-100" rows="3" placeholder="Mensaje opcional"></textarea>
+                    <textarea wire:model="form.comments" class="form-control w-100" rows="3" placeholder="Mensaje opcional"></textarea>
                     @error('Apppointment.comments') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
             </div>
         </div>
 
-        <div class="row">
+        <div class="row ">
             <div class="col-12">
                 <div class="text-center">
                     <button type="submit" class="btn btn-cita px-4 py-2 rounded-pill">Reservar cita</button>
@@ -140,7 +198,7 @@
         <!-- Selección de otros items -->
         <div class="mb-3">
             <label class="form-label">Otros servicios</label>
-            <select wire:model="Apppointment.item_id" class="form-control w-100">
+            <select wire:model="form.item_id" class="form-control w-100">
                 <option value="">-- Seleccionar --</option>
                 @foreach($showItemsOthers as $item)
                     <option value="{{ $item->id }}">{{ $item->name . ' -- ' . $item->total_price . '€' }}</option>
@@ -164,16 +222,16 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
     <script>
       flatpickr("#calendar-container", {
-  inline: true,
-  defaultDate: "today",
-  minDate: "today",  
-  locale: "es",
-  dateFormat: "d-m-Y",   // formato para que incluya el año
-  monthSelectorType: "static", // muestra el año junto al mes
-  onChange: function(selectedDates, dateStr, instance) {
-      @this.set('date', dateStr);
-  }
-});
+        inline: true,
+        defaultDate: "today",
+        minDate: "today",  
+        locale: "es",
+        dateFormat: "Y-m-d",   // <-- ESTE formato es el que espera tu backend
+        monthSelectorType: "static",
+        onChange: function(selectedDates, dateStr, instance) {
+            @this.set('date', dateStr);
+        }
+        });
     </script>
     @endpush
 </div>

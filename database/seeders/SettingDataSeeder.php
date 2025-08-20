@@ -22,7 +22,7 @@ class SettingDataSeeder extends Seeder
             'general.city_id'     => "",
             'general.postal_code' => '09922',
             'general.address'     => 'fonollar 6, planta baja',
-            'general.allow_appointment'     => false,
+            'general.allow_appointment'     => true,
         ];
 
         foreach ($settings as $key => $value) {
