@@ -24,6 +24,7 @@ class FrontBooking extends Component
     public $generalSettings; // <--- Recibirá la configuración
     protected $rules = [
         'form.item_id' => 'required|integer|exists:items,id',
+        'form.apointment_id' => 'required|integer|exists:appointments,id',
         'form.requester_name' => 'required|string|min:3',
         'form.requester_phone' => 'required|string|min:3',
         'form.email' => 'required|email',
@@ -31,6 +32,7 @@ class FrontBooking extends Component
         'form.comments' => 'nullable|string',
     ];
     protected $messages = [
+        'form.apointment_id.required' => 'Debes seleccionar una cita.',
         'form.item_id.required' => 'Debes seleccionar un servicio.',
         'form.item_id.integer' => 'El valor seleccionado no es válido.',
         'form.item_id.exists' => 'El servicio seleccionado no existe.',
@@ -101,7 +103,7 @@ class FrontBooking extends Component
             ->orderBy('start_time', 'asc')
             ->get();
 
-            
+
         return view('livewire.front-booking');
     }
 }

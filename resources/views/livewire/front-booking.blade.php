@@ -114,6 +114,7 @@
                     </div>
                     
                 </div>
+                @error('form.appointment_id') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
            
         </div>
@@ -122,13 +123,13 @@
                 <!-- Nombre -->
                 <div class="mb-3">
                     <input type="text" wire:model="form.requester_name" class="form-control w-100" placeholder="Nombre completo">
-                    @error('Apppointment.requester_name') <small class="text-danger">{{ $message }}</small> @enderror
+                    @error('form.requester_name') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <!-- Email -->
                 <div class="mb-3">
                     <input type="email" wire:model="form.email" class="form-control w-100" placeholder="Correo electrónico">
-                    @error('Apppointment.email') <small class="text-danger">{{ $message }}</small> @enderror
+                    @error('form.email') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <!-- Teléfono -->
@@ -153,7 +154,7 @@
 
                 <div class="mb-3">
                     <input type="text" wire:model="form.requester_phone" class="form-control w-100" placeholder="Teléfono">
-                    @error('Apppointment.requester_phone') <small class="text-danger">{{ $message }}</small> @enderror
+                    @error('form.requester_phone') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <!-- Selección de items -->
@@ -165,12 +166,12 @@
                             <option value="{{ $item->id }}">{{ $item->name . ' -- '.$item->total_price. '€' }}</option>
                         @endforeach
                     </select>
-                    @error('Apppointment.item_id') <small class="text-danger">{{ $message }}</small> @enderror
+                    @error('form.item_id') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <div class="mb-3">
                     <textarea wire:model="form.comments" class="form-control w-100" rows="3" placeholder="Mensaje opcional"></textarea>
-                    @error('Apppointment.comments') <small class="text-danger">{{ $message }}</small> @enderror
+                    @error('form.comments') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
             </div>
         </div>
