@@ -89,6 +89,19 @@
 
            
             <div class="col-12  mb-3 pt-5">
+                <div class="mb-3">
+                    <label class="form-label">Selecciona un trabajador</label>
+                    <select wire:model.live="worker_id" class="form-control w-100">
+                        <option value="">Todos</option>
+                        @foreach($workerlist as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('worker_id') 
+                        <small class="text-danger">{{ $message }}</small> 
+                    @enderror
+                </div>
+
                 @error('date') <small class="text-danger">{{ $message }}</small> @enderror
                 <div class="row g-3">
                     <div class="row g-3">

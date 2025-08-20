@@ -90,7 +90,7 @@ class AppointmentTemplateResource extends Resource
                                 ->label('Nombre de la plantilla')
                                 ->required(),
 
-                            Select::make('duplicate_worker_id')
+                            /*   Select::make('duplicate_worker_id')
                                 ->label('Empleado')
                                 ->relationship('worker', 'name')
                                 ->searchable()
@@ -99,7 +99,17 @@ class AppointmentTemplateResource extends Resource
 
                                 ->dehydrated(fn(callable $get) => $get('duplicate_general') === false)    // solo enviar si NO es general
                                 ->required(fn(callable $get) => $get('duplicate_general') === false)      // obligatorio si NO es general
+                                ->reactive(),*/
+                            Select::make('duplicate_worker_id')
+                                ->label('Empleado')
+                                ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- aplica tu scope
+                                ->searchable()
+                                ->preload()
+                                ->visible(fn(callable $get) => $get('duplicate_general') === false)
+                                ->dehydrated(fn(callable $get) => $get('duplicate_general') === false) // solo enviar si NO es general
+                                ->required(fn(callable $get) => $get('duplicate_general') === false)   // obligatorio si NO es general
                                 ->reactive(),
+
 
                             Toggle::make('duplicate_active')
                                 ->label('¿Activa?')
@@ -126,14 +136,24 @@ class AppointmentTemplateResource extends Resource
                         TextInput::make('name')
                             ->required()
                             ->label('Nombre de la Plantilla'),
-                        Select::make('worker_id')
+                        /*Select::make('worker_id')
                             ->label('Trabajador')
                             ->relationship('worker', 'name') // Usa el campo "name" del modelo User
                             ->searchable()->preload()
                             ->visible(fn(callable $get) => $get('is_general') === false)
                             ->dehydrated(fn(callable $get) => $get('is_general') === false) // no enviar valor si está deshabilitado
                             ->required(fn(callable $get) => $get('is_general') === false) // requerido si NO es general
-                            ->reactive(), // para que se actualice dinámicamente,
+                            ->reactive(), // para que se actualice dinámicamente,*/
+                        Select::make('worker_id')
+                            ->label('Trabajador')
+                            ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- aplica el scope
+                            ->searchable()
+                            ->preload()
+                            ->visible(fn(callable $get) => $get('is_general') === false)
+                            ->dehydrated(fn(callable $get) => $get('is_general') === false) // no enviar valor si está deshabilitado
+                            ->required(fn(callable $get) => $get('is_general') === false)   // requerido si NO es general
+                            ->reactive(), // para que se actualice dinámicamente
+
 
                         Toggle::make('active')->inline(false)
                             ->label('Activa'),
@@ -232,7 +252,7 @@ class AppointmentTemplateResource extends Resource
             ->filters([
                 Filter::make('custom_filter')
                     ->form([
-                        Select::make('worker_id')
+                        /*Select::make('worker_id')
                             ->label('Empleado')
                             ->relationship('worker', 'name')
                             ->searchable()
@@ -240,7 +260,17 @@ class AppointmentTemplateResource extends Resource
                             ->placeholder('Selecciona un empleado')
                             ->visible(fn(callable $get) => $get('is_general') !== '1')  // visible solo si is_general NO es '1'
                             ->required(fn(callable $get) => $get('is_general') === '0') // requerido solo si is_general es '0'
+                            ->reactive(),*/
+                        Select::make('worker_id')
+                            ->label('Empleado')
+                            ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- aplica tu scope
+                            ->searchable()
+                            ->preload()
+                            ->placeholder('Selecciona un empleado')
+                            ->visible(fn(callable $get) => $get('is_general') !== '1')   // visible solo si is_general NO es '1'
+                            ->required(fn(callable $get) => $get('is_general') === '0')  // requerido solo si is_general es '0'
                             ->reactive(),
+
 
                         Select::make('active')
                             ->label('¿Activo?')

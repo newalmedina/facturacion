@@ -45,7 +45,7 @@ class ListAppointments extends ListRecords
                         ->required(),
                     Select::make('worker_id')
                         ->label('Empleado')
-                        ->relationship('worker', 'name')
+                        ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // filtra solo empleados disponibles
                         ->searchable()
                         ->preload()
                         ->required()

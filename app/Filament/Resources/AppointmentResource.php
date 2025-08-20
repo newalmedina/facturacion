@@ -55,10 +55,12 @@ class AppointmentResource extends Resource
                 //     ->required()
                 //     ->numeric(),
                 Select::make('worker_id')
-                    ->label('Trabajador')
-                    ->relationship('worker', 'name') // Usa el campo "name" del modelo User
-                    ->searchable()->preload()
-                    ->required(),
+                    ->label('Empleado')
+                    ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- Aplica el scope
+                    ->searchable()
+                    ->preload()
+                    ->placeholder('Selecciona empleado'),
+
 
                 DatePicker::make('date')
                     ->label('Fecha')
@@ -228,10 +230,11 @@ class AppointmentResource extends Resource
                     ->form([
                         Select::make('worker_id')
                             ->label('Empleado')
-                            ->relationship('worker', 'name')
+                            ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- Aplica el scope
                             ->searchable()
                             ->preload()
                             ->placeholder('Selecciona empleado'),
+
 
                         DatePicker::make('date_from')
                             ->label('Fecha inicio')

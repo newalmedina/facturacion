@@ -108,4 +108,13 @@ class User extends Authenticatable implements FilamentUser
         // Si no tiene imagen, devuelve la URL de las iniciales
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('active', true);
+    }
+    public function scopeCanAppointment($query)
+    {
+        return $query->where('can_appointment', true);
+    }
 }

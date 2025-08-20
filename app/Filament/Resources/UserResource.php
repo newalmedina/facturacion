@@ -104,6 +104,10 @@ class UserResource extends Resource
                                             ->inline(false)
                                             ->label("¿Activo?")
                                             ->required(),
+                                        Forms\Components\Toggle::make('can_appointment')
+                                            ->inline(false)
+                                            ->label("¿Permir cita?")
+                                            ->required(),
 
 
                                     ]),
@@ -196,6 +200,9 @@ class UserResource extends Resource
                 Tables\Columns\IconColumn::make('active')
                     ->boolean()
                     ->label("¿Activo?"),
+                Tables\Columns\IconColumn::make('can_appointment')
+                    ->boolean()
+                    ->label("¿Permir cita?"),
 
                 Tables\Columns\TextColumn::make('state.name')
                     ->sortable()
@@ -231,6 +238,12 @@ class UserResource extends Resource
                     ->options([
                         '1' => 'Activo',
                         '0' => 'No activo',
+                    ]),
+                SelectFilter::make('can_appointment')
+                    ->label("¿Permir cita?")
+                    ->options([
+                        '1' => 'Si',
+                        '0' => 'No',
                     ]),
                 SelectFilter::make('country_id')
                     ->relationship(name: 'country', titleAttribute: 'name')
