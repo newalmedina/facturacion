@@ -3,71 +3,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
 
-.appointment-card {
-    
-    border: 2px solid #ccc; /* borde por defecto */
-    border-radius: 0.5rem;
-    transition: border-color 0.3s;
-    width: 100%; /* todas las cards ocupan el mismo ancho */
-}
-
-.appointment-card input:checked + .card {
-    border-color: #581177; 
-    background: #dd93ec;
-    color: #fff; 
-    font-weight: bold;
-}
-
-.appointment-card input:checked + .card .card-body,
-.appointment-card input:checked + .card .card-body label,
-.appointment-card input:checked + .card .card-body p {
-    color: #fff !important;
-    font-weight: bold;
-}
-
-.cursor-pointer {
-    cursor: pointer;
-}
-
-    #calendar-container {
-      width: 100%;
-      padding: 15px;
-      box-sizing: border-box;
-    }
-
-    /* Forzar que el calendario muestre los 7 días completos */
-    #calendar-container .flatpickr-calendar {
-      min-width: 320px;   /* ancho mínimo para que entren todos los días */
-      max-width: 100%;
-      margin: 0 auto;
-      width: 100% !important;
-    }
-
-    input.form-control, select.form-control, textarea.form-control {
-      width: 100% !important;
-    }
-    
-    /* Color del día seleccionado */
-    .flatpickr-day.selected, 
-    .flatpickr-day.selected:hover {
-      background: #581177 !important;
-      border-color: #581177 !important;
-      color: #fff !important;
-    }
-
-    /* Ajustes para pantallas pequeñas */
-    @media (max-width: 768px) {
-      #calendar-container .flatpickr-calendar {
-        width: 100% !important;
-        min-width: auto;
-        font-size: 14px;
-      }
-      .flatpickr-day {
-        max-width: 34px;
-        height: 34px;
-        line-height: 34px;
-      }
-    }
     </style>
     @endpush
 
@@ -84,7 +19,8 @@
         <div class="row">
             <!-- Calendario -->
             <div class="col-12 mb-3">
-                <div id="calendar-container"></div>
+                <div id="calendar-container" class="flatpickr-container"></div>
+
             </div>
 
            
@@ -106,23 +42,22 @@
                 <div class="row g-3">
                     <div class="row g-3">
                         @foreach($apppointmentList as $appointment)
-                        <div class="col-12 col-md-3 d-flex">
-                            <label class="appointment-card d-block cursor-pointer flex-fill h-100"
-                                   wire:click="selectAppointment({{ $appointment->id }})">
-                                
-                                <input type="radio" name="selectedAppointment" 
-                                       wire:model="selectedAppointment" 
-                                       value="{{ $appointment->id }}" class="d-none">
-                                
-                                <div class="card h-100 shadow-sm">
-                                    <div class="card-body text-center d-flex flex-column justify-content-center">
-                                        <span style="font-size: 15px">{{ $appointment->worker->name }}</span>
-                                        <p style="font-size: 15px">{{ $appointment->start_time->format('H:i') }} - {{ $appointment->end_time->format('H:i') }}</p>
+                            <div class="col-12 col-md-3 d-flex">
+                                <label class="appointment-card d-block cursor-pointer flex-fill h-100"
+                                    wire:click="selectAppointment({{ $appointment->id }})">
+                                    
+                                    <input type="radio" name="selectedAppointment" 
+                                        value="{{ $appointment->id }}" class="d-none">
+                                    
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                                            <span style="font-size: 15px">{{ $appointment->worker->name }}</span>
+                                            <p style="font-size: 15px">{{ $appointment->start_time->format('H:i') }} - {{ $appointment->end_time->format('H:i') }}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </label>
-                        </div>
-                    @endforeach
+                                </label>
+                            </div>
+                        @endforeach
                     
                     </div>
                     
@@ -231,21 +166,42 @@
         </div>
     </form>
 
-    @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-    <script>
-      flatpickr("#calendar-container", {
-        inline: true,
-        defaultDate: "today",
-        minDate: "today",  
-        locale: "es",
-        dateFormat: "Y-m-d",   // <-- ESTE formato es el que espera tu backend
-        monthSelectorType: "static",
-        onChange: function(selectedDates, dateStr, instance) {
-            @this.set('date', dateStr);
-        }
-        });
-    </script>
-    @endpush
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener('livewire:load', function () {
+             alert(123);
+            //  initializeCalendar();
+     
+             // Re-inicializa después de cada actualización de Livewire
+             Livewire.hook('message.processed', (message, component) => {
+                //  initializeCalendar();
+             });
+     
+             function initializeCalendar() {
+                 const calendarEl = document.querySelector("#calendar-container");
+                 
+                 if (!calendarEl._flatpickr) { // Evita inicializarlo varias veces
+                     flatpickr(calendarEl, {
+                         inline: true,
+                         defaultDate: "today",
+                         minDate: "today",
+                         locale: "es",
+                         dateFormat: "Y-m-d",
+                         monthSelectorType: "static",
+                         onChange: function(selectedDates, dateStr, instance) {
+                             // Emitimos el evento a Livewire
+                             Livewire.emit('dateSelected', dateStr);
+                         }
+                     });
+                 }
+             }
+         });
+     
+     });
+
+</script>
+@endpush
 </div>

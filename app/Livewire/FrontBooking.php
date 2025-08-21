@@ -14,7 +14,7 @@ class FrontBooking extends Component
     public $name;
     public $email;
     public $phone;
-    public $date;
+    public $selectedDate;
     public Appointment $apppointment;
     public $message;
     public $showItems = [];
@@ -25,6 +25,14 @@ class FrontBooking extends Component
     public $phoneCode = 207;
     public $worker_id = null;
     public $generalSettings;
+    public $form = [
+        'form.item_id',
+        'form.apointment_id',
+        'form.requester_name',
+        'form.requester_phone',
+        'form.email',
+        'form.comments',
+    ];
 
     protected $rules = [
         'form.item_id' => 'required|integer|exists:items,id',
@@ -32,7 +40,7 @@ class FrontBooking extends Component
         'form.requester_name' => 'required|string|min:3',
         'form.requester_phone' => 'required|string|min:3',
         'form.email' => 'required|email',
-        'date' => 'required|date|after_or_equal:today',
+        'selectedDate' => 'required|date|after_or_equal:today',
         'form.comments' => 'nullable|string',
     ];
 
@@ -54,11 +62,17 @@ class FrontBooking extends Component
         'date.after_or_equal' => 'La fecha no puede ser anterior a hoy.',
         'form.comments.string' => 'Los comentarios deben ser texto.',
     ];
+    protected $listeners = ['dateSelected'];
+
+    public function dateSelected($date)
+    {
+        $this->selectedDate = $date;
+    }
 
     public function mount()
     {
         $this->apppointment = new Appointment();
-        $this->date = Carbon::now()->format("Y-m-d");
+        $this->selectedDate = Carbon::now()->format("Y-m-d");
 
         $this->workerlist = User::canAppointment()->get();
         $this->showItems = Item::showBooking()->orderBy('price', 'asc')->get();
@@ -85,7 +99,7 @@ class FrontBooking extends Component
     private function loadAppointments()
     {
         $this->apppointmentList = Appointment::active()
-            ->where("date", $this->date)
+            ->where("date", $this->selectedDate)
             ->when(!empty($this->worker_id), fn($query) => $query->where('worker_id', $this->worker_id))
             ->statusAvailable()
             ->orderBy('date', 'asc')
@@ -97,6 +111,10 @@ class FrontBooking extends Component
     {
         $form["apointment_id"] = $id;
         //$this->apppointment = Appointment::find($id);
+    }
+    public function setDate($date)
+    {
+        $this->selectedDate = $date;
     }
 
     public function submit()

@@ -986,3 +986,165 @@ pedir cita btn
     padding: 35px;
   }
 }
+
+/* bookingsection */
+
+.appointment-card {
+
+  border: 2px solid #ccc;
+  /* borde por defecto */
+  border-radius: 0.5rem;
+  transition: border-color 0.3s;
+  width: 100%;
+  /* todas las cards ocupan el mismo ancho */
+}
+
+.appointment-card input:checked+.card {
+  border-color: var(--secondary-color);
+  background: var(--custom-btn-bg-hover-color);
+  color: #fff;
+  font-weight: bold;
+}
+
+.appointment-card input:checked+.card .card-body,
+.appointment-card input:checked+.card .card-body label,
+.appointment-card input:checked+.card .card-body p {
+  color: #fff !important;
+  font-weight: bold;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+#calendar-container {
+  width: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+/* Forzar que el calendario muestre los 7 días completos */
+#calendar-container .flatpickr-calendar {
+  min-width: 320px;
+  /* ancho mínimo para que entren todos los días */
+  max-width: 100%;
+  margin: 0 auto;
+  width: 100% !important;
+}
+
+input.form-control,
+select.form-control,
+textarea.form-control {
+  width: 100% !important;
+}
+
+/* Color del día seleccionado */
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+  background: var(--secondary-color) !important;
+  border-color: var(--secondary-color) !important;
+  color: #fff !important;
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  #calendar-container .flatpickr-calendar {
+    width: 100% !important;
+    min-width: auto;
+    font-size: 14px;
+  }
+
+  .flatpickr-day {
+    max-width: 34px;
+    height: 34px;
+    line-height: 34px;
+  }
+}
+
+/* plantilla css */
+/* ... tu CSS existente de botones flotantes ... */
+/* 
+/* Swiper styles */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #b462e2 !important;
+  height: 50px;
+  background-size: 50% 50%;
+}
+
+.swiper-pagination-bullet {
+  background: #b462e2 !important;
+  width: 16px;
+  height: 16px;
+}
+
+.swiper-pagination-bullet-active {
+  background: #b462e2 !important;
+}
+
+*/ #floating-booking-btn {
+  position: fixed;
+  /* Siempre visible */
+  right: 20px;
+  /* Separado del borde derecho */
+  top: 50%;
+  /* Centrado verticalmente */
+  transform: translateY(-50%);
+  z-index: 9999;
+  width: 60px;
+  /* Tamaño circular */
+  height: 60px;
+  border-radius: 50%;
+  /* Hace el círculo */
+  background-color: #dd93ec;
+  /* Color Bootstrap primary */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  /* Tamaño del icono o emoji */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+#floating-booking-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  background-color: #581177;
+  /* Color más oscuro al pasar el mouse */
+}
+
+/*---------------------------------------
+  FLOATING WHATSAPP BUTTON
+-----------------------------------------*/
+#floating-whatsapp-btn {
+  position: fixed;
+  right: 20px;
+  top: calc(50% + 80px);
+  /* 80px debajo del botón de cita */
+  transform: translateY(-50%);
+  z-index: 9999;
+
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+
+  background: #25D366;
+  /* Color oficial de WhatsApp */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  text-decoration: none;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+#floating-whatsapp-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  background: #1ebe57;
+  /* Verde más oscuro al hover */
+}
