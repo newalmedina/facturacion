@@ -25,7 +25,9 @@
                     <div class="row">
                         <!-- Calendario -->
                         <div class="col-12 mb-3">
-                            <div id="calendar-container" class="flatpickr-container"></div>
+                           <div id="calendar-container" wire:ignore>
+                                <!-- calendario -->
+                            </div>
                         
                         </div>
 
@@ -246,9 +248,7 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-@endpush
 
-@script
 <script>
     document.addEventListener('livewire:initialized', () => {
         // Inicializa en el primer render
@@ -285,7 +285,9 @@
         });
     }
 </script>
-@endscript
+@endpush
+
+
 
 
 </div>
