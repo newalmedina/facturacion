@@ -47,6 +47,14 @@
                             @error('date') <small class="text-danger">{{ $message }}</small> @enderror
                             <div class="row g-3">
                                 <div class="row g-3">
+                                <div class="col-12 text-center">
+                                        <!-- Overlay de carga -->
+                                        <div wire:loading wire:target="selectedDate, worker_id" class="loading-overlay">
+                                            <div class="spinner-border loading-overlay-color" role="status">
+                                                <span class="visually-hidden">Cargando...</span>
+                                            </div>
+                                        </div>
+                                </div>
                             @forelse($apppointmentList as $appointment)
                                 <div class="col-12 col-md-3 d-flex">
                                     <label class="appointment-card d-block cursor-pointer flex-fill h-100"

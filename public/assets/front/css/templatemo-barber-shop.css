@@ -1161,3 +1161,8 @@ textarea.form-control {
   background: #1ebe57;
   /* Verde más oscuro al hover */
 }
+
+/* overlay */
+.loading-overlay-color {
+  color: #581177;
+}
