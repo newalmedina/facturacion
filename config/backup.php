@@ -20,7 +20,14 @@ return [
             ],
 
             'databases' => [
-                env('DB_CONNECTION', 'mysql'),
+                [
+                    'connection' => env('DB_CONNECTION', 'mysql'),
+                    'dump_command_path' => env('DUMP_COMMAND_PATH', '/usr/bin'),
+                    'use_single_transaction' => true,
+                    'dump_command_options' => [
+                        '--ssl-mode=DISABLED', // <--- Ignora la verificación SSL
+                    ],
+                ],
             ],
         ],
 
