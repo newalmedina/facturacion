@@ -22,10 +22,10 @@ return [
             'databases' => [
                 [
                     'connection' => env('DB_CONNECTION', 'mysql'),
-                    'dump_command_path' => env('DUMP_COMMAND_PATH', '/usr/bin'),
+                    'dump_command_path' => '/usr/bin', // coincide con which mysqldump
                     'use_single_transaction' => true,
                     'dump_command_options' => [
-                        '--ssl-mode=DISABLED', // <--- Ignora la verificación SSL
+                        '--ssl-mode=DISABLED', // <--- esto es clave
                     ],
                 ],
             ],
