@@ -89,31 +89,31 @@ class Settings extends BaseSettings
                                                     ->success()
                                                     ->send();
                                             }),
-                                        FormAction::make('downloadOldBackup')
-                                            ->label('Descargar BBDD Antigua')
-                                            ->icon('heroicon-o-arrow-down')
-                                            ->extraAttributes([
-                                                'style' => 'background-color: #6B21A8; color: white;' // púrpura y texto blanco
-                                            ])
-                                            ->visible(fn() => auth()->check() && auth()->user()->email === 'el.solitions@gmail.com')
+                                        // FormAction::make('downloadOldBackup')
+                                        //     ->label('Descargar BBDD Antigua')
+                                        //     ->icon('heroicon-o-arrow-down')
+                                        //     ->extraAttributes([
+                                        //         'style' => 'background-color: #6B21A8; color: white;' // púrpura y texto blanco
+                                        //     ])
+                                        //     ->visible(fn() => auth()->check() && auth()->user()->email === 'el.solitions@gmail.com')
 
-                                            ->form([
-                                                TextInput::make('filename')
-                                                    ->label('Nombre del archivo')
-                                                    ->required()
-                                                    ->placeholder('Ejemplo: laravel-backup/2025-07-22-19-54-30.zip'),
-                                            ])
-                                            ->action(function (array $data, $livewire) {
-                                                $filename = $data['filename'];
+                                        //     ->form([
+                                        //         TextInput::make('filename')
+                                        //             ->label('Nombre del archivo')
+                                        //             ->required()
+                                        //             ->placeholder('Ejemplo: laravel-backup/2025-07-22-19-54-30.zip'),
+                                        //     ])
+                                        //     ->action(function (array $data, $livewire) {
+                                        //         $filename = $data['filename'];
 
-                                                // Validar o sanitizar filename si quieres
+                                        //         // Validar o sanitizar filename si quieres
 
-                                                // Ruta de descarga generada
-                                                $url = route('filament.backups.download', ['filepath' => $filename]);
+                                        //         // Ruta de descarga generada
+                                        //         $url = route('filament.backups.download', ['filepath' => $filename]);
 
-                                                // Redirigir usando Livewire
-                                                $livewire->redirect($url);
-                                            }),
+                                        //         // Redirigir usando Livewire
+                                        //         $livewire->redirect($url);
+                                        //     }),
 
 
 
