@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
  
-@livewireStyles
+{{-- @livewireStyles --}}
     @stack('styles')
 </head>
 <body>
@@ -81,7 +81,7 @@ $generalSettings = $settings?->general;
     <!-- SWIPER JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     
-    @livewireScripts
+    {{-- @livewireScripts --}}
     @stack('scripts')
  @if(!empty($contactForm->whatsapp_url))
     <a 
