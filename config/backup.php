@@ -18,7 +18,16 @@ return [
                 env('DB_CONNECTION', 'mysql'), // <--- array de strings
             ],
         ],
+        'database_dump_compressor' => null,
 
+        'dbDump' => [
+            'mysql' => [
+                'dump_command_path' => '/usr/bin/',
+                'dump_command_options' => [
+                    '--skip-ssl',
+                ],
+            ],
+        ],
 
 
         'database_dump_compressor' => null,
