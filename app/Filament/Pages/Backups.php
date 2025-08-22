@@ -40,6 +40,4 @@ class Backups extends BaseBackups
             ->success()
             ->send();
     }
-
-    
 }
