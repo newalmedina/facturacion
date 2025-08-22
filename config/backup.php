@@ -7,13 +7,8 @@ return [
 
         'source' => [
             'files' => [
-                'include' => [
-                    base_path(),
-                ],
-                'exclude' => [
-                    base_path('vendor'),
-                    base_path('node_modules'),
-                ],
+                'include' => [base_path()],
+                'exclude' => [base_path('vendor'), base_path('node_modules')],
                 'follow_links' => false,
                 'ignore_unreadable_directories' => false,
                 'relative_path' => null,
@@ -22,14 +17,15 @@ return [
             'databases' => [
                 [
                     'connection' => env('DB_CONNECTION', 'mysql'),
-                    'dump_command_path' => '/usr/bin', // coincide con which mysqldump
+                    'dump_command_path' => '/usr/bin',
                     'use_single_transaction' => true,
                     'dump_command_options' => [
-                        '--ssl-mode=DISABLED', // <--- esto es clave
+                        '--ssl-mode=DISABLED', // <--- ignora la verificación SSL
                     ],
                 ],
             ],
         ],
+
 
         'database_dump_compressor' => null,
         'database_dump_file_timestamp_format' => null,
