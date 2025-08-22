@@ -19,8 +19,25 @@ return [
                 'relative_path' => null,
             ],
 
+            // 'databases' => [
+            //     env('DB_CONNECTION', 'mysql'),
+            // ],
             'databases' => [
-                env('DB_CONNECTION', 'mysql'),
+                // Aquí definimos la conexión mysql con opciones personalizadas
+                'mysql' => [
+                    'driver' => 'mysql',
+                    'host' => env('DB_HOST', '127.0.0.1'),
+                    'port' => env('DB_PORT', '3306'),
+                    'database' => env('DB_DATABASE', 'forge'),
+                    'username' => env('DB_USERNAME', 'forge'),
+                    'password' => env('DB_PASSWORD', ''),
+                    'dump' => [
+                        'dump_binary_path' => '/usr/bin',   // ruta donde está mysqldump en tu contenedor
+                        'use_single_transaction',
+                        'timeout' => 60,
+                        'extra_options' => '--ssl-mode=DISABLED',
+                    ],
+                ],
             ],
         ],
 
