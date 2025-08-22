@@ -28,12 +28,11 @@
                            <div id="calendar-container" wire:ignore>
                                 <!-- calendario -->
                             </div>
-                            
+                        
                         </div>
-                        
-                        
+
+                    
                         <div class="col-12  mb-3 pt-5">
-                            <input class="form-control w-100" type="date" id="date" wire:model.live="selectedDate" class="form-control d-none">
                             <div class="mb-3">
                                 <label class="form-label">Selecciona un trabajador</label>
                                 <select wire:model.live="worker_id" class="form-control w-100">
@@ -247,7 +246,7 @@
   
 
 @push('scripts')
-{{-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 
 <script>
@@ -285,7 +284,7 @@
             }
         });
     }
-</script> --}}
+</script>
 @endpush
 
 
