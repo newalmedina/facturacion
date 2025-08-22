@@ -15,16 +15,10 @@ return [
             ],
 
             'databases' => [
-                [
-                    'connection' => env('DB_CONNECTION', 'mysql'),
-                    'dump_command_path' => '/usr/bin',
-                    'use_single_transaction' => true,
-                    'dump_command_options' => [
-                        '--ssl-mode=DISABLED', // <--- ignora la verificación SSL
-                    ],
-                ],
+                env('DB_CONNECTION', 'mysql'), // <--- array de strings
             ],
         ],
+
 
 
         'database_dump_compressor' => null,
