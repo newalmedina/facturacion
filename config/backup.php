@@ -7,28 +7,22 @@ return [
 
         'source' => [
             'files' => [
-                'include' => [base_path()],
-                'exclude' => [base_path('vendor'), base_path('node_modules')],
+                'include' => [
+                    base_path(),
+                ],
+                'exclude' => [
+                    base_path('vendor'),
+                    base_path('node_modules'),
+                ],
                 'follow_links' => false,
                 'ignore_unreadable_directories' => false,
                 'relative_path' => null,
             ],
 
             'databases' => [
-                env('DB_CONNECTION', 'mysql'), // <--- array de strings
+                env('DB_CONNECTION', 'mysql'),
             ],
         ],
-        'database_dump_compressor' => null,
-
-        'dbDump' => [
-            'mysql' => [
-                'dump_command_path' => '/usr/bin/',
-                'dump_command_options' => [
-                    '--skip-ssl',
-                ],
-            ],
-        ],
-
 
         'database_dump_compressor' => null,
         'database_dump_file_timestamp_format' => null,
