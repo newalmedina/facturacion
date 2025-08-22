@@ -9,8 +9,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Livewire\Component;
 
-use Illuminate\Support\Facades\Cache;
-
 class FrontBooking extends Component
 {
     public $name;
@@ -76,92 +74,104 @@ class FrontBooking extends Component
 
     public function mount()
     {
+        $this->apppointment = new Appointment();
         $this->selectedDate = Carbon::now()->format("Y-m-d");
 
-        // Caching para producción
-        $this->workerlist = Cache::remember('workers', 3600, fn() => User::canAppointment()->get());
-        $this->showItems = Cache::remember('booking_items', 3600, fn() => Item::showBooking()->orderBy('price', 'asc')->get());
-        $this->showItemsOthers = Cache::remember('booking_items_others', 3600, fn() => Item::showBookingOthers()->orderBy('price', 'asc')->get());
-        $this->countries = Cache::remember('countries', 3600, fn() => Country::activos()
+        $this->workerlist = User::canAppointment()->get();
+        $this->showItems = Item::showBooking()->orderBy('price', 'asc')->get();
+        $this->showItemsOthers = Item::showBookingOthers()->orderBy('price', 'asc')->get();
+        $this->countries = Country::activos()
             ->select('id', 'name', 'phonecode')
             ->orderBy('name', 'asc')
-            ->get());
-
-        $this->loadAppointments();
+            ->get();
     }
 
     /**
-     * Se dispara automáticamente cuando cambia $worker_id o $selectedDate
+     * Se dispara automáticamente cuando cambia $worker_id o $date
      */
     public function updatedWorkerId()
     {
         $this->loadAppointments();
     }
 
-    public function updatedSelectedDate()
+    public function updatedDate()
     {
         $this->loadAppointments();
     }
 
     private function loadAppointments()
     {
-        $query = Appointment::active()
+        $this->apppointmentList = Appointment::active()
             ->where("date", $this->selectedDate)
+            ->when(!empty($this->worker_id), fn($query) => $query->where('worker_id', $this->worker_id))
             ->statusAvailable()
             ->orderBy('date', 'asc')
-            ->orderBy('start_time', 'asc');
+            ->orderBy('start_time', 'asc')
+            ->get();
 
-        if (!empty($this->worker_id)) {
-            $query->where('worker_id', $this->worker_id);
-        }
+        if (!empty($this->selectedAppointment)) {
+            $found = false;
 
-        $this->apppointmentList = $query->get();
+            foreach ($this->apppointmentList as $appointment) {
+                if ($appointment->id == $this->selectedAppointment) {
+                    $found = true;
+                    break;
+                }
+            }
 
-        if (!empty($this->selectedAppointment) && !$this->apppointmentList->contains('id', $this->selectedAppointment)) {
-            $this->selectedAppointment = null;
+            if (! $found) {
+                $this->selectedAppointment = null;
+            }
         }
     }
+
 
     public function selectAppointment($id)
     {
         $this->selectedAppointment = $id;
+        //$this->apppointment = Appointment::find($id);
     }
+
 
     public function submit()
     {
+
         $this->validate();
 
         $appointment = Appointment::find($this->selectedAppointment);
-        if (!$appointment) {
+
+        if (! $appointment) {
             $this->addError('selectedAppointment', 'La cita seleccionada no existe.');
             return;
         }
 
+        // Verificar si ya hay otra cita para este email en la misma fecha
         $existing = Appointment::where('requester_email', $this->form['requester_email'])
             ->where('date', $appointment->date)
             ->where('id', '!=', $appointment->id)
-            ->exists();
+            ->first();
 
         if ($existing) {
             session()->flash(
                 'error',
                 "Ya existe una cita seleccionada para este día con este correo. 
-            Para poder seleccionar esta debes cancelar la existente."
+                Para poder seleccionar esta debes cancelar la existente."
             );
             return;
         }
 
-        $country = $this->countries->firstWhere('id', $this->phoneCode);
-
+        $country = Country::find($this->phoneCode);
+        // Actualizar cita
         $appointment->update([
-            'item_id' => $this->form['item_id'],
-            'requester_name' => $this->form['requester_name'],
+            'item_id'  => $this->form['item_id'],
+            'requester_name'  => $this->form['requester_name'],
             'requester_phone' => "+" . $country->phonecode . $this->form['requester_phone'],
             'requester_email' => $this->form['requester_email'],
-            'comments' => $this->form['comments'],
-            'status' => 'pending_confirmation',
+            'comments'        => $this->form['comments'],
+            'status'          => 'pending_confirmation',
         ]);
 
+        // Mensaje dinámico
         $fecha = $appointment->date->format('d/m/Y');
         $horaInicio = $appointment->start_time->format('H:i');
         $horaFin = $appointment->end_time->format('H:i');
@@ -175,6 +185,7 @@ class FrontBooking extends Component
         $this->showForm = false;
     }
 
+
     public function initCalendar()
     {
         $this->dispatchBrowserEvent('init-calendar');
@@ -182,9 +193,12 @@ class FrontBooking extends Component
 
     public function render()
     {
-        $this->selectedItem = $this->showItems->firstWhere('id', $this->form["item_id"]);
-        $this->selecteOtherdItem = $this->showItemsOthers->firstWhere('id', $this->other_item_id);
-
+        // Cargar citas inicialmente
+        $this->loadAppointments();
+        $this->selectedItem = Item::find($this->form["item_id"]);
+        $this->selecteOtherdItem = Item::find($this->other_item_id);
+        // dd($this->selectedItem);
+        // dd($this->selectedAppointment);
         return view('livewire.front-booking');
     }
 }
