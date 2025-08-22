@@ -50,11 +50,23 @@ class ItemResource extends Resource
                         Section::make()
                             ->columnSpan(3) // Ocupa 2 columnas de las 12 disponibles
                             ->schema([
+                                // FileUpload::make('image')
+                                //     ->image()
+                                //     ->directory('items')
+                                //     ->visibility('public')
+                                //     ->label('Imagen'),
                                 FileUpload::make('image')
                                     ->image()
                                     ->directory('items')
                                     ->visibility('public')
-                                    ->label('Imagen'),
+                                    ->label('Imagen')
+                                    ->helperText('Resolución recomendada: 1000 × 667 píxeles')
+
+                                    ->imageEditor()                        // habilita editor
+                                    ->imageResizeMode('cover')              // recorta para llenar el tamaño
+                                    ->imageCropAspectRatio('3:2')          // relación 1000x667 ≈ 3:2
+                                    ->imageResizeTargetWidth(1000)         // ancho final
+                                    ->imageResizeTargetHeight(667),      // alto final
                             ]),
 
                         Section::make('Información general')
@@ -89,46 +101,46 @@ class ItemResource extends Resource
                                     ->maxLength(255),
                                 // Campo Marca (Solo visible cuando 'type' es 'product')
 
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('time_formatted')
-                                            ->label('Duración (HH:MM)')
-                                            ->placeholder('Ej. 01:30')
-                                            ->mask('99:99')
-                                            ->helperText('Introduce el tiempo en horas:minutos')
-                                            // ->dehydrated(false) // ⚠️ Muy importante para que no intente guardar en la BD
-                                            ->required(fn($get) => $get('type') === 'service')
-                                            ->hidden(fn($get) => $get('type') !== 'service')
-                                            ->afterStateHydrated(function ($state, callable $set, $get) {
-                                                $minutes = $get('time');
-                                                if ($minutes !== null) {
-                                                    $hours = floor($minutes / 60);
-                                                    $mins = $minutes % 60;
-                                                    $set('time_formatted', sprintf('%02d:%02d', $hours, $mins));
-                                                }
-                                            })
-                                            ->afterStateUpdated(function ($state, callable $set) {
-                                                if (preg_match('/^(\d{1,2}):(\d{2})$/', $state, $matches)) {
-                                                    $hours = (int) $matches[1];
-                                                    $minutes = (int) $matches[2];
-                                                    $set('time', $hours * 60 + $minutes);
-                                                } else {
-                                                    $set('time', null);
-                                                }
-                                            }),
+                                // Forms\Components\Grid::make(2)
+                                //     ->schema([
+                                //         Forms\Components\TextInput::make('time_formatted')
+                                //             ->label('Duración (HH:MM)')
+                                //             ->placeholder('Ej. 01:30')
+                                //             ->mask('99:99')
+                                //             ->helperText('Introduce el tiempo en horas:minutos')
+                                //             // ->dehydrated(false) // ⚠️ Muy importante para que no intente guardar en la BD
+                                //             // ->required(fn($get) => $get('type') === 'service')
+                                //             ->hidden(fn($get) => $get('type') !== 'service')
+                                //             ->afterStateHydrated(function ($state, callable $set, $get) {
+                                //                 $minutes = $get('time');
+                                //                 if ($minutes !== null) {
+                                //                     $hours = floor($minutes / 60);
+                                //                     $mins = $minutes % 60;
+                                //                     $set('time_formatted', sprintf('%02d:%02d', $hours, $mins));
+                                //                 }
+                                //             })
+                                //             ->afterStateUpdated(function ($state, callable $set) {
+                                //                 if (preg_match('/^(\d{1,2}):(\d{2})$/', $state, $matches)) {
+                                //                     $hours = (int) $matches[1];
+                                //                     $minutes = (int) $matches[2];
+                                //                     $set('time', $hours * 60 + $minutes);
+                                //                 } else {
+                                //                     $set('time', null);
+                                //                 }
+                                //             }),
 
-                                        Forms\Components\TextInput::make('time')
-                                            ->label('Tiempo en minutos')
-                                            ->numeric()
-                                            ->hidden()
-                                            // ->dehydrated()
-                                            ->disabled(),
-
-
+                                //         Forms\Components\TextInput::make('time')
+                                //             ->label('Tiempo en minutos')
+                                //             ->numeric()
+                                //             ->hidden()
+                                //             // ->dehydrated()
+                                //             ->disabled(),
 
 
-                                    ])
-                                    ->visible(fn($get) => $get('type') === 'service'),
+
+
+                                //     ])
+                                //     ->visible(fn($get) => $get('type') === 'service'),
 
                                 // ->required(),
                                 // Campo Descripción
@@ -277,13 +289,13 @@ class ItemResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label("nombre")
                     ->searchable(),
-                Tables\Columns\TextColumn::make('time')
-                    ->label('Tiempo')
-                    ->formatStateUsing(
-                        fn($state) => ($state !== null && $state > 0)
-                            ? sprintf('%02d:%02d h', floor($state / 60), $state % 60)
-                            : ''
-                    ),
+                // Tables\Columns\TextColumn::make('time')
+                //     ->label('Tiempo')
+                //     ->formatStateUsing(
+                //         fn($state) => ($state !== null && $state > 0)
+                //             ? sprintf('%02d:%02d h', floor($state / 60), $state % 60)
+                //             : ''
+                //     ),
 
 
                 Tables\Columns\TextColumn::make('price')
@@ -301,13 +313,13 @@ class ItemResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('taxes_amount')  // Utilizando el atributo taxes_amount
                     ->label("Impuestos")
-                    ->searchable()
+                    // ->searchable()
                     ->formatStateUsing(fn($state) => number_format($state, 2) . '€')  // Formateamos el valor con dos decimales
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_price')  // Utilizando el atributo total_price
                     ->label("Precio Total")
-                    ->searchable()
+                    // ->searchable()
                     ->formatStateUsing(fn($state) => number_format($state, 2) . '€')  // Formateamos el valor con dos decimales
                     ->sortable(),
                 Tables\Columns\TextColumn::make('amount')

@@ -24,28 +24,34 @@ class FrontBooking extends Component
     public $countries = [];
     public $phoneCode = 207;
     public $worker_id = null;
+    public $showForm = true;
     public $generalSettings;
+    public $selectedAppointment = null;
+    public $selectedItem = null;
+    public $selecteOtherdItem = null;
+    public $other_item_id = null;
     public $form = [
-        'form.item_id',
-        'form.apointment_id',
-        'form.requester_name',
-        'form.requester_phone',
-        'form.email',
-        'form.comments',
+        'item_id' => null,
+        'requester_name' => null,
+        'requester_phone' => null,
+        'requester_email' => null,
+        'comments' => null,
     ];
 
     protected $rules = [
-        'form.item_id' => 'required|integer|exists:items,id',
-        'form.apointment_id' => 'required|integer|exists:appointments,id',
+        'form.item_id' => 'required|',
+        'selectedAppointment' => 'required|integer|exists:appointments,id',
         'form.requester_name' => 'required|string|min:3',
         'form.requester_phone' => 'required|string|min:3',
-        'form.email' => 'required|email',
+        'form.requester_email' => 'required|email',
         'selectedDate' => 'required|date|after_or_equal:today',
+        'phoneCode' => 'required',
         'form.comments' => 'nullable|string',
     ];
 
     protected $messages = [
-        'form.apointment_id.required' => 'Debes seleccionar una cita.',
+        'phoneCode.required' => 'Debes seleccionar código teléfono.',
+        'selectedAppointment.required' => 'Debes seleccionar una cita.',
         'form.item_id.required' => 'Debes seleccionar un servicio.',
         'form.item_id.integer' => 'El valor seleccionado no es válido.',
         'form.item_id.exists' => 'El servicio seleccionado no existe.',
@@ -55,19 +61,16 @@ class FrontBooking extends Component
         'form.requester_phone.required' => 'El teléfono es obligatorio.',
         'form.requester_phone.string' => 'El teléfono debe ser texto.',
         'form.requester_phone.min' => 'El teléfono debe tener al menos 3 caracteres.',
-        'form.email.required' => 'El correo electrónico es obligatorio.',
-        'form.email.email' => 'Debes ingresar un correo electrónico válido.',
+        'form.requester_email.required' => 'El correo electrónico es obligatorio.',
+        'form.requester_email.email' => 'Debes ingresar un correo electrónico válido.',
         'date.required' => 'La fecha es obligatoria.',
         'date.date' => 'Debes ingresar una fecha válida.',
         'date.after_or_equal' => 'La fecha no puede ser anterior a hoy.',
         'form.comments.string' => 'Los comentarios deben ser texto.',
     ];
-    protected $listeners = ['dateSelected'];
 
-    public function dateSelected($date)
-    {
-        $this->selectedDate = $date;
-    }
+
+
 
     public function mount()
     {
@@ -105,34 +108,97 @@ class FrontBooking extends Component
             ->orderBy('date', 'asc')
             ->orderBy('start_time', 'asc')
             ->get();
+
+        if (!empty($this->selectedAppointment)) {
+            $found = false;
+
+            foreach ($this->apppointmentList as $appointment) {
+                if ($appointment->id == $this->selectedAppointment) {
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (! $found) {
+                $this->selectedAppointment = null;
+            }
+        }
     }
+
 
     public function selectAppointment($id)
     {
-        $form["apointment_id"] = $id;
+        $this->selectedAppointment = $id;
         //$this->apppointment = Appointment::find($id);
     }
-    public function setDate($date)
-    {
-        $this->selectedDate = $date;
-    }
+
 
     public function submit()
     {
+
         $this->validate();
 
-        // Guardar en BD, enviar correo, etc.
-        session()->flash('success', '¡Tu cita ha sido registrada correctamente!');
+        $appointment = Appointment::find($this->selectedAppointment);
 
-        // Limpiar campos
-        $this->reset(['name', 'email', 'phone', 'date', 'message', 'worker_id']);
+        if (! $appointment) {
+            $this->addError('selectedAppointment', 'La cita seleccionada no existe.');
+            return;
+        }
+
+        // Verificar si ya hay otra cita para este email en la misma fecha
+        $existing = Appointment::where('requester_email', $this->form['requester_email'])
+            ->where('date', $appointment->date)
+            ->where('id', '!=', $appointment->id)
+            ->first();
+
+        if ($existing) {
+            session()->flash(
+                'error',
+                "Ya existe una cita seleccionada para este día con este correo. 
+                Para poder seleccionar esta debes cancelar la existente."
+            );
+            return;
+        }
+
+        $country = Country::find($this->phoneCode);
+        // Actualizar cita
+        $appointment->update([
+            'item_id'  => $this->form['item_id'],
+            'requester_name'  => $this->form['requester_name'],
+            'requester_phone' => "+" . $country->phonecode . $this->form['requester_phone'],
+            'requester_email' => $this->form['requester_email'],
+            'comments'        => $this->form['comments'],
+            'status'          => 'pending_confirmation',
+        ]);
+
+        // Mensaje dinámico
+        $fecha = $appointment->date->format('d/m/Y');
+        $horaInicio = $appointment->start_time->format('H:i');
+        $horaFin = $appointment->end_time->format('H:i');
+
+        session()->flash(
+            'success',
+            "Acabas de seleccionar una cita para el día {$fecha} de {$horaInicio} a {$horaFin}. 
+        A continuación recibirás un correo electrónico con los datos de tu cita."
+        );
+
+        $this->showForm = false;
+    }
+
+
+    public function initCalendar()
+    {
+        $this->dispatchBrowserEvent('init-calendar');
     }
 
     public function render()
     {
         // Cargar citas inicialmente
         $this->loadAppointments();
-
+        $this->selectedItem = Item::find($this->form["item_id"]);
+        $this->selecteOtherdItem = Item::find($this->other_item_id);
+        // dd($this->selectedItem);
+        // dd($this->selectedAppointment);
         return view('livewire.front-booking');
     }
 }

@@ -999,7 +999,7 @@ pedir cita btn
   /* todas las cards ocupan el mismo ancho */
 }
 
-.appointment-card input:checked+.card {
+/* .appointment-card input:checked+.card {
   border-color: var(--secondary-color);
   background: var(--custom-btn-bg-hover-color);
   color: #fff;
@@ -1009,6 +1009,19 @@ pedir cita btn
 .appointment-card input:checked+.card .card-body,
 .appointment-card input:checked+.card .card-body label,
 .appointment-card input:checked+.card .card-body p {
+  color: #fff !important;
+  font-weight: bold;
+} */
+.selected {
+  border: 2px solid var(--secondary-color);
+  background: var(--custom-btn-bg-hover-color);
+  color: #fff;
+  font-weight: bold;
+}
+
+.selected .card-body,
+.selected .card-body span,
+.selected .card-body p {
   color: #fff !important;
   font-weight: bold;
 }
