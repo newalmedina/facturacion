@@ -15,7 +15,7 @@
         <ul>
             <li>Teléfono: <strong>{{ $appointment->requester_phone }}</strong></li>
             <li>Email: <strong>{{ $appointment->requester_email  }}</strong></li>
-            <li>Peinado: <strong>{{ optional($appointment->item)->name . ", " . optional($appointment->item)->total_price }} €</strong></li>
+            <li>Peinado: <strong>{{ $appointment->item->name . ", " . o$appointment->item->total_price }} €</strong></li>
 
         </ul>
         
