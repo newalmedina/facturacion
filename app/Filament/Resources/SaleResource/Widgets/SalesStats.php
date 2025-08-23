@@ -29,7 +29,7 @@ class SalesStats extends StatsOverviewWidget
         });
 
         return [
-            Stat::make('Total gastos', '€ ' . number_format($totalAmount, 2))
+            Stat::make('Total ventas', '€ ' . number_format($totalAmount, 2))
                 ->extraAttributes(['class' => 'flex flex-col justify-center items-center text-center h-full text-green-500']),
             Stat::make('Núm. transacciones', $totalTransactions)
                 ->extraAttributes(['class' => 'flex flex-col justify-center items-center text-center h-full text-green-500']),

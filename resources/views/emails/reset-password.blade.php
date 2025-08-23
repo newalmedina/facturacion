@@ -23,7 +23,7 @@
             <tr>
                 <td align="center">
                     <a href="{{ $url }}" style="
-                        background-color: #4F46E5;
+                        background-color: #dd93ec;
                         border: none;
                         color: white;
                         padding: 12px 25px;
