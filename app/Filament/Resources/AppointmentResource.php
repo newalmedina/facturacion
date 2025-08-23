@@ -277,8 +277,8 @@ class AppointmentResource extends Resource
                             ->default(Carbon::now()->startOfWeek()),
 
                         DatePicker::make('date_until')
-                            ->label('Fecha fin')
-                            ->default(Carbon::now()->endOfWeek()),
+                            ->label('Fecha fin'),
+                        // ->default(Carbon::now()->endOfWeek()),
 
                         Select::make('status')
                             ->label('Estado')
