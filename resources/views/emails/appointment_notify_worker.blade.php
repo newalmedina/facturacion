@@ -14,6 +14,9 @@
 
         <hr>
         <p>Por favor revisa tu agenda y confirma la disponibilidad en el siguiente enlace:</p>
+        <p>
+            <a href="{{ url('admin/appointments/' . $appointment->id . '/edit') }}">Ver cita</a>
+        </p>
     </td>
 </tr>
 @endsection
