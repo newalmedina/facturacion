@@ -137,7 +137,7 @@
                                     target="_blank" 
                                     href="https://wa.me/{{ preg_replace('/\D/', '', $contactForm->whatsapp_url) }}" 
                                     title="Chatear por WhatsApp">
-                                    WhatsApp
+                                    {{  $contactForm->whatsapp_url }}
                                 </a>. ¡Estaremos encantados de ayudarte!
                             </p>
                             
