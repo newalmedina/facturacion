@@ -8,10 +8,17 @@
         <h2>Hola {{ $appointment->worker->name }},</h2>
 
         <p>
-            {{ $appointment->requester_name }} acaba de solicitar una cita para el día <strong>{{ $appointment->date->format('d/m/Y') }}</strong>,
+            <b>{{ ucfirst($appointment->requester_name) }}</b>
+            acaba de solicitar una cita para el día <strong>{{ $appointment->date->format('d/m/Y') }}</strong>,
             desde las <strong>{{ $appointment->start_time->format('H:i') }}</strong> hasta las <strong>{{ $appointment->end_time->format('H:i') }}</strong>.
         </p>
+        <ul>
+            <li>Teléfono: <strong>{{ $appointment->requester_phone }}</strong></li>
+            <li>Email: <strong>{{ $appointment->requester_email  }}</strong></li>
+            <li>Peinado: <strong>{{ optional($appointment->item)->name . ", " . optional($appointment->item)->total_price }} €</strong></li>
 
+        </ul>
+        
         <hr>
         <p>Por favor revisa tu agenda y confirma la disponibilidad en el siguiente enlace:</p>
         <p>

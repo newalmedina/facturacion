@@ -23,6 +23,10 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class, 'worker_id');
     }
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
     public function canDelete(): bool
     {
         return !is_null($this->status) && $this->status !== 'cancelled';
