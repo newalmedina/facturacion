@@ -101,7 +101,20 @@
                     <!-- Contenido dinámico -->
                     @yield('content')
 
+                    
                     <!-- Pie de página -->
+                    <tr>
+                        @php
+                        $contactForm = \App\Models\CmsContent::findBySlug('contact-form');
+                    @endphp
+                            <p>PAra cualquier otro tipo de información no dudes en ponerte en contacto<a 
+                                id="floating-whatsapp-btn" 
+                                target="_blank" 
+                                href="https://wa.me/{{ preg_replace('/\D/', '', $contactForm->whatsapp_url) }}" 
+                                title="Chatear por WhatsApp">
+                                {{ $contactForm->whatsapp_url}}
+                             </a>.</p>
+                    </tr>
                     <tr>
                         <td class="footer">
                             &copy; {{ date('Y') }} {{ $brandName ?? 'Mi Empresa' }}. Todos los derechos reservados.

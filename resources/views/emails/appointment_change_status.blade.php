@@ -27,13 +27,7 @@
         </p>
         
 <hr>
-<p>Si necesitas modificarla o cancelarla, por favor contáctanos al  teléfono <a 
-    id="floating-whatsapp-btn" 
-    target="_blank" 
-    href="https://wa.me/{{ preg_replace('/\D/', '', $contactForm->whatsapp_url) }}" 
-    title="Chatear por WhatsApp">
-    {{ $contactForm->whatsapp_url}}
- </a>.</p>
+<p>Si necesitas modificarla o cancelarla, por favor contáctanos.</p>
     </td>
 </tr>
 @endsection
