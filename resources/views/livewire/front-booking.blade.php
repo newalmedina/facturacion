@@ -100,21 +100,21 @@
                         <!-- Nombre -->
                         <div class="col-12 col-md-6 mb-3">
                             <label for="requester_name" class="form-label">Nombre completo</label>
-                            <input type="text" id="requester_name"  wire:model.defer="form.requester_name" class="form-control" placeholder="Ej: Juan Pérez">
+                            <input type="text" id="requester_name"  wire:model.defer="form.requester_name" class="form-control" placeholder="Ej: Juan Pérez" autocomplete="off">
                             @error('form.requester_name') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
 
                         <!-- Email -->
                         <div class="col-12 col-md-6 mb-3">
                             <label for="email" class="form-label">Correo electrónico</label>
-                            <input type="email" id="email"  wire:model.defer="form.requester_email" class="form-control" placeholder="Ej: juan@mail.com">
+                            <input type="email" id="email"  wire:model.defer="form.requester_email" class="form-control" placeholder="Ej: juan@mail.com" autocomplete="off">
                             @error('form.requester_email') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
 
                         <!-- Código país -->
                         <div class="col-12 col-md-3 mb-3">
                             <label for="phoneCode" class="form-label">Código país</label>
-                            <select id="phoneCode"  wire:model.defer="phoneCode" class="form-control">
+                            <select id="phoneCode"  wire:model.defer="phoneCode" class="form-control" autocomplete="off">
                                 @foreach($countries as $country)
                                     <option value="{{ $country->id }}">
                                         {{ $country->name }} (+{{ $country->phonecode }})
@@ -132,7 +132,7 @@
                         <!-- Teléfono -->
                         <div class="col-12 col-md-9 mb-3">
                             <label for="requester_phone" class="form-label">Teléfono</label>
-                            <input type="text" id="requester_phone"  wire:model.defer="form.requester_phone" class="form-control" placeholder="Ej: 600123456">
+                            <input type="text" id="requester_phone"  wire:model.defer="form.requester_phone" class="form-control" placeholder="Ej: 600123456" autocomplete="off">
                             @error('form.requester_phone') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
 
@@ -141,7 +141,7 @@
                             <div class="row">
                                 <div class="col-12  mb-3">
                                 <label for="item_id" class="form-label">Selecciona un Servicio</label>
-                                    <select id="item_id" wire:model.live="form.item_id" class="form-control">
+                                    <select id="item_id" wire:model.live="form.item_id" class="form-control" autocomplete="off">
                                         <option value="">-- Seleccionar --</option>
                                         @foreach($showItems as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }} -- {{ $item->total_price }}€</option>
