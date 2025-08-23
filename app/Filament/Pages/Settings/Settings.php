@@ -95,8 +95,8 @@ class Settings extends BaseSettings
                                             ->extraAttributes([
                                                 'style' => 'background-color: #6B21A8; color: white;' // púrpura y texto blanco
                                             ])
-                                            // ->visible(fn() => auth()->check() && auth()->user()->email === 'el.solitions@gmail.com')
-                                            ->visible(false)
+                                            ->visible(fn() => auth()->check() && auth()->user()->email === 'el.solitions@gmail.com')
+                                            //  ->visible(false)
 
                                             ->form([
                                                 TextInput::make('filename')
