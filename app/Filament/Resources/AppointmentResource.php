@@ -62,6 +62,19 @@ class AppointmentResource extends Resource
                     ->preload()
                     ->placeholder('Selecciona empleado'),
 
+                Select::make('item_id')
+                    ->label('Peinado')
+                    ->relationship(
+                        name: 'item', // relación en tu modelo
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn($query) => $query->active()
+                    )
+                    ->getOptionLabelFromRecordUsing(fn($record) => $record->name . ' -- ' . $record->total_price . ' €')
+                    ->searchable()
+                    ->preload()
+                    ->placeholder('Selecciona Servicio'),
+
+
 
                 DatePicker::make('date')
                     ->label('Fecha')
@@ -134,12 +147,9 @@ class AppointmentResource extends Resource
                     ->maxLength(255)
                     ->suffixAction(function ($get) {
                         $phone = preg_replace('/\D/', '', $get('requester_phone'));
-                        if (!$phone) {
-                            return null; // No mostrar el botón si no hay número
-                        }
 
                         return Action::make('whatsapp')
-                            ->icon('heroicon-s-chat-bubble-left') // icono de WhatsApp, puedes poner tu propio SVG si quieres
+                            ->icon('heroicon-s-chat-bubble-left') // icono de WhatsApp
                             ->label('')
                             ->url('https://wa.me/' . $phone)
                             ->openUrlInNewTab();
@@ -180,11 +190,7 @@ class AppointmentResource extends Resource
         text-transform: uppercase;
     '>{$state}</span>";
                     }),
-                Tables\Columns\TextColumn::make('worker.name')
-                    ->numeric()
-                    ->label('Empleado')   // Etiqueta de la columna
-                    ->searchable()        // Se puede buscar en esta columna
-                    ->sortable(),         // Se puede ordenar por esta columna
+
 
                 Tables\Columns\TextColumn::make('date')
                     ->date()
@@ -210,7 +216,19 @@ class AppointmentResource extends Resource
                         return Carbon::parse($state)->format('H:i'); // Formato hora:minutos (24h)
                     }),
 
-
+                Tables\Columns\TextColumn::make('worker.name')
+                    ->numeric()
+                    ->label('Empleado')   // Etiqueta de la columna
+                    ->searchable()        // Se puede buscar en esta columna
+                    ->sortable(),         // Se puede ordenar por esta columna
+                Tables\Columns\TextColumn::make('item.name')
+                    ->label('Servicio')
+                    ->formatStateUsing(
+                        fn($state, $record) =>
+                        $state . ' -- ' . ($record->item?->total_price ?? 0) . ' €'
+                    )
+                    ->searchable()
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('requester_name')->label("Nombre solicitante")
                     ->searchable(),   // Buscable
@@ -366,7 +384,7 @@ class AppointmentResource extends Resource
                     ->icon('heroicon-o-envelope')
                     ->color('success') // azul
                     ->tooltip('Enviar notificación por correo electrónico')
-                    ->visible(fn($record) => in_array($record->status, ['confirmed', 'cancelled']) && $record->active == 1 && $record->requester_email)
+                    ->visible(fn($record) => in_array($record->status, ['confirmed', 'cancelled']) &&  $record->requester_email)
 
                     ->action(function ($record) {
                         Mail::to($record->requester_email)
@@ -380,9 +398,20 @@ class AppointmentResource extends Resource
                             ->success()
                             ->send();
                     }),
+                Tables\Actions\Action::make('whatsapp')
+                    ->icon('heroicon-s-chat-bubble-left')
+                    ->label('')
+                    ->tooltip('Enviar WhatsApp')
+                    ->url(fn($record) => 'https://wa.me/' . preg_replace('/\D/', '', $record->requester_phone))
+                    ->openUrlInNewTab()
+                    ->visible(
+                        fn($record) =>
+                        !empty($record->requester_phone) && in_array($record->status, ['cancelled', 'confirmed'])
+                    ),
+
 
                 Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
-                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->visible(fn($record) => $record->status === null || $record->status === 'cancelled'),
+                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->visible(fn($record) => $record->status == "available"),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
