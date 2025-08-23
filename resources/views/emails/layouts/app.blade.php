@@ -81,11 +81,11 @@
                         <td style="background-color:#581177; padding:20px;">
                             <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                                 <tr>
-                                    @if($brandLogoBase64)
+                                   {{-- @if($brandLogoBase64)
                                         <td style="vertical-align: middle; width:60px; padding-right:15px;">
                                             <img src="{{ $brandLogoBase64 }}" alt="Logo" style="max-height:50px; display:block; border:0; outline:none; text-decoration:none;" />
                                         </td>
-                                    @endif
+                                    @endif--}}
                                     <td style="vertical-align: middle;">
                                         @if(!empty($brandName))
                                             <h1 style="color:#ffffff; font-size:24px; margin:0; font-weight:normal;">{{ $brandName }}</h1>
