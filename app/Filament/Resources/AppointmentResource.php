@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
+use Filament\Forms\Components\Actions\Action;
 
 class AppointmentResource extends Resource
 {
@@ -121,11 +122,28 @@ class AppointmentResource extends Resource
 
 
 
-                TextInput::make('requester_phone')
+                /* TextInput::make('requester_phone')
                     ->label('Teléfono del solicitante')
                     ->tel()
                     ->maxLength(255),
+*/
 
+                TextInput::make('requester_phone')
+                    ->label('Teléfono del solicitante')
+                    ->tel()
+                    ->maxLength(255)
+                    ->suffixAction(function ($get) {
+                        $phone = preg_replace('/\D/', '', $get('requester_phone'));
+                        if (!$phone) {
+                            return null; // No mostrar el botón si no hay número
+                        }
+
+                        return Action::make('whatsapp')
+                            ->icon('heroicon-s-chat-bubble-left') // icono de WhatsApp, puedes poner tu propio SVG si quieres
+                            ->label('')
+                            ->url('https://wa.me/' . $phone)
+                            ->openUrlInNewTab();
+                    }),
                 Textarea::make('comments')
                     ->label('Comentarios')
                     ->columnSpanFull(),
