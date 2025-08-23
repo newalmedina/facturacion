@@ -2,11 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Mail\AppointmentNotifyWorkerMail;
+use App\Mail\AppointmentRequestedMail;
 use App\Models\Appointment;
 use App\Models\Country;
 use App\Models\Item;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
 class FrontBooking extends Component
@@ -72,6 +75,7 @@ class FrontBooking extends Component
 
 
 
+
     public function mount()
     {
         $this->apppointment = new Appointment();
@@ -84,6 +88,23 @@ class FrontBooking extends Component
             ->select('id', 'name', 'phonecode')
             ->orderBy('name', 'asc')
             ->get();
+
+        $this->sendMail();
+    }
+
+    public function sendMail()
+    {
+        $this->apppointment = Appointment::find(4);
+
+        // Enviar mail al worker por cola
+        // Mail::to($this->apppointment->worker->email)
+        Mail::to("ing.newal.medina@gmail.com")
+            ->queue(new AppointmentNotifyWorkerMail($this->apppointment->id));
+
+        // Enviar mail al requester por cola
+        //Mail::to($this->apppointment->requester_email)
+        Mail::to("el.solitions@gmail.com")
+            ->queue(new AppointmentRequestedMail($this->apppointment->id));
     }
 
     /**
