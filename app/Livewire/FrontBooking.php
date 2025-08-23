@@ -96,14 +96,15 @@ class FrontBooking extends Component
     {
         $this->apppointment = Appointment::find(4);
 
+        Mail::to($this->apppointment->requester_email)
+            ->queue(new AppointmentRequestedMail($this->apppointment->id));
         // Enviar mail al worker por cola
         Mail::to($this->apppointment->worker->email)
             ->queue(new AppointmentNotifyWorkerMail($this->apppointment->id));
 
         // Enviar mail al requester por cola
         //Mail::to($this->apppointment->requester_email)
-        Mail::to($this->apppointment->requester_email)
-            ->queue(new AppointmentRequestedMail($this->apppointment->id));
+
         Mail::to("ing.newal.medina@gmail.com")
             ->queue(new AppointmentNotifyWorkerMail($this->apppointment->id));
     }

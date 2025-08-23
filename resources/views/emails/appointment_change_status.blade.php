@@ -3,6 +3,9 @@
 @section('title', 'Cambio de estado de cita')
 
 @section('content')
+@php
+    $contactForm = \App\Models\CmsContent::findBySlug('contact-form');
+@endphp
 <tr>
     <td style="padding: 30px 40px; color: #333333; font-size: 16px; line-height: 1.5;">
         <h2>Hola {{ $appointment->requester_name }},</h2>
@@ -24,7 +27,13 @@
         </p>
         
 <hr>
-        <p>Si tienes alguna duda o necesitas asistencia, no dudes en contactarnos.</p>
+<p>Si necesitas modificarla o cancelarla, por favor contáctanos al  teléfono <a 
+    id="floating-whatsapp-btn" 
+    target="_blank" 
+    href="https://wa.me/{{ preg_replace('/\D/', '', $contactForm->whatsapp_url) }}" 
+    title="Chatear por WhatsApp">
+    {{ $contactForm->whatsapp_url}}
+ </a>.</p>
     </td>
 </tr>
 @endsection
