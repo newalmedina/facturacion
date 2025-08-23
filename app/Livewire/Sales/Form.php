@@ -129,7 +129,7 @@ class Form extends Component
 
         // Aquí se envía el correo (ejemplo genérico)
         // Mail::to($this->recipientEmail)->send(new InvoiceMail($this->order));
-        $this->notify('Factura enviada a ' . $this->recipientEmail, 'Factura enviada',  'success');
+        $this->notify('Recibo enviado a ' . $this->recipientEmail, 'Recibo enviado',  'success');
         $this->dispatch('close-modal', id: 'send-invoiced-modal');
     }
     public function generateReceipt()

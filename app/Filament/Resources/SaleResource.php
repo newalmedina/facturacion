@@ -335,7 +335,7 @@ class SaleResource extends Resource
 
 
                         Notification::make()
-                            ->title('Factura enviada por email')
+                            ->title('Recibo enviado por email')
                             ->success()
                             ->send();
                     }),

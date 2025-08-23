@@ -1,6 +1,6 @@
 @extends('emails.layouts.app')
 
-@section('title', 'Factura enviada')
+@section('title', 'Recibo enviado')
 
 @section('content')
 <tr>
