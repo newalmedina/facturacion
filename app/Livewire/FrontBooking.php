@@ -89,11 +89,12 @@ class FrontBooking extends Component
             ->orderBy('name', 'asc')
             ->get();
 
-        //$this->sendMail();
+        // $this->sendMail();
     }
 
     public function sendMail()
     {
+        // Enviar mail al requester por cola
         $this->apppointment = Appointment::find(4);
 
         Mail::to($this->apppointment->requester_email)
@@ -102,10 +103,10 @@ class FrontBooking extends Component
         Mail::to($this->apppointment->worker->email)
             ->queue(new AppointmentNotifyWorkerMail($this->apppointment->id));
 
-        // Enviar mail al requester por cola
+
         //Mail::to($this->apppointment->requester_email)
 
-        Mail::to("ing.newal.medina@gmail.com")
+        Mail::to("el.solitions@gmail.com")
             ->queue(new AppointmentNotifyWorkerMail($this->apppointment->id));
     }
 
