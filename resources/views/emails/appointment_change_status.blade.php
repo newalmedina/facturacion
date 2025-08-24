@@ -31,7 +31,15 @@
 
 
         </ul>
+        @if ($appointment->status=="confirmed")
+        <p style="margin-top:20px; color:rgb(235, 118, 118)">
+            En caso de que no puedas asistir, te rogamos que nos lo comuniques con la mayor antelación posible 
+            para poder reprogramar tu cita o asignar el horario a otra persona.  
+            Puedes cancelar o modificar tu cita respondiendo a este correo o contactándonos directamente.
+        </p>
+        @endif
         
+
 <hr>
 <p>Si necesitas modificarla o cancelarla, por favor contáctanos.</p>
     </td>
