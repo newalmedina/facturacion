@@ -43,6 +43,7 @@ class Appointment extends Model
             'available' => 'Disponible',
             'confirmed' => 'Confirmado',
             //'accepted' => 'Aceptada',
+            'pending_confirmation' => 'Pendiente Confirmación',
             'cancelled' => 'Cancelada',
             null => 'Sin estado',
             '' => 'Sin estado',

@@ -26,6 +26,8 @@ use Filament\Tables\Filters\Filter;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Tables\Actions\Action as TableAction;
+use Filament\Actions\Action as ModalAction;
 
 class AppointmentResource extends Resource
 {
@@ -379,6 +381,81 @@ class AppointmentResource extends Resource
             ])
 
             ->actions([
+
+                TableAction::make('confirmNotification')
+                    ->label('')
+                    ->icon('heroicon-m-check-circle')
+                    ->color('success')
+                    ->tooltip('Confirmar la solicitud y/o enviar notificación')
+                    ->visible(fn($record) => in_array($record->status, ['cancelled', 'pending_confirmation']))
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirmar solicitud')
+                    ->modalSubmitActionLabel('Confirmar')   // botón principal
+                    ->modalCancelActionLabel('Regresar')    // cerrar modal
+                    ->form([
+                        \Filament\Forms\Components\Checkbox::make('send_notification')
+                            ->label('Enviar notificación por correo')
+                            ->default(false),
+                    ])
+                    ->action(function ($record, array $data) {
+                        $record->status = 'confirmed';
+                        $record->save();
+
+                        if (!empty($data['send_notification']) && $record->requester_email) {
+                            Mail::to($record->requester_email)
+                                ->send(new AppointmentChangeStatusMail($record));
+
+                            $record->notification_sended = true;
+                            $record->save();
+
+                            Notification::make()
+                                ->title('Solicitud confirmada y notificación enviada')
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Solicitud confirmada')
+                                ->success()
+                                ->send();
+                        }
+                    }),
+                TableAction::make('cancelNotification')
+                    ->label('')
+                    ->icon('heroicon-m-x-circle') // aspa roja
+                    ->color('danger') // rojo
+                    ->tooltip('Cancelar la solicitud y/o enviar notificación')
+                    ->visible(fn($record) => in_array($record->status, ['pending_confirmation', 'confirmed']))
+                    ->requiresConfirmation()
+                    ->modalHeading('Cancelar solicitud')
+                    ->modalSubmitActionLabel('Cancelar')   // botón principal
+                    ->modalCancelActionLabel('Regresar')   // cerrar modal
+                    ->form([
+                        \Filament\Forms\Components\Checkbox::make('send_notification')
+                            ->label('Enviar notificación por correo')
+                            ->default(false),
+                    ])
+                    ->action(function ($record, array $data) {
+                        $record->status = 'cancelled';
+                        $record->save();
+
+                        if (!empty($data['send_notification']) && $record->requester_email) {
+                            Mail::to($record->requester_email)
+                                ->send(new AppointmentChangeStatusMail($record));
+
+                            $record->notification_sended = true;
+                            $record->save();
+
+                            Notification::make()
+                                ->title('Solicitud cancelada y notificación enviada')
+                                ->danger() // rojo
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Solicitud cancelada')
+                                ->danger() // rojo
+                                ->send();
+                        }
+                    }),
                 Tables\Actions\Action::make('sendNotification')
                     ->label('')
                     ->icon('heroicon-o-envelope')
