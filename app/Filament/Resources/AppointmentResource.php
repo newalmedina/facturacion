@@ -6,6 +6,7 @@ use App\Exports\AppointmentExport;
 use App\Filament\Resources\AppointmentResource\Pages;
 use App\Filament\Resources\AppointmentResource\RelationManagers;
 use App\Mail\AppointmentChangeStatusMail;
+use App\Mail\AppointmentChangeStatusToWorkerMail;
 use App\Models\Appointment;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -405,6 +406,11 @@ class AppointmentResource extends Resource
                             Mail::to($record->requester_email)
                                 ->send(new AppointmentChangeStatusMail($record));
 
+                            if ($record->worker && $record->worker->email) {
+                                Mail::to($record->worker->email)
+                                    ->send(new AppointmentChangeStatusToWorkerMail($record));
+                            }
+
                             $record->notification_sended = true;
                             $record->save();
 
@@ -442,6 +448,10 @@ class AppointmentResource extends Resource
                             Mail::to($record->requester_email)
                                 ->send(new AppointmentChangeStatusMail($record));
 
+                            if ($record->worker && $record->worker->email) {
+                                Mail::to($record->worker->email)
+                                    ->send(new AppointmentChangeStatusToWorkerMail($record));
+                            }
                             $record->notification_sended = true;
                             $record->save();
 
@@ -467,6 +477,10 @@ class AppointmentResource extends Resource
                         Mail::to($record->requester_email)
                             ->send(new AppointmentChangeStatusMail($record));
 
+                        if ($record->worker && $record->worker->email) {
+                            Mail::to($record->worker->email)
+                                ->send(new AppointmentChangeStatusToWorkerMail($record));
+                        }
                         $record->notification_sended = true;
                         $record->save();
 

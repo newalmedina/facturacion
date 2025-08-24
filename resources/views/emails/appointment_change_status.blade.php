@@ -25,6 +25,12 @@
                 {{ $appointment->status_name_formatted }}
             </span>.
         </p>
+        <ul>
+            <li>Empleado: <strong>{{ $appointment->worker->name }}</strong></li>
+            <li>Peinado: <strong>{{ $appointment->item->name . ", " . $appointment->item->total_price }} €</strong></li>
+
+
+        </ul>
         
 <hr>
 <p>Si necesitas modificarla o cancelarla, por favor contáctanos.</p>

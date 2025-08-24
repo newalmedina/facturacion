@@ -4,6 +4,7 @@ namespace App\Filament\Resources\AppointmentResource\Pages;
 
 use App\Filament\Resources\AppointmentResource;
 use App\Mail\AppointmentChangeStatusMail;
+use App\Mail\AppointmentChangeStatusToWorkerMail;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -32,6 +33,10 @@ class EditAppointment extends EditRecord
                 ->action(function ($record) {
                     Mail::to($record->requester_email)
                         ->send(new AppointmentChangeStatusMail($record));
+                    if ($record->worker && $record->worker->email) {
+                        Mail::to($record->worker->email)
+                            ->send(new AppointmentChangeStatusToWorkerMail($record));
+                    }
 
                     $record->notification_sended = true;
                     $record->save();
@@ -64,6 +69,10 @@ class EditAppointment extends EditRecord
                     if (!empty($data['send_notification']) && $record->requester_email) {
                         Mail::to($record->requester_email)
                             ->send(new AppointmentChangeStatusMail($record));
+                        if ($record->worker && $record->worker->email) {
+                            Mail::to($record->worker->email)
+                                ->send(new AppointmentChangeStatusToWorkerMail($record));
+                        }
 
                         $record->notification_sended = true;
                         $record->save();
@@ -103,6 +112,10 @@ class EditAppointment extends EditRecord
                     if (!empty($data['send_notification']) && $record->requester_email) {
                         Mail::to($record->requester_email)
                             ->send(new AppointmentChangeStatusMail($record));
+                        if ($record->worker && $record->worker->email) {
+                            Mail::to($record->worker->email)
+                                ->send(new AppointmentChangeStatusToWorkerMail($record));
+                        }
 
                         $record->notification_sended = true;
                         $record->save();
