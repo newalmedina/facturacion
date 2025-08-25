@@ -3,19 +3,28 @@
 namespace App\Filament\Resources\AppointmentResource\Pages;
 
 use App\Filament\Resources\AppointmentResource;
+use App\Filament\Resources\AppointmentResource\Widgets\AppointmentsStats;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
+use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Str;
 
 class ListAppointments extends ListRecords
 {
+    use ExposesTableToWidgets;
     protected static string $resource = AppointmentResource::class;
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            AppointmentsStats::class,
+        ];
+    }
     protected function getHeaderActions(): array
     {
         return [
