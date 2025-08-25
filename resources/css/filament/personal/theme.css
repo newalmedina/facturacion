@@ -1,0 +1,60 @@
+:root {
+    --white-color: #ffffff;
+    --primary-color: #ecc4f4;
+    /* Rosa lavanda */
+    --secondary-color: #581177;
+    /* Púrpura profundo */
+    --section-bg-color: #f5f5f5;
+    /* Gris claro */
+    --custom-btn-bg-color: #581177;
+    --custom-btn-bg-hover-color: #dd93ec;
+    --dark-color: #000000;
+    --p-color: #333333;
+    --border-color: #dd93ec;
+    --link-hover-color: #b462e2;
+}
+
+/* 🔹 Acentos generales */
+.fi-btn-primary {
+    background-color: var(--primary-color) !important;
+    color: var(--dark-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+.fi-btn-primary:hover {
+    background-color: var(--custom-btn-bg-hover-color) !important;
+}
+
+/* 🔹 Sidebar */
+.fi-sidebar {
+    background-color: var(--secondary-color) !important;
+    color: var(--white-color) !important;
+}
+
+.fi-sidebar .fi-sidebar-item-label {
+    color: var(--white-color) !important;
+}
+
+/* 🔹 Topbar */
+.fi-topbar {
+    background-color: var(--primary-color) !important;
+}
+
+/* 🔹 Login page */
+.fi-login-page {
+    background-color: var(--section-bg-color) !important;
+}
+
+.fi-login-page .fi-card {
+    border: 1px solid var(--border-color) !important;
+    background-color: var(--white-color) !important;
+}
+
+/* 🔹 Links */
+a {
+    color: var(--secondary-color);
+}
+
+a:hover {
+    color: var(--link-hover-color);
+}
