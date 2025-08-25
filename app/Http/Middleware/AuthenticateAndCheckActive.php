@@ -39,5 +39,9 @@ class AuthenticateAndCheckActive extends FilamentAuthenticate
 
             abort(403, 'Tu cuenta está desactivada.');
         }
+        // Nueva verificación:
+        if ($panel->getId() == "admin" && !$user->can_admin_panel) {
+            abort(403, 'No tienes permiso para acceder al panel de administración.');
+        }
     }
 }

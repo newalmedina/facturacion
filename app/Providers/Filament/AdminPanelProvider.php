@@ -152,6 +152,11 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Perfil')
                     ->url(route('filament.admin.pages.profile')) // Aquí también agregamos la URL
                     ->icon('heroicon-o-user'),
+                'home' => MenuItem::make()
+                    ->label('Ir a la Home')
+                    ->url(url('/')) // tu landing page
+                    ->icon('heroicon-o-globe-alt') // ícono globo terrestre
+                    ->openUrlInNewTab(), // opcional: abre en nueva pestaña
             ]);
         });
     }
