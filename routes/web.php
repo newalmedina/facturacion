@@ -3,6 +3,7 @@
 use App\Http\Controllers\BackupDownloadController;
 use App\Http\Controllers\FrontBookingController;
 use App\Http\Controllers\WelcomeController;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,15 +19,16 @@ use Illuminate\Support\Facades\Storage;
 */
 
 Route::get('/', function () {
-    return redirect('/admin');
 
-    return view('welcome');
+    return redirect('/home');
+
+    // return view('welcome');
 });
 // Route::get('/landing', function () {
 
 //     return view('welcome');
 // });
-Route::get('/landing', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/home', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/booking', [FrontBookingController::class, 'index'])->name('booking');
 
 

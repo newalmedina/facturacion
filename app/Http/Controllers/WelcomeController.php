@@ -12,6 +12,13 @@ class WelcomeController extends Controller
 {
     public function index()
     {
+
+        $settings = Setting::first();
+        $generalSettings = $settings?->general;
+
+        if (!$generalSettings->has_home) {
+            abort(404);
+        }
         $jumbotron = CmsContent::findBySlug('header-jumbotron');
         $aboutUs = CmsContent::findBySlug('about-us');
         $discounts = CmsContent::findBySlug('discounts');
@@ -20,8 +27,7 @@ class WelcomeController extends Controller
         $contactForm = CmsContent::findBySlug('contact-form');
         $gallery = CmsContent::findBySlug('gallery');
 
-        $settings = Setting::first();
-        $generalSettings = $settings?->general;
+
         // dd($generalSettings);
         // $generalSettings?->brand_name = $generalSettings?->brand_name ?? config('app.name', 'Mi Empresa');
         $state = State::find(trim($generalSettings->state_id, '"'));
