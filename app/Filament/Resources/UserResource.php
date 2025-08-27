@@ -108,6 +108,10 @@ class UserResource extends Resource
                                             ->inline(false)
                                             ->label("¿Permir cita?")
                                             ->required(),
+                                        Forms\Components\Toggle::make('can_admin_panel')
+                                            ->inline(false)
+                                            ->label("¿Permir Ingresar administración?")
+                                            ->required(),
 
 
                                     ]),
@@ -203,6 +207,9 @@ class UserResource extends Resource
                 Tables\Columns\IconColumn::make('can_appointment')
                     ->boolean()
                     ->label("¿Permir cita?"),
+                Tables\Columns\IconColumn::make('can_admin_panel')
+                    ->boolean()
+                    ->label("¿Permir Administración?"),
 
                 Tables\Columns\TextColumn::make('state.name')
                     ->sortable()
@@ -245,6 +252,13 @@ class UserResource extends Resource
                         '1' => 'Si',
                         '0' => 'No',
                     ]),
+                SelectFilter::make('can_admin_panel')
+                    ->label("¿Permir Ingresar administración?")
+                    ->options([
+                        '1' => 'Si',
+                        '0' => 'No',
+                    ]),
+
                 SelectFilter::make('country_id')
                     ->relationship(name: 'country', titleAttribute: 'name')
                     ->searchable()

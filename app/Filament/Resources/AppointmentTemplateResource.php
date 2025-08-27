@@ -6,6 +6,7 @@ use App\Filament\Resources\AppointmentTemplateResource\Pages;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
 use App\Models\AppointmentTemplate;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Grid;
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Tables\Filters\Filter;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentTemplateResource extends Resource
 {
@@ -33,6 +35,27 @@ class AppointmentTemplateResource extends Resource
 
     protected static ?string $navigationGroup = 'Gestión de citas';
     protected static ?int $navigationSort = 54;
+
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+
+        // Obtener el ID del panel actual
+        $currentPanelId = Filament::getCurrentPanel()?->getId();
+
+        // Filtrar solo si estamos en el panel "personal"
+        if ($user && $currentPanelId === 'personal') {
+            $query->where(function ($q) use ($user) {
+                $q->where('appointment_templates.worker_id', $user->id)
+                    ->orWhere('appointment_templates.is_general', true);
+            });
+        }
+
+        return $query;
+    }
 
     public static function getModelLabel(): string
     {
@@ -47,89 +70,100 @@ class AppointmentTemplateResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $currentPanelId = Filament::getCurrentPanel()?->getId();
         return $form
             ->schema([
                 // Primera fila con los campos principales
                 Actions::make([
                     Action::make('createOtherExpenseItem')
                         ->label("Duplicar plantilla")
-                        ->icon('heroicon-o-clipboard-document') // icono de "copiar"
-                        ->color('success') // color verde
+                        ->icon('heroicon-o-clipboard-document')
+                        ->color('success')
+                        ->form(function () {
+                            $currentPanelId = Filament::getCurrentPanel()?->getId();
+
+                            $fields = [
+                                TextInput::make('duplicate_name')
+                                    ->label('Nombre de la plantilla')
+                                    ->required(),
+
+                                Toggle::make('duplicate_active')
+                                    ->label('¿Activa?')
+                                    ->inline(false),
+                            ];
+
+                            // Solo mostrar estos campos si NO es panel personal
+                            if ($currentPanelId !== 'personal') {
+                                $fields[] = Select::make('duplicate_worker_id')
+                                    ->label('Empleado')
+                                    ->relationship('worker', 'name', fn($query) => $query->canAppointment())
+                                    ->searchable()
+                                    ->preload()
+                                    ->visible(fn(callable $get) => $get('duplicate_general') === false)
+                                    ->dehydrated(fn(callable $get) => $get('duplicate_general') === false)
+                                    ->required(fn(callable $get) => $get('duplicate_general') === false)
+                                    ->reactive();
+
+                                $fields[] = Toggle::make('duplicate_general')
+                                    ->label('¿Plantilla general?')
+                                    ->inline(false)
+                                    ->reactive()
+                                    ->afterStateUpdated(function (callable $set, $state) {
+                                        if ($state) {
+                                            $set('duplicate_worker_id', null);
+                                        }
+                                    });
+                            }
+
+                            return $fields;
+                        })
+                        ->modalHeading('Duplicar plantilla')
+                        ->modalSubmitActionLabel('Guardar')
+                        ->modalWidth('md')
                         ->action(function (array $data, Get $get) {
+                            $currentPanelId = Filament::getCurrentPanel()?->getId();
                             $original = AppointmentTemplate::findOrFail($get('id'));
 
-                            // Crear la plantilla duplicada
-                            $duplicated = AppointmentTemplate::create([
-                                'name' => $data['duplicate_name'],
-                                'worker_id' => $data['duplicate_worker_id'] ?? null,
+                            // Forzar valores si el panel es personal
+                            $workerId = $currentPanelId === 'personal'
+                                ? Auth::id()
+                                : ($data['duplicate_worker_id'] ?? null);
 
-                                'active' => $data['duplicate_active'],
-                                'is_general' => $data['duplicate_general'],
+                            $isGeneral = $currentPanelId === 'personal'
+                                ? false
+                                : ($data['duplicate_general'] ?? false);
+
+                            $duplicated = AppointmentTemplate::create([
+                                'name'       => $data['duplicate_name'],
+                                'worker_id'  => $workerId,
+                                'active'     => $data['duplicate_active'],
+                                'is_general' => $isGeneral,
                             ]);
 
                             // Duplicar slots
                             foreach ($original->slots as $slot) {
                                 $duplicated->slots()->create([
                                     'day_of_week' => $slot->day_of_week,
-                                    'start_time' => $slot->start_time,
-                                    'end_time' => $slot->end_time,
-                                    'group' => $slot->group,
+                                    'start_time'  => $slot->start_time,
+                                    'end_time'    => $slot->end_time,
+                                    'group'       => $slot->group,
                                 ]);
                             }
+
                             Notification::make()
-                                ->title('Registro duplicado ')
+                                ->title('Registro duplicado')
                                 ->success()
                                 ->send();
-                            // Redirigir a la vista de edición (ajusta la ruta si usas resource diferente)
+
+                            if ($currentPanelId == 'personal') {
+                                return redirect()->route('filament.personal.resources.appointment-templates.edit', [
+                                    'record' => $duplicated->id,
+                                ]);
+                            }
                             return redirect()->route('filament.admin.resources.appointment-templates.edit', [
                                 'record' => $duplicated->id,
                             ]);
                         })
-                        ->form([
-                            TextInput::make('duplicate_name')
-                                ->label('Nombre de la plantilla')
-                                ->required(),
-
-                            /*   Select::make('duplicate_worker_id')
-                                ->label('Empleado')
-                                ->relationship('worker', 'name')
-                                ->searchable()
-                                ->preload()
-                                ->visible(fn(callable $get) => $get('duplicate_general') === false)
-
-                                ->dehydrated(fn(callable $get) => $get('duplicate_general') === false)    // solo enviar si NO es general
-                                ->required(fn(callable $get) => $get('duplicate_general') === false)      // obligatorio si NO es general
-                                ->reactive(),*/
-                            Select::make('duplicate_worker_id')
-                                ->label('Empleado')
-                                ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- aplica tu scope
-                                ->searchable()
-                                ->preload()
-                                ->visible(fn(callable $get) => $get('duplicate_general') === false)
-                                ->dehydrated(fn(callable $get) => $get('duplicate_general') === false) // solo enviar si NO es general
-                                ->required(fn(callable $get) => $get('duplicate_general') === false)   // obligatorio si NO es general
-                                ->reactive(),
-
-
-                            Toggle::make('duplicate_active')
-                                ->label('¿Activa?')
-                                ->inline(false),
-
-                            Toggle::make('duplicate_general')
-                                ->label('¿Plantilla general?')
-                                ->inline(false)
-                                ->reactive()
-                                ->afterStateUpdated(function (callable $set, $state) {
-                                    if ($state) {
-                                        // limpiar el empleado cuando se marca como plantilla general
-                                        $set('duplicate_worker_id', null);
-                                    }
-                                }),
-
-                        ])
-                        ->modalHeading('Nuevo Gasto Extra')
-                        ->modalSubmitActionLabel('Guardar')
-                        ->modalWidth('md'),
                 ])->visible(fn(Get $get) => $get('id') !== null),
                 Forms\Components\Grid::make(3)
                     ->schema([
@@ -146,25 +180,28 @@ class AppointmentTemplateResource extends Resource
                             ->reactive(), // para que se actualice dinámicamente,*/
                         Select::make('worker_id')
                             ->label('Trabajador')
-                            ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- aplica el scope
+                            ->relationship('worker', 'name', fn($query) => $query->canAppointment())
                             ->searchable()
                             ->preload()
-                            ->visible(fn(callable $get) => $get('is_general') === false)
-                            ->dehydrated(fn(callable $get) => $get('is_general') === false) // no enviar valor si está deshabilitado
-                            ->required(fn(callable $get) => $get('is_general') === false)   // requerido si NO es general
-                            ->reactive(), // para que se actualice dinámicamente
+                            ->visible($currentPanelId !== 'personal') // 👈 no mostrar en panel personal
+                            ->dehydrated(fn(callable $get) => $get('is_general') === false)
+                            ->required(fn(callable $get) => $get('is_general') === false)
+                            ->reactive(),
 
 
                         Toggle::make('active')->inline(false)
                             ->label('Activa'),
 
-                        Toggle::make('is_general')->inline(false)
-                            ->label('Plantilla General')->reactive()
+                        Toggle::make('is_general')
+                            ->inline(false)
+                            ->label('Plantilla General')
+                            ->reactive()
                             ->afterStateUpdated(function (callable $set, $state) {
                                 if ($state) {
-                                    $set('worker_id', null); // limpia el campo si es general
+                                    $set('worker_id', null);
                                 }
-                            }),
+                            })
+                            ->disabled($currentPanelId == 'personal'), // 👈 no mostrar en panel personal
                     ]),
 
                 // Segunda fila: Repeater ocupa 100%
@@ -231,6 +268,8 @@ class AppointmentTemplateResource extends Resource
 
     public static function table(Table $table): Table
     {
+
+        $currentPanelId = Filament::getCurrentPanel()?->getId();
         return $table
             ->columns([
                 TextColumn::make('name')->label('Nombre')->searchable(),
@@ -342,58 +381,71 @@ class AppointmentTemplateResource extends Resource
                     ->label('')
                     ->icon('heroicon-o-clipboard-document')
                     ->color('success')
-                    ->requiresConfirmation() // Opcional si quieres confirmación antes
-                    ->form([
-                        TextInput::make('duplicate_name')
-                            ->label('Nombre de la plantilla')
-                            ->required(),
+                    ->requiresConfirmation()
+                    ->form(function () use ($currentPanelId) {
+                        $fields = [
+                            TextInput::make('duplicate_name')
+                                ->label('Nombre de la plantilla')
+                                ->required(),
+                        ];
 
-                        Select::make('duplicate_worker_id')
-                            ->label('Empleado')
-                            ->relationship('worker', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->visible(fn(callable $get) => $get('duplicate_general') === false)
+                        if ($currentPanelId !== 'personal') {
+                            // Solo se muestran en paneles que NO son personal
+                            $fields[] = Select::make('duplicate_worker_id')
+                                ->label('Empleado')
+                                ->relationship('worker', 'name')
+                                ->searchable()
+                                ->preload()
+                                ->visible(fn(callable $get) => $get('duplicate_general') === false)
+                                ->dehydrated(fn(callable $get) => $get('duplicate_general') === false)
+                                ->required(fn(callable $get) => $get('duplicate_general') === false)
+                                ->reactive();
 
-                            ->dehydrated(fn(callable $get) => $get('duplicate_general') === false)    // solo enviar si NO es general
-                            ->required(fn(callable $get) => $get('duplicate_general') === false)      // obligatorio si NO es general
-                            ->reactive(),
+                            $fields[] = Toggle::make('duplicate_general')
+                                ->label('¿Plantilla general?')
+                                ->inline(false)
+                                ->reactive()
+                                ->afterStateUpdated(function (callable $set, $state) {
+                                    if ($state) {
+                                        $set('duplicate_worker_id', null);
+                                    }
+                                });
+                        }
 
-                        Toggle::make('duplicate_active')
+                        $fields[] = Toggle::make('duplicate_active')
                             ->label('¿Activa?')
-                            ->inline(false),
+                            ->inline(false);
 
-                        Toggle::make('duplicate_general')
-                            ->label('¿Plantilla general?')
-                            ->inline(false)
-                            ->reactive()
-                            ->afterStateUpdated(function (callable $set, $state) {
-                                if ($state) {
-                                    // limpiar el empleado cuando se marca como plantilla general
-                                    $set('duplicate_worker_id', null);
-                                }
-                            }),
-                    ])
+                        return $fields;
+                    })
                     ->modalHeading('Duplicar plantilla')
                     ->modalSubmitActionLabel('Duplicar')
                     ->modalWidth('md')
-                    ->action(function (array $data, Tables\Actions\Action $action) {
+                    ->action(function (array $data, Tables\Actions\Action $action) use ($currentPanelId) {
                         $original = \App\Models\AppointmentTemplate::findOrFail($action->getRecord()->id);
 
-                        $duplicated = \App\Models\AppointmentTemplate::create([
-                            'name' => $data['duplicate_name'],
-                            'worker_id' => $data['duplicate_worker_id'] ?? null,
+                        // Forzar worker_id e is_general si el panel es personal
+                        $workerId = $currentPanelId === 'personal'
+                            ? Auth::id()
+                            : ($data['duplicate_worker_id'] ?? null);
 
-                            'active' => $data['duplicate_active'],
-                            'is_general' => $data['duplicate_general'],
+                        $isGeneral = $currentPanelId === 'personal'
+                            ? false
+                            : $data['duplicate_general'];
+
+                        $duplicated = \App\Models\AppointmentTemplate::create([
+                            'name'      => $data['duplicate_name'],
+                            'worker_id' => $workerId,
+                            'active'    => $data['duplicate_active'],
+                            'is_general' => $isGeneral,
                         ]);
 
                         foreach ($original->slots as $slot) {
                             $duplicated->slots()->create([
                                 'day_of_week' => $slot->day_of_week,
-                                'start_time' => $slot->start_time,
-                                'end_time' => $slot->end_time,
-                                'group' => $slot->group,
+                                'start_time'  => $slot->start_time,
+                                'end_time'    => $slot->end_time,
+                                'group'       => $slot->group,
                             ]);
                         }
 
@@ -402,16 +454,67 @@ class AppointmentTemplateResource extends Resource
                             ->success()
                             ->send();
 
-                        // Redirige a la edición del nuevo registro
+                        if ($currentPanelId == 'personal') {
+                            return redirect()->route('filament.personal.resources.appointment-templates.edit', [
+                                'record' => $duplicated->id,
+                            ]);
+                        }
+
                         return redirect()->route('filament.admin.resources.appointment-templates.edit', [
                             'record' => $duplicated->id,
                         ]);
                     }),
-                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')
+                Tables\Actions\DeleteAction::make()
+                    ->label('')
+                    ->tooltip('Eliminar')
+                    ->visible(function ($record) use ($currentPanelId) {
+                        if ($currentPanelId == 'admin') {
+                            return true;
+                        } else if ($currentPanelId == 'personal' && $record->worker_id == Auth::user()->id) {
+                            return true;
+                        }
+                        return false;
+                    }),
             ])
             ->bulkActions([
-                //  Tables\Actions\DeleteBulkAction::make(),
-            ]);
+                Tables\Actions\BulkAction::make('cambiarEstado')
+                    ->label('Cambiar estado')
+                    ->icon('heroicon-o-adjustments-horizontal')
+                    ->color('primary')
+                    ->form([
+                        \Filament\Forms\Components\Radio::make('estado')
+                            ->label('Selecciona el estado')
+                            ->options([
+                                1 => 'Activar',
+                                0 => 'Desactivar',
+                            ])
+                            ->required(),
+                    ])
+                    ->action(function (array $data, $records) {
+                        $currentPanelId = \Filament\Facades\Filament::getCurrentPanel()?->getId();
+                        $userId = \Illuminate\Support\Facades\Auth::id();
+
+                        foreach ($records as $record) {
+                            if ($currentPanelId == 'personal' && $record->worker_id === $userId) {
+                                $record->update([
+                                    'active' => $data['estado'],
+                                ]);
+                            } else if ($currentPanelId == 'admin') {
+                                $record->update([
+                                    'active' => $data['estado'],
+                                ]);
+                            }
+                        }
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Estado actualizado')
+                            ->body('Se ha actualizado el estado de las plantillas')
+                            ->success()
+                            ->send();
+                    })
+                    ->deselectRecordsAfterCompletion(), // 👈 Limpia la selección después de ejecutar
+            ])
+        ;
     }
 
     public static function getRelations(): array

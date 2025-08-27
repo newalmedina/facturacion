@@ -7,6 +7,7 @@ use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Str;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 
 class EditAppointmentTemplate extends EditRecord
 {
@@ -19,6 +20,8 @@ class EditAppointmentTemplate extends EditRecord
             //Actions\DeleteAction::make(),
         ];
     }
+
+
     protected function getCancelFormAction(): Action
     {
         return Action::make('cancel')
@@ -28,6 +31,7 @@ class EditAppointmentTemplate extends EditRecord
     }
     protected function mutateFormDataBeforeFill(array $data): array
     {
+
         $grouped = [];
 
         foreach ($this->record->slots->groupBy('group') as $groupSlots) {
@@ -53,6 +57,11 @@ class EditAppointmentTemplate extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+
+        $currentPanelId = Filament::getCurrentPanel()?->getId();
+        if ($currentPanelId == "personal") {
+            $data['is_general'] = false;
+        }
         if ($data["is_general"]) {
             $data["worker_id"] = null;
         }

@@ -29,6 +29,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Tables\Actions\Action as TableAction;
 use Filament\Actions\Action as ModalAction;
+use Illuminate\Support\Facades\Auth;
+use Filament\Facades\Filament;
 
 class AppointmentResource extends Resource
 {
@@ -49,7 +51,22 @@ class AppointmentResource extends Resource
     {
         return 'Citas';
     }
+    public static function getEloquentQuery(): Builder
+    {
 
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+
+        // Obtener el ID del panel actual
+        $currentPanelId = Filament::getCurrentPanel()?->getId();
+        // Filtrar solo si estamos en el panel "personal"
+        if ($user && $currentPanelId === 'personal') {
+            $query->where('worker_id', $user->id);
+        }
+
+        return $query;
+    }
 
     public static function form(Form $form): Form
     {
@@ -63,6 +80,7 @@ class AppointmentResource extends Resource
                     ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- Aplica el scope
                     ->searchable()
                     ->preload()
+                    ->visible(fn() => Filament::getCurrentPanel()?->getId() !== 'personal')
                     ->placeholder('Selecciona empleado'),
 
                 Select::make('item_id')
@@ -223,6 +241,7 @@ class AppointmentResource extends Resource
                     ->numeric()
                     ->label('Empleado')   // Etiqueta de la columna
                     ->searchable()        // Se puede buscar en esta columna
+                    ->visible(fn() => Filament::getCurrentPanel()?->getId() !== 'personal')
                     ->sortable(),         // Se puede ordenar por esta columna
                 Tables\Columns\TextColumn::make('item.name')
                     ->label('Servicio')
@@ -272,7 +291,7 @@ class AppointmentResource extends Resource
                             ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- Aplica el scope
                             ->searchable()
                             ->preload()
-                            ->placeholder('Selecciona empleado'),
+                            ->placeholder('Selecciona empleado')->visible(fn() => Filament::getCurrentPanel()?->getId() !== 'personal'),
 
 
                         DatePicker::make('date_from')
@@ -534,6 +553,28 @@ class AppointmentResource extends Resource
                                 ->success()
                                 ->send();
                         }),
+                    BulkAction::make('delete_available')
+                        ->label('Eliminar disponibles')
+                        ->color('danger')
+                        ->requiresConfirmation() // <-- mensaje de confirmación
+                        ->modalHeading('Confirmar eliminación')
+                        ->modalSubheading('¿Seguro que deseas eliminar los registros seleccionados que estén disponibles? Esta acción no se puede deshacer.')
+                        ->modalButton('Sí, eliminar')
+                        ->action(function ($records) {
+                            $deletedCount = 0;
+
+                            foreach ($records as $record) {
+                                if ($record->status === 'available') {
+                                    $record->delete();
+                                    $deletedCount++;
+                                }
+                            }
+
+                            Notification::make()
+                                ->title("Se eliminaron {$deletedCount} registros disponibles")
+                                ->success()
+                                ->send();
+                        }),
                 ]),
                 BulkAction::make('export')->label('Exportar ' . self::getPluralModelLabel())->icon('heroicon-m-arrow-down-tray')
                     ->action(function ($records) {
@@ -562,7 +603,7 @@ class AppointmentResource extends Resource
     {
         return [
             'index' => Pages\ListAppointments::route('/'),
-            // 'create' => Pages\CreateAppointment::route('/create'),
+            'create' => Pages\CreateAppointment::route('/create'),
             'edit' => Pages\EditAppointment::route('/{record}/edit'),
         ];
     }
