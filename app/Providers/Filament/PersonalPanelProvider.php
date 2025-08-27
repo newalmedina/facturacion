@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
 use App\Filament\AvatarProviders\AutenticatedUserAvatar;
+use App\Filament\CustomWidgets\AppointmentStats;
 use App\Filament\Resources\AppointmentResource;
 use App\Filament\Resources\AppointmentTemplateResource;
 use App\Http\Middleware\AuthenticateAndCheckActive;
@@ -73,6 +74,8 @@ class PersonalPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
+
+                AppointmentStats::class,
             ])
             ->middleware([
                 EncryptCookies::class,
