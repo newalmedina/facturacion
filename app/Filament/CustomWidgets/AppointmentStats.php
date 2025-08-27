@@ -90,7 +90,7 @@ class AppointmentStats extends BaseWidget
         while ($currentDate->lte($endDate)) {
             $dateString = $currentDate->format('Y-m-d');
 
-            $query = Appointment::query()
+            $query = Appointment::query()->statusConfirmed()
                 ->whereDate('date', $dateString);
 
             if ($currentPanelId === 'personal' && $user) {
