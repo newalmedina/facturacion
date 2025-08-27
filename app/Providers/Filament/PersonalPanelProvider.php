@@ -4,7 +4,8 @@ namespace App\Providers\Filament;
 
 use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
 use App\Filament\AvatarProviders\AutenticatedUserAvatar;
-
+use App\Filament\Resources\AppointmentResource;
+use App\Filament\Resources\AppointmentTemplateResource;
 use App\Http\Middleware\AuthenticateAndCheckActive;
 use App\Models\Setting;
 use Filament\Http\Middleware\Authenticate;
@@ -59,7 +60,10 @@ class PersonalPanelProvider extends PanelProvider
                 'light' => '#f5f5f5',       // Gris claro de fondo
                 'dark' => '#000000',        // Negro
             ])
-
+            ->resources([
+                AppointmentResource::class, // 👈 registramos tu Resource aquí
+                AppointmentTemplateResource::class, // 👈 registramos tu Resource aquí
+            ])
             ->defaultAvatarProvider(AutenticatedUserAvatar::class)
             ->plugins([])
             ->pages([

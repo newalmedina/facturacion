@@ -58,10 +58,10 @@ class Appointment extends Model
             'available' => '#6c757d',   // gris (bootstrap secondary)
             'confirmed' => '#28a745', // verde (bootstrap success)
             'cancelled' => '#dc3545', // rojo (bootstrap danger)
+            'pending_confirmation' => '#63b2f7ff',          // gris
             null => '#6c757d',        // gris
             '' => '#6c757d',          // gris
         ];
-
         return $colors[$this->status] ?? '#6c757d'; // gris por defecto
     }
     protected static function booted()
