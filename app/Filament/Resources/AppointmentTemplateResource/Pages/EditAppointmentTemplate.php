@@ -58,7 +58,6 @@ class EditAppointmentTemplate extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
 
-        dd($data);
         $currentPanelId = Filament::getCurrentPanel()?->getId();
         if ($currentPanelId == "personal") {
             $data['is_general'] = false;
