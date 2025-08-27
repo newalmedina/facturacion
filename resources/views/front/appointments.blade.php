@@ -13,7 +13,7 @@
             
            <div class="row">
                 <div class="col-lg-8 mx-auto">
-             @livewire('front-booking', ['generalSettings' => $generalSettings])
+             @livewire('front-booking', ['generalSettings' => $generalSettings,'contactForm' => $contactForm])
 
                 </div>
             </div>

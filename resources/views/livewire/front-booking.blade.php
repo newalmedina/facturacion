@@ -78,12 +78,13 @@
                                         <p class="text-red-600">
                                             ❌ No hay citas disponibles para este día.  
                                             Contáctanos a través de 
-                                            <a href="{{ $contactForm->whatsapp_url }}" target="_blank" class="text-green-600 underline">
+                                            <a    target="_blank" 
+                                            href="https://wa.me/{{ preg_replace('/\D/', '', $contactForm->whatsapp_url) }}"  class="text-green-600 underline">
                                                 WhatsApp ({{$contactForm->whatsapp_url }})
                                             </a> 
                                             o envíanos un 
                                             <a href="mailto:{{ $generalSettings->email }}" class="text-blue-600 underline">
-                                                correo electrónico {{ $generalSettings->email  }}
+                                                correo electrónico ({{ $generalSettings->email  }})
                                             </a> 
                                             para ver la posibilidad de poder reservar.
                                         </p>
