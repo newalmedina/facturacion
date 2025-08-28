@@ -95,4 +95,8 @@ class Appointment extends Model
     {
         return $query->where('status', 'available');
     }
+    public function scopeStatusConfirmed($query)
+    {
+        return $query->where('status', 'confirmed');
+    }
 }

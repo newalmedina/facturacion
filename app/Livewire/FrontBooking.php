@@ -30,6 +30,7 @@ class FrontBooking extends Component
     public $worker_id = null;
     public $showForm = true;
     public $generalSettings;
+    public $contactForm;
     public $selectedAppointment = null;
     public $selectedItem = null;
     public $selecteOtherdItem = null;

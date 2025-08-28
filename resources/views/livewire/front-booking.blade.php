@@ -84,7 +84,20 @@
                             @empty
                                 <div class="col-12">
                                     <p class="text-danger fw-bold text-center mt-3">
-                                        ❌ No hay citas disponibles para este día.
+                                        <p class="text-red-600">
+                                            ❌ No hay citas disponibles para este día.  
+                                            Contáctanos a través de 
+                                            <a    target="_blank" 
+                                            href="https://wa.me/{{ preg_replace('/\D/', '', $contactForm->whatsapp_url) }}"  class="text-green-600 underline">
+                                                WhatsApp ({{$contactForm->whatsapp_url }})
+                                            </a> 
+                                            o envíanos un 
+                                            <a href="mailto:{{ $generalSettings->email }}" class="text-blue-600 underline">
+                                                correo electrónico ({{ $generalSettings->email  }})
+                                            </a> 
+                                            para ver la posibilidad de poder reservar.
+                                        </p>
+                                        
                                     </p>
                                 </div>
                             @endforelse
