@@ -23,6 +23,7 @@ class FrontBooking extends Component
     public $showItems = [];
     public $showItemsOthers = [];
     public $apppointmentList = [];
+    public $highlightedDates = [];
     public $workerlist = [];
     public $countries = [];
     public $phoneCode = 207;
@@ -88,6 +89,13 @@ class FrontBooking extends Component
             ->select('id', 'name', 'phonecode')
             ->orderBy('name', 'asc')
             ->get();
+        $this->highlightedDates = Appointment::active()
+            ->where("date", ">=", Carbon::now()->format('Y-m-d'))
+            ->statusAvailable()
+            ->distinct("date") // 👈 solo fechas únicas
+            ->pluck("date")
+            ->map(fn($date) => Carbon::parse($date)->format("Y-m-d"))
+            ->toArray();
 
         // $this->sendMail();
     }

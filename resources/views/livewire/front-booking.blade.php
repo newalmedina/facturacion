@@ -25,6 +25,15 @@
                     <div class="row">
                         <!-- Calendario -->
                         <div class="col-12 mb-3">
+                           <div class="col-12 mb-3">
+                            <!-- 📌 Leyenda -->
+                            <div class="mb-2 d-flex align-items-center">
+                                <span style="display:inline-block; width:16px; height:16px; background-color:#22c55e; border-radius:50%; margin-right:8px;"></span>
+                                <span>{{ __('Día con citas disponible') }}</span>
+                            </div>
+                                                
+                        </div>
+                        <div class="col-12 mb-3">
                            <div id="calendar-container" wire:ignore>
                                 <!-- calendario -->
                             </div>
@@ -248,8 +257,48 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-
 <script>
+    document.addEventListener('livewire:initialized', () => {
+        initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));
+
+        Livewire.hook('morphed', ({ el, component }) => {
+            if (el.querySelector('#calendar-container')) {
+                initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));
+            }
+        });
+    });
+
+    function initializeCalendar(selectedDate, highlightedDates) {
+        let calendarEl = document.querySelector("#calendar-container");
+
+        if (!calendarEl) return;
+
+        if (calendarEl._flatpickr) {
+            calendarEl._flatpickr.destroy();
+        }
+
+        flatpickr(calendarEl, {
+            inline: true,
+            defaultDate: selectedDate || "today",
+            minDate: "today",
+            locale: "es",
+            dateFormat: "Y-m-d",
+            monthSelectorType: "static",
+            onChange: function(selectedDates, dateStr, instance) {
+                @this.set('selectedDate', dateStr);
+            },
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                let date = dayElem.dateObj.toISOString().split('T')[0];
+
+                if (highlightedDates.includes(date)) {
+                    dayElem.style.backgroundColor = "#22c55e"; // verde (equivale a bg-green-500)
+                    dayElem.style.color = "white"; // texto en blanco
+                    dayElem.style.borderRadius = "50%"; // redondo como círculo
+                }
+            }
+        });
+    }
+</script>{{-- <script>
     document.addEventListener('livewire:initialized', () => {
         // Inicializa en el primer render
         initializeCalendar(@this.get('selectedDate'));
@@ -284,7 +333,7 @@
             }
         });
     }
-</script>
+</script> --}}
 @endpush
 
 
