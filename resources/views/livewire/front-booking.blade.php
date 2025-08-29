@@ -301,14 +301,19 @@
                 @this.set('selectedDate', dateStr);
             },
             onDayCreate: function(dObj, dStr, fp, dayElem) {
-                let date = dayElem.dateObj.toISOString().split('T')[0];
+                let dateObj = dayElem.dateObj;
+                let date = dateObj.getFullYear() + '-' +
+                        String(dateObj.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(dateObj.getDate()).padStart(2, '0');
 
                 if (highlightedDates.includes(date)) {
-                    dayElem.style.backgroundColor = "#22c55e"; // verde (equivale a bg-green-500)
-                    dayElem.style.color = "white"; // texto en blanco
-                    dayElem.style.borderRadius = "50%"; // redondo como círculo
+                    dayElem.style.backgroundColor = "#22c55e"; // verde
+                    dayElem.style.color = "white";
+                    dayElem.style.borderRadius = "50%";
                 }
             }
+
+            
         });
     }
 </script>{{-- <script>

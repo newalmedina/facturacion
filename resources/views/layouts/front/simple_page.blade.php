@@ -24,6 +24,7 @@
  
 {{-- @livewireStyles --}}
     @stack('styles')
+    @livewireStyles
 </head>
 <body>
     @php
@@ -94,5 +95,6 @@ $generalSettings = $settings?->general;
 @endif
     </div>
 </div>
+@livewireScripts
 </body>
 </html>
