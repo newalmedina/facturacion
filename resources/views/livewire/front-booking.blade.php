@@ -41,7 +41,7 @@
                         <div class="col-12  mb-3 pt-5">
                             <div class="mb-3">
                                 <label class="form-label">Selecciona un trabajador</label>
-                                <select wire:model.live="worker_id" class="form-control w-100">
+                                <select wire:model.debounce.500ms="worker_id" class="form-control w-100">
                                     <option value="">Todos</option>
                                     @foreach($workerlist as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -265,7 +265,7 @@
   
 
 @push('scripts')
-{{-- <script>
+<script>
     document.addEventListener('livewire:initialized', () => {
         initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));
 
@@ -314,7 +314,7 @@
             
         });
     }
-</script> --}}
+</script>
 @endpush
 
 
