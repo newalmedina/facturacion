@@ -41,7 +41,7 @@
                         <div class="col-12  mb-3 pt-5">
                             <div class="mb-3">
                                 <label class="form-label">Selecciona un trabajador</label>
-                                <select wire:model.debounce.500ms="worker_id" class="form-control w-100">
+                                <select wire:model.defer="worker_id" wire:change='loadAppointments' class="form-control w-100">
                                     <option value="">Todos</option>
                                     @foreach($workerlist as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -269,7 +269,7 @@
     document.addEventListener('livewire:initialized', () => {
         initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));
 
-        Livewire.hook('morph.updated', ({ el, component }) => {
+        Livewire.hook('morphed', ({ el, component }) => {
            
             if (el.querySelector('#calendar-container')) {
                 initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));

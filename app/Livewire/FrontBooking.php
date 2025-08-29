@@ -122,10 +122,10 @@ class FrontBooking extends Component
     /**
      * Se dispara automáticamente cuando cambia $worker_id o $date
      */
-    public function updatedWorkerId()
-    {
-        $this->loadAppointments();
-    }
+    // public function updatedWorkerId()
+    // {
+    //     $this->loadAppointments();
+    // }
 
     public function updatedDate()
     {
@@ -138,7 +138,7 @@ class FrontBooking extends Component
     }
 
 
-    private function loadAppointments()
+    public function loadAppointments()
     {
         $this->apppointmentList = Appointment::with('worker') // carga los trabajadores relacionados
             ->active()
