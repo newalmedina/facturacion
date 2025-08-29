@@ -97,7 +97,7 @@ class FrontBooking extends Component
             ->pluck("date")
             ->map(fn($date) => Carbon::parse($date)->format("Y-m-d"))
             ->toArray();
-
+        $this->loadAppointments();
         // $this->sendMail();
     }
 
@@ -132,13 +132,19 @@ class FrontBooking extends Component
         $this->loadAppointments();
     }
 
+    public function updatedSelectedDate()
+    {
+        $this->loadAppointments();
+    }
+
+
     private function loadAppointments()
     {
-        $this->apppointmentList = Appointment::active()
-            ->where("date", $this->selectedDate)
+        $this->apppointmentList = Appointment::with('worker') // carga los trabajadores relacionados
+            ->active()
+            ->where('date', $this->selectedDate)
             ->when(!empty($this->worker_id), fn($query) => $query->where('worker_id', $this->worker_id))
             ->statusAvailable()
-            ->orderBy('date', 'asc')
             ->orderBy('start_time', 'asc')
             ->get();
 
@@ -220,6 +226,14 @@ class FrontBooking extends Component
     }
 
 
+    public function getSelectedItem()
+    {
+        $this->selectedItem = Item::find($this->form["item_id"]);
+    }
+    public function getSelectedOtherItem()
+    {
+        $this->selecteOtherdItem = Item::find($this->other_item_id);
+    }
     public function initCalendar()
     {
         $this->dispatchBrowserEvent('init-calendar');
@@ -228,9 +242,9 @@ class FrontBooking extends Component
     public function render()
     {
         // Cargar citas inicialmente
-        $this->loadAppointments();
-        $this->selectedItem = Item::find($this->form["item_id"]);
-        $this->selecteOtherdItem = Item::find($this->other_item_id);
+        // $this->loadAppointments();
+        // $this->selectedItem = Item::find($this->form["item_id"]);
+        // $this->selecteOtherdItem = Item::find($this->other_item_id);
         // dd($this->selectedItem);
         // dd($this->selectedAppointment);
         return view('livewire.front-booking');

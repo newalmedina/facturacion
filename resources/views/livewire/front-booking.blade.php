@@ -163,7 +163,7 @@
                             <div class="row">
                                 <div class="col-12  mb-3">
                                 <label for="item_id" class="form-label">Selecciona un Servicio</label>
-                                    <select id="item_id" wire:model.live="form.item_id" class="form-control" autocomplete="off">
+                                    <select id="item_id" wire:model.defer="form.item_id" wire:change='getSelectedItem' class="form-control" autocomplete="off">
                                         <option value="">-- Seleccionar --</option>
                                         @foreach($showItems as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }} -- {{ $item->total_price }}€</option>
@@ -233,7 +233,7 @@
         <div class="col-12 mb-3">
             <!-- Selección de otros items -->
             <label class="form-label">Otros servicios</label>
-                <select wire:model.live="other_item_id" class="form-control w-100">
+                <select wire:model.defer="other_item_id"  wire:change='getSelectedOtherItem' class="form-control w-100">
                     <option value="">-- Seleccionar --</option>
                     @foreach($showItemsOthers as $item)
                         <option value="{{ $item->id }}">{{ $item->name . ' -- ' . $item->total_price . '€' }}</option>
