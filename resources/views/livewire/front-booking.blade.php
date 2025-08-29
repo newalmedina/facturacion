@@ -1,9 +1,6 @@
 <div>
     @push('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <style>
-
-    </style>
+   
     @endpush
 
     <h3 class="mb-4 text-center text-primary" style="color:#b462e2 !important">Reserva tu cita</h3>
@@ -268,18 +265,19 @@
   
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-<script>
+{{-- <script>
     document.addEventListener('livewire:initialized', () => {
         initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));
 
-        Livewire.hook('morphed', ({ el, component }) => {
+        Livewire.hook('morph.updated', ({ el, component }) => {
+           
             if (el.querySelector('#calendar-container')) {
                 initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));
             }
         });
+        
     });
+    
 
     function initializeCalendar(selectedDate, highlightedDates) {
         let calendarEl = document.querySelector("#calendar-container");
@@ -314,41 +312,6 @@
             }
 
             
-        });
-    }
-</script>{{-- <script>
-    document.addEventListener('livewire:initialized', () => {
-        // Inicializa en el primer render
-        initializeCalendar(@this.get('selectedDate'));
-
-        // Reinicializa después de cada render del componente
-        Livewire.hook('morphed', ({ el, component }) => {
-            if (el.querySelector('#calendar-container')) {
-                initializeCalendar(@this.get('selectedDate'));
-            }
-        });
-    });
-
-    function initializeCalendar(selectedDate) {
-        let calendarEl = document.querySelector("#calendar-container");
-
-        if (!calendarEl) return;
-
-        // Destruir instancia previa si existe
-        if (calendarEl._flatpickr) {
-            calendarEl._flatpickr.destroy();
-        }
-
-        flatpickr(calendarEl, {
-            inline: true,
-            defaultDate: selectedDate || "today", // 👉 si hay fecha seleccionada la usamos
-            minDate: "today",
-            locale: "es",
-            dateFormat: "Y-m-d",
-            monthSelectorType: "static",
-            onChange: function(selectedDates, dateStr, instance) {
-                @this.set('selectedDate', dateStr);
-            }
         });
     }
 </script> --}}

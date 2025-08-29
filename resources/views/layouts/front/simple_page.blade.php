@@ -15,6 +15,8 @@
     <link href="{{ asset('assets/front/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/front/css/bootstrap-icons.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/front/css/templatemo-barber-shop.css') }}" rel="stylesheet">
+    
+       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <!-- SWIPER CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
 <!-- Font Awesome 5 -->
@@ -81,7 +83,8 @@ $generalSettings = $settings?->general;
     
     <!-- SWIPER JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
     {{-- @livewireScripts --}}
     @stack('scripts')
  @if(!empty($contactForm->whatsapp_url))
