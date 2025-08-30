@@ -21,7 +21,8 @@
         "shuvroroy/filament-spatie-laravel-backup": "^2.2",
         "stechstudio/filament-impersonate": "^3.16",
         "tapp/filament-authentication-log": "^3.1",
-        "torann/geoip": "^3.0"
+        "torann/geoip": "^3.0",
+        "voku/html-min": "^4.5"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",
