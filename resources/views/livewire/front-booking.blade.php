@@ -1,6 +1,9 @@
 <div>
     @push('styles')
-   
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+
+    </style>
     @endpush
 
     <h3 class="mb-4 text-center text-primary" style="color:#b462e2 !important">Reserva tu cita</h3>
@@ -41,7 +44,7 @@
                         <div class="col-12  mb-3 pt-5">
                             <div class="mb-3">
                                 <label class="form-label">Selecciona un trabajador</label>
-                                <select wire:model.defer="worker_id" wire:change='loadAppointments' class="form-control w-100">
+                                <select wire:model.live="worker_id" class="form-control w-100">
                                     <option value="">Todos</option>
                                     @foreach($workerlist as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -63,16 +66,16 @@
                                             </div>
                                         </div>
                                 </div>
-                                @forelse($apppointmentList as $appointment)
+                            @forelse($apppointmentList as $appointment)
                                 <div class="col-12 col-md-3 d-flex">
                                     <label class="appointment-card d-block cursor-pointer flex-fill h-100"
-                                           wire:click="selectAppointment({{ $appointment['id'] }})">
-                            
-                                        <div class="card h-100 shadow-sm {{ $appointment['id'] == $selectedAppointment ? 'selected' : '' }}">
+                                        wire:click="selectAppointment({{ $appointment->id }})">
+
+                                        <div class="card h-100 shadow-sm {{ $appointment->id == $selectedAppointment ? 'selected' : '' }}">
                                             <div class="card-body text-center d-flex flex-column justify-content-center">
-                                                <span style="font-size: 15px">{{ $appointment['worker_name'] }}</span>
+                                                <span style="font-size: 15px">{{ $appointment->worker->name }}</span>
                                                 <p style="font-size: 15px">
-                                                    {{ $appointment['start_time'] }} - {{ $appointment['end_time'] }}
+                                                    {{ $appointment->start_time->format('H:i') }} - {{ $appointment->end_time->format('H:i') }}
                                                 </p>
                                             </div>
                                         </div>
@@ -81,20 +84,7 @@
                             @empty
                                 <div class="col-12">
                                     <p class="text-danger fw-bold text-center mt-3">
-                                        <p class="text-red-600">
-                                            ❌ No hay citas disponibles para este día.  
-                                            Contáctanos a través de 
-                                            <a    target="_blank" 
-                                            href="https://wa.me/{{ preg_replace('/\D/', '', $contactForm->whatsapp_url) }}"  class="text-green-600 underline">
-                                                WhatsApp ({{$contactForm->whatsapp_url }})
-                                            </a> 
-                                            o envíanos un 
-                                            <a href="mailto:{{ $generalSettings->email }}" class="text-blue-600 underline">
-                                                correo electrónico ({{ $generalSettings->email  }})
-                                            </a> 
-                                            para ver la posibilidad de poder reservar.
-                                        </p>
-                                        
+                                        ❌ No hay citas disponibles para este día.
                                     </p>
                                 </div>
                             @endforelse
@@ -134,7 +124,7 @@
                         <div class="col-12 col-md-3 mb-3">
                             <label for="phoneCode" class="form-label">Código país</label>
                             <select id="phoneCode"  wire:model.defer="phoneCode" class="form-control" autocomplete="off">
-                                @foreach($this->countries as $country)
+                                @foreach($countries as $country)
                                     <option value="{{ $country->id }}">
                                         {{ $country->name }} (+{{ $country->phonecode }})
                                     </option>
@@ -160,9 +150,9 @@
                             <div class="row">
                                 <div class="col-12  mb-3">
                                 <label for="item_id" class="form-label">Selecciona un Servicio</label>
-                                    <select id="item_id" wire:model.defer="form.item_id" wire:change='getSelectedItem' class="form-control" autocomplete="off">
+                                    <select id="item_id" wire:model.live="form.item_id" class="form-control" autocomplete="off">
                                         <option value="">-- Seleccionar --</option>
-                                        @foreach($this->showItems as $item)
+                                        @foreach($showItems as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }} -- {{ $item->total_price }}€</option>
                                         @endforeach
                                     </select>
@@ -230,9 +220,9 @@
         <div class="col-12 mb-3">
             <!-- Selección de otros items -->
             <label class="form-label">Otros servicios</label>
-                <select wire:model.defer="other_item_id"  wire:change='getSelectedOtherItem' class="form-control w-100">
+                <select wire:model.live="other_item_id" class="form-control w-100">
                     <option value="">-- Seleccionar --</option>
-                    @foreach($this->showItemsOthers as $item)
+                    @foreach($showItemsOthers as $item)
                         <option value="{{ $item->id }}">{{ $item->name . ' -- ' . $item->total_price . '€' }}</option>
                     @endforeach
                 </select>
@@ -265,19 +255,18 @@
   
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 <script>
     document.addEventListener('livewire:initialized', () => {
         initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));
 
         Livewire.hook('morphed', ({ el, component }) => {
-           
             if (el.querySelector('#calendar-container')) {
                 initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));
             }
         });
-        
     });
-    
 
     function initializeCalendar(selectedDate, highlightedDates) {
         let calendarEl = document.querySelector("#calendar-container");
@@ -314,7 +303,42 @@
             
         });
     }
-</script>
+</script>{{-- <script>
+    document.addEventListener('livewire:initialized', () => {
+        // Inicializa en el primer render
+        initializeCalendar(@this.get('selectedDate'));
+
+        // Reinicializa después de cada render del componente
+        Livewire.hook('morphed', ({ el, component }) => {
+            if (el.querySelector('#calendar-container')) {
+                initializeCalendar(@this.get('selectedDate'));
+            }
+        });
+    });
+
+    function initializeCalendar(selectedDate) {
+        let calendarEl = document.querySelector("#calendar-container");
+
+        if (!calendarEl) return;
+
+        // Destruir instancia previa si existe
+        if (calendarEl._flatpickr) {
+            calendarEl._flatpickr.destroy();
+        }
+
+        flatpickr(calendarEl, {
+            inline: true,
+            defaultDate: selectedDate || "today", // 👉 si hay fecha seleccionada la usamos
+            minDate: "today",
+            locale: "es",
+            dateFormat: "Y-m-d",
+            monthSelectorType: "static",
+            onChange: function(selectedDates, dateStr, instance) {
+                @this.set('selectedDate', dateStr);
+            }
+        });
+    }
+</script> --}}
 @endpush
 
 

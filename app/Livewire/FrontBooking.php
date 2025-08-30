@@ -9,7 +9,6 @@ use App\Models\Country;
 use App\Models\Item;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
@@ -21,17 +20,16 @@ class FrontBooking extends Component
     public $selectedDate;
     public Appointment $apppointment;
     public $message;
-    /* public $showItems = [];
-    public $showItemsOthers = [];*/
+    public $showItems = [];
+    public $showItemsOthers = [];
     public $apppointmentList = [];
     public $highlightedDates = [];
     public $workerlist = [];
-    //  public $countries = [];
+    public $countries = [];
     public $phoneCode = 207;
     public $worker_id = null;
     public $showForm = true;
     public $generalSettings;
-    public $contactForm;
     public $selectedAppointment = null;
     public $selectedItem = null;
     public $selecteOtherdItem = null;
@@ -74,29 +72,10 @@ class FrontBooking extends Component
         'date.after_or_equal' => 'La fecha no puede ser anterior a hoy.',
         'form.comments.string' => 'Los comentarios deben ser texto.',
     ];
-    public function getCountriesProperty()
-    {
-        return Cache::rememberForever('active_countries', function () {
-            return Country::activos()
-                ->select('id', 'name', 'phonecode')
-                ->orderBy('name', 'asc')
-                ->get();
-        });
-    }
 
-    public function getShowItemsProperty()
-    {
-        return Cache::remember('show_items', now()->addMinutes(10), function () {
-            return Item::showBooking()->orderBy('price', 'asc')->get();
-        });
-    }
 
-    public function getShowItemsOthersProperty()
-    {
-        return Cache::remember('show_items_others', now()->addMinutes(10), function () {
-            return Item::showBookingOthers()->orderBy('price', 'asc')->get();
-        });
-    }
+
+
 
     public function mount()
     {
@@ -104,21 +83,20 @@ class FrontBooking extends Component
         $this->selectedDate = Carbon::now()->format("Y-m-d");
 
         $this->workerlist = User::canAppointment()->get();
-        /* $this->showItems = Item::showBooking()->orderBy('price', 'asc')->get();
-        $this->showItemsOthers = Item::showBookingOthers()->orderBy('price', 'asc')->get();*/
-        /* $this->countries = Country::activos()
+        $this->showItems = Item::showBooking()->orderBy('price', 'asc')->get();
+        $this->showItemsOthers = Item::showBookingOthers()->orderBy('price', 'asc')->get();
+        $this->countries = Country::activos()
             ->select('id', 'name', 'phonecode')
             ->orderBy('name', 'asc')
-            ->get();*/
+            ->get();
         $this->highlightedDates = Appointment::active()
-            ->where('date', '>=', Carbon::now()->format('Y-m-d'))
+            ->where("date", ">=", Carbon::now()->format('Y-m-d'))
             ->statusAvailable()
-            ->distinct()
-            ->pluck('date')
-            ->map(fn($date) => Carbon::parse($date)->format('Y-m-d'))
-            ->take(30) // Limitar solo próximos 30 días
+            ->distinct("date") // 👈 solo fechas únicas
+            ->pluck("date")
+            ->map(fn($date) => Carbon::parse($date)->format("Y-m-d"))
             ->toArray();
-         $this->loadAppointments();
+
         // $this->sendMail();
     }
 
@@ -143,40 +121,26 @@ class FrontBooking extends Component
     /**
      * Se dispara automáticamente cuando cambia $worker_id o $date
      */
-    // public function updatedWorkerId()
-    // {
-    //     $this->loadAppointments();
-    // }
+    public function updatedWorkerId()
+    {
+        $this->loadAppointments();
+    }
 
     public function updatedDate()
     {
         $this->loadAppointments();
     }
 
-    public function updatedSelectedDate()
+    private function loadAppointments()
     {
-        $this->loadAppointments();
-    }
-
-
-    public function loadAppointments()
-    {
-        $this->apppointmentList = Appointment::query()
-            ->select('id', 'worker_id', 'start_time', 'end_time')
-            ->active()
-            ->where('date', $this->selectedDate)
+        $this->apppointmentList = Appointment::active()
+            ->where("date", $this->selectedDate)
             ->when(!empty($this->worker_id), fn($query) => $query->where('worker_id', $this->worker_id))
             ->statusAvailable()
+            ->orderBy('date', 'asc')
             ->orderBy('start_time', 'asc')
-            ->get()
-            ->map(function ($appointment) {
-                return [
-                    'id' => $appointment->id,
-                    'worker_name' => $appointment->worker->name,
-                    'start_time' => $appointment->start_time->format('H:i'),
-                    'end_time' => $appointment->end_time->format('H:i'),
-                ];
-            });
+            ->get();
+
         if (!empty($this->selectedAppointment)) {
             $found = false;
 
@@ -255,14 +219,6 @@ class FrontBooking extends Component
     }
 
 
-    public function getSelectedItem()
-    {
-        $this->selectedItem = Item::find($this->form["item_id"]);
-    }
-    public function getSelectedOtherItem()
-    {
-        $this->selecteOtherdItem = Item::find($this->other_item_id);
-    }
     public function initCalendar()
     {
         $this->dispatchBrowserEvent('init-calendar');
@@ -271,9 +227,9 @@ class FrontBooking extends Component
     public function render()
     {
         // Cargar citas inicialmente
-        // $this->loadAppointments();
-        // $this->selectedItem = Item::find($this->form["item_id"]);
-        // $this->selecteOtherdItem = Item::find($this->other_item_id);
+        $this->loadAppointments();
+        $this->selectedItem = Item::find($this->form["item_id"]);
+        $this->selecteOtherdItem = Item::find($this->other_item_id);
         // dd($this->selectedItem);
         // dd($this->selectedAppointment);
         return view('livewire.front-booking');
