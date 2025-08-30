@@ -58,10 +58,10 @@ class FrontBooking extends Component
         $this->workerlist = User::canAppointment()->get();
         $this->showItems = Item::showBooking()->orderBy('price')->get();
         $this->showItemsOthers = Item::showBookingOthers()->orderBy('price')->get();
-        /*$this->countries = Country::activos()
+        $this->countries = Country::activos()
             ->select('id', 'name', 'phonecode')
             ->orderBy('name')
-            ->get();*/
+            ->get();
         $this->highlightedDates = Appointment::active()
             ->where("date", ">=", now()->format('Y-m-d'))
             ->statusAvailable()
