@@ -1,14 +1,4 @@
-    @php
-    use App\Models\Setting;
-    use App\Models\State;
-    use App\Models\City;
 
-$settings = Setting::first();
- $generalSettings = $settings?->general;
-        // $generalSettings?->brand_name = $generalSettings?->brand_name ?? config('app.name', 'Mi Empresa');
-        $state = State::find(trim($generalSettings->state_id, '"'));
-        $city = City::find(trim($generalSettings->city_id, '"'));
-@endphp
 <footer class="site-footer">
     <div class="container">
         <div class="row">

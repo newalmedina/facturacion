@@ -51,7 +51,7 @@ class FrontBooking extends Component
 
     public function mount()
     {
-        /*$this->apppointment = new Appointment();
+        $this->apppointment = new Appointment();
         $this->selectedDate = Carbon::now()->format("Y-m-d");
 
         // Datos estáticos: solo se cargan una vez
@@ -71,13 +71,13 @@ class FrontBooking extends Component
             ->toArray();
 
         // Primera carga de citas
-        $this->loadAppointments();*/
+        $this->loadAppointments();
     }
 
     private function loadAppointments()
     {
         $this->apppointmentList = Appointment::active()
-            //  ->with('worker') // 🔥 evita N+1
+            ->with('worker') // 🔥 evita N+1
             ->where("date", $this->selectedDate)
             ->when($this->worker_id, fn($q) => $q->where('worker_id', $this->worker_id))
             ->statusAvailable()

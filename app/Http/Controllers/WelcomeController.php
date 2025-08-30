@@ -19,15 +19,28 @@ class WelcomeController extends Controller
         if (!$generalSettings->has_home) {
             abort(404);
         }
-        $jumbotron = CmsContent::findBySlug('header-jumbotron');
-        $aboutUs = CmsContent::findBySlug('about-us');
-        $discounts = CmsContent::findBySlug('discounts');
-        $service = CmsContent::findBySlug('services');
-        $priceList = CmsContent::findBySlug('price-catalog');
-        $contactForm = CmsContent::findBySlug('contact-form');
-        $gallery = CmsContent::findBySlug('gallery');
+        // 🔹 Cargar todos los CmsContent en una sola query
+        $slugs = [
+            'header-jumbotron',
+            'about-us',
+            'discounts',
+            'services',
+            'price-catalog',
+            'contact-form',
+            'gallery'
+        ];
 
+        $cmsContents = CmsContent::whereIn('slug', $slugs)
+            ->get()
+            ->keyBy('slug');
 
+        $jumbotron   = $cmsContents['header-jumbotron'] ?? null;
+        $aboutUs     = $cmsContents['about-us'] ?? null;
+        $discounts   = $cmsContents['discounts'] ?? null;
+        $service     = $cmsContents['services'] ?? null;
+        $priceList   = $cmsContents['price-catalog'] ?? null;
+        $contactForm = $cmsContents['contact-form'] ?? null;
+        $gallery     = $cmsContents['gallery'] ?? null;
         // dd($generalSettings);
         // $generalSettings?->brand_name = $generalSettings?->brand_name ?? config('app.name', 'Mi Empresa');
         $state = State::find(trim($generalSettings->state_id, '"'));
