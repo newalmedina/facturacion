@@ -63,16 +63,16 @@
                                             </div>
                                         </div>
                                 </div>
-                            @forelse($apppointmentList as $appointment)
+                                @forelse($apppointmentList as $appointment)
                                 <div class="col-12 col-md-3 d-flex">
                                     <label class="appointment-card d-block cursor-pointer flex-fill h-100"
-                                        wire:click="selectAppointment({{ $appointment->id }})">
-
-                                        <div class="card h-100 shadow-sm {{ $appointment->id == $selectedAppointment ? 'selected' : '' }}">
+                                           wire:click="selectAppointment({{ $appointment['id'] }})">
+                            
+                                        <div class="card h-100 shadow-sm {{ $appointment['id'] == $selectedAppointment ? 'selected' : '' }}">
                                             <div class="card-body text-center d-flex flex-column justify-content-center">
-                                                <span style="font-size: 15px">{{ $appointment->worker->name }}</span>
+                                                <span style="font-size: 15px">{{ $appointment['worker_name'] }}</span>
                                                 <p style="font-size: 15px">
-                                                    {{ $appointment->start_time->format('H:i') }} - {{ $appointment->end_time->format('H:i') }}
+                                                    {{ $appointment['start_time'] }} - {{ $appointment['end_time'] }}
                                                 </p>
                                             </div>
                                         </div>

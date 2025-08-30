@@ -104,18 +104,19 @@ class FrontBooking extends Component
         $this->selectedDate = Carbon::now()->format("Y-m-d");
 
         $this->workerlist = User::canAppointment()->get();
-        $this->showItems = Item::showBooking()->orderBy('price', 'asc')->get();
-        $this->showItemsOthers = Item::showBookingOthers()->orderBy('price', 'asc')->get();
+        /* $this->showItems = Item::showBooking()->orderBy('price', 'asc')->get();
+        $this->showItemsOthers = Item::showBookingOthers()->orderBy('price', 'asc')->get();*/
         /* $this->countries = Country::activos()
             ->select('id', 'name', 'phonecode')
             ->orderBy('name', 'asc')
             ->get();*/
         $this->highlightedDates = Appointment::active()
-            ->where("date", ">=", Carbon::now()->format('Y-m-d'))
+            ->where('date', '>=', Carbon::now()->format('Y-m-d'))
             ->statusAvailable()
-            ->distinct("date") // 👈 solo fechas únicas
-            ->pluck("date")
-            ->map(fn($date) => Carbon::parse($date)->format("Y-m-d"))
+            ->distinct()
+            ->pluck('date')
+            ->map(fn($date) => Carbon::parse($date)->format('Y-m-d'))
+            ->take(30) // Limitar solo próximos 30 días
             ->toArray();
         $this->loadAppointments();
         // $this->sendMail();
@@ -160,14 +161,22 @@ class FrontBooking extends Component
 
     public function loadAppointments()
     {
-        $this->apppointmentList = Appointment::with('worker') // carga los trabajadores relacionados
+        $this->apppointmentList = Appointment::query()
+            ->select('id', 'worker_id', 'start_time', 'end_time')
             ->active()
             ->where('date', $this->selectedDate)
             ->when(!empty($this->worker_id), fn($query) => $query->where('worker_id', $this->worker_id))
             ->statusAvailable()
             ->orderBy('start_time', 'asc')
-            ->get();
-
+            ->get()
+            ->map(function ($appointment) {
+                return [
+                    'id' => $appointment->id,
+                    'worker_name' => $appointment->worker->name,
+                    'start_time' => $appointment->start_time->format('H:i'),
+                    'end_time' => $appointment->end_time->format('H:i'),
+                ];
+            });
         if (!empty($this->selectedAppointment)) {
             $found = false;
 
