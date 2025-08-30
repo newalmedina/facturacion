@@ -118,7 +118,7 @@ class FrontBooking extends Component
             ->map(fn($date) => Carbon::parse($date)->format('Y-m-d'))
             ->take(30) // Limitar solo próximos 30 días
             ->toArray();
-        $this->loadAppointments();
+         $this->loadAppointments();
         // $this->sendMail();
     }
 
