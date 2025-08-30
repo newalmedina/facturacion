@@ -66,7 +66,7 @@
                                             </div>
                                         </div>
                                 </div>
-                            @forelse($apppointmentList as $appointment)
+                            @forelse($appointmentList as $appointment)
                                 <div class="col-12 col-md-3 d-flex">
                                     <label class="appointment-card d-block cursor-pointer flex-fill h-100"
                                         wire:click="selectAppointment({{ $appointment->id }})">

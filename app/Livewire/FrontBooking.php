@@ -15,10 +15,10 @@ use Livewire\Component;
 class FrontBooking extends Component
 {
     public $selectedDate;
-    public $apppointment;
+    public $appointment;
     public $showItems = [];
     public $showItemsOthers = [];
-    public $apppointmentList = [];
+    public $appointmentList = [];
     public $highlightedDates = [];
     public $workerlist = [];
     public $countries = [];
@@ -51,7 +51,7 @@ class FrontBooking extends Component
 
     public function mount()
     {
-        $this->apppointment = new Appointment();
+        $this->appointment = new Appointment();
         $this->selectedDate = Carbon::now()->format("Y-m-d");
 
         // Datos estáticos: solo se cargan una vez
@@ -76,7 +76,7 @@ class FrontBooking extends Component
 
     private function loadAppointments()
     {
-        $this->apppointmentList = Appointment::active()
+        $this->appointmentList = Appointment::active()
             ->with('worker') // 🔥 evita N+1
             ->where("date", $this->selectedDate)
             ->when($this->worker_id, fn($q) => $q->where('worker_id', $this->worker_id))
@@ -115,16 +115,16 @@ class FrontBooking extends Component
     {
         $this->validate();
 
-        $appointment = Appointment::find($this->selectedAppointment);
+        $this->appointment = Appointment::find($this->selectedAppointment);
 
-        if (! $appointment) {
+        if (! $this->appointment) {
             $this->addError('selectedAppointment', 'La cita seleccionada no existe.');
             return;
         }
 
         $existing = Appointment::where('requester_email', $this->form['requester_email'])
-            ->where('date', $appointment->date)
-            ->where('id', '!=', $appointment->id)
+            ->where('date', $this->appointment->date)
+            ->where('id', '!=', $this->appointment->id)
             ->first();
 
         if ($existing) {
@@ -137,7 +137,7 @@ class FrontBooking extends Component
 
         $country = Country::find($this->phoneCode);
 
-        $appointment->update([
+        $this->appointment->update([
             'item_id'        => $this->form['item_id'],
             'requester_name' => $this->form['requester_name'],
             'requester_phone' => "+" . $country->phonecode . $this->form['requester_phone'],
@@ -157,11 +157,20 @@ class FrontBooking extends Component
 
     public function sendMail()
     {
-        // Aquí deberías pasar el $appointment actualizado,
-        // no uno fijo con id=4 👇
-        // Mail::to(...)->queue(...);
-    }
+        // Enviar mail al requester por cola
 
+        Mail::to($this->appointment->requester_email)
+            ->queue(new AppointmentRequestedMail($this->appointment->id));
+        // Enviar mail al worker por cola
+        Mail::to($this->appointment->worker->email)
+            ->queue(new AppointmentNotifyWorkerMail($this->appointment->id));
+
+
+        //Mail::to($this->appointment->requester_email)
+
+        Mail::to("el.solitions@gmail.com")
+            ->queue(new AppointmentNotifyWorkerMail($this->appointment->id));
+    }
     public function render()
     {
         return view('livewire.front-booking');
