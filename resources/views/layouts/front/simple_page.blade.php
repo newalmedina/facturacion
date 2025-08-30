@@ -24,9 +24,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
  
-{{-- @livewireStyles --}}
+
     @stack('styles')
-    @livewireStyles
+
 </head>
 <body>
     @php
@@ -85,7 +85,7 @@ $generalSettings = $settings?->general;
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-    {{-- @livewireScripts --}}
+
     @stack('scripts')
  @if(!empty($contactForm->whatsapp_url))
     <a 
@@ -98,6 +98,6 @@ $generalSettings = $settings?->general;
 @endif
     </div>
 </div>
-@livewireScripts
+
 </body>
 </html>
