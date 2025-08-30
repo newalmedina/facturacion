@@ -134,7 +134,7 @@
                         <div class="col-12 col-md-3 mb-3">
                             <label for="phoneCode" class="form-label">Código país</label>
                             <select id="phoneCode"  wire:model.defer="phoneCode" class="form-control" autocomplete="off">
-                                @foreach($countries as $country)
+                                @foreach($this->countries as $country)
                                     <option value="{{ $country->id }}">
                                         {{ $country->name }} (+{{ $country->phonecode }})
                                     </option>
@@ -162,7 +162,7 @@
                                 <label for="item_id" class="form-label">Selecciona un Servicio</label>
                                     <select id="item_id" wire:model.defer="form.item_id" wire:change='getSelectedItem' class="form-control" autocomplete="off">
                                         <option value="">-- Seleccionar --</option>
-                                        @foreach($showItems as $item)
+                                        @foreach($this->showItems as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }} -- {{ $item->total_price }}€</option>
                                         @endforeach
                                     </select>
@@ -232,7 +232,7 @@
             <label class="form-label">Otros servicios</label>
                 <select wire:model.defer="other_item_id"  wire:change='getSelectedOtherItem' class="form-control w-100">
                     <option value="">-- Seleccionar --</option>
-                    @foreach($showItemsOthers as $item)
+                    @foreach($this->showItemsOthers as $item)
                         <option value="{{ $item->id }}">{{ $item->name . ' -- ' . $item->total_price . '€' }}</option>
                     @endforeach
                 </select>

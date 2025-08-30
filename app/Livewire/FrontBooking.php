@@ -9,6 +9,7 @@ use App\Models\Country;
 use App\Models\Item;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
@@ -20,12 +21,12 @@ class FrontBooking extends Component
     public $selectedDate;
     public Appointment $apppointment;
     public $message;
-    public $showItems = [];
-    public $showItemsOthers = [];
+    /* public $showItems = [];
+    public $showItemsOthers = [];*/
     public $apppointmentList = [];
     public $highlightedDates = [];
     public $workerlist = [];
-    public $countries = [];
+    //  public $countries = [];
     public $phoneCode = 207;
     public $worker_id = null;
     public $showForm = true;
@@ -73,10 +74,29 @@ class FrontBooking extends Component
         'date.after_or_equal' => 'La fecha no puede ser anterior a hoy.',
         'form.comments.string' => 'Los comentarios deben ser texto.',
     ];
+    public function getCountriesProperty()
+    {
+        return Cache::rememberForever('active_countries', function () {
+            return Country::activos()
+                ->select('id', 'name', 'phonecode')
+                ->orderBy('name', 'asc')
+                ->get();
+        });
+    }
 
+    public function getShowItemsProperty()
+    {
+        return Cache::remember('show_items', now()->addMinutes(10), function () {
+            return Item::showBooking()->orderBy('price', 'asc')->get();
+        });
+    }
 
-
-
+    public function getShowItemsOthersProperty()
+    {
+        return Cache::remember('show_items_others', now()->addMinutes(10), function () {
+            return Item::showBookingOthers()->orderBy('price', 'asc')->get();
+        });
+    }
 
     public function mount()
     {
@@ -86,10 +106,10 @@ class FrontBooking extends Component
         $this->workerlist = User::canAppointment()->get();
         $this->showItems = Item::showBooking()->orderBy('price', 'asc')->get();
         $this->showItemsOthers = Item::showBookingOthers()->orderBy('price', 'asc')->get();
-        $this->countries = Country::activos()
+        /* $this->countries = Country::activos()
             ->select('id', 'name', 'phonecode')
             ->orderBy('name', 'asc')
-            ->get();
+            ->get();*/
         $this->highlightedDates = Appointment::active()
             ->where("date", ">=", Carbon::now()->format('Y-m-d'))
             ->statusAvailable()
