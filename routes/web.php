@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Storage;
 |
 */
 
+Route::get('/contador', function () {
+    return view('contador'); // 👈 una vista blade donde llamamos al componente
+})->name('contador');
 Route::get('/', function () {
 
     return redirect('/home');
