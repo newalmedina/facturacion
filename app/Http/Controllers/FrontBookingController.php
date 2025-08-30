@@ -7,43 +7,57 @@ use App\Models\CmsContent;
 use App\Models\Setting;
 use App\Models\State;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class FrontBookingController extends Controller
 {
     public function index()
     {
-        $settings = Setting::first();
-        $generalSettings = $settings?->general;
+        // 🔹 Cargar configuración general desde cache 1h
+        $generalSettings = Cache::remember('general_settings', 3600, function () {
+            $settings = Setting::first();
+            return $settings?->general;
+        });
 
-        if (!$generalSettings->allow_appointment) {
+        if (!$generalSettings?->allow_appointment) {
             abort(404);
         }
 
-        $jumbotron = CmsContent::findBySlug('header-jumbotron');
-        $aboutUs = CmsContent::findBySlug('about-us');
-        $discounts = CmsContent::findBySlug('discounts');
-        $service = CmsContent::findBySlug('services');
-        $priceList = CmsContent::findBySlug('price-catalog');
-        $contactForm = CmsContent::findBySlug('contact-form');
-        $gallery = CmsContent::findBySlug('gallery');
+        // 🔹 Cargar todos los CmsContent en una sola query
+        $slugs = [
+            'header-jumbotron',
+            'about-us',
+            'discounts',
+            'services',
+            'price-catalog',
+            'contact-form',
+            'gallery'
+        ];
 
-        // $generalSettings?->brand_name = $generalSettings?->brand_name ?? config('app.name', 'Mi Empresa');
-        $state = State::find(trim($generalSettings->state_id, '"'));
-        $city = City::find(trim($generalSettings->city_id, '"'));
+        $cmsContents = CmsContent::whereIn('slug', $slugs)
+            ->get()
+            ->keyBy('slug');
+
+        $jumbotron   = $cmsContents['header-jumbotron'] ?? null;
+        $aboutUs     = $cmsContents['about-us'] ?? null;
+        $discounts   = $cmsContents['discounts'] ?? null;
+        $service     = $cmsContents['services'] ?? null;
+        $priceList   = $cmsContents['price-catalog'] ?? null;
+        $contactForm = $cmsContents['contact-form'] ?? null;
+        $gallery     = $cmsContents['gallery'] ?? null;
+
 
 
         return view('front.appointments', [
-            'jumbotron' => $jumbotron,
-            'aboutUs' => $aboutUs,
-            'service' => $service,
-            'discounts' => $discounts,
-            'contactForm' => $contactForm,
-            'priceList' => $priceList,
-            'gallery' => $gallery,
+            'jumbotron'       => $jumbotron,
+            'aboutUs'         => $aboutUs,
+            'service'         => $service,
+            'discounts'       => $discounts,
+            'contactForm'     => $contactForm,
+            'priceList'       => $priceList,
+            'gallery'         => $gallery,
             'generalSettings' => $generalSettings,
-            'state' => $state,
-            'city' => $city,
-            'pageTitle' => "Pedir cita",
+            'pageTitle'       => "Pedir cita",
         ]);
     }
 }

@@ -29,12 +29,7 @@
 
 </head>
 <body>
-    @php
-    use App\Models\Setting;
 
-$settings = Setting::first();
-$generalSettings = $settings?->general;
-@endphp
 
     <div class="container-fluid">
         <div class="row">
