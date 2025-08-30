@@ -23,7 +23,9 @@
 <!-- Font Awesome 5 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
- 
+
+
+@livewireStyles
 
     @stack('styles')
 
@@ -81,6 +83,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 
+
+@livewireScripts
     @stack('scripts')
  @if(!empty($contactForm->whatsapp_url))
     <a 
