@@ -38,6 +38,14 @@ class Order extends Model
         return $this->hasMany(OrderDetail::class);
     }
 
+    // Appointment.php
+
+    public function appointment()
+    {
+        return $this->belongsTo(Appointment::class, 'appointment_id');
+    }
+
+
     public function getProductsAttribute(): string
     {
         return $this->orderDetails

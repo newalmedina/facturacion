@@ -8,6 +8,8 @@ use App\Filament\Resources\AppointmentResource\RelationManagers;
 use App\Mail\AppointmentChangeStatusMail;
 use App\Mail\AppointmentChangeStatusToWorkerMail;
 use App\Models\Appointment;
+use App\Models\Order;
+use App\Models\OrderDetail;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
@@ -70,6 +72,7 @@ class AppointmentResource extends Resource
 
     public static function form(Form $form): Form
     {
+
         return $form
             ->schema([
                 // Forms\Components\TextInput::make('user_id')
@@ -187,6 +190,7 @@ class AppointmentResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $currentPanelId = Filament::getCurrentPanel()?->getId();
         return $table
             ->columns([
                 // Tables\Columns\TextColumn::make('user_id')
@@ -449,7 +453,11 @@ class AppointmentResource extends Resource
                     ->icon('heroicon-m-x-circle') // aspa roja
                     ->color('danger') // rojo
                     ->tooltip('Cancelar la solicitud y/o enviar notificación')
-                    ->visible(fn($record) => in_array($record->status, ['pending_confirmation', 'confirmed']))
+                    ->visible(function ($record) {
+                        return in_array($record->status, ['pending_confirmation', 'confirmed'])
+                            && !\App\Models\Order::where('appointment_id', $record->id)->exists();
+                    })
+
                     ->requiresConfirmation()
                     ->modalHeading('Cancelar solicitud')
                     ->modalSubmitActionLabel('Cancelar')   // botón principal
@@ -518,10 +526,87 @@ class AppointmentResource extends Resource
                         fn($record) =>
                         !empty($record->requester_phone) && in_array($record->status, ['cancelled', 'confirmed'])
                     ),
+                TableAction::make('convertToInvoice')
+                    ->label('')
+                    ->icon('heroicon-m-document-text') // ícono de documento
+                    ->color('warning') // verde
+                    ->tooltip('Convertir esta cita en una factura')
+                    ->visible(function ($record) {
+                        $currentPanelId = Filament::getCurrentPanel()?->getId();
+
+                        return $record->status === 'confirmed'
+                            && $currentPanelId === 'admin'
+                            && !\App\Models\Order::where('appointment_id', $record->id)->exists();
+                    })
+
+                    ->requiresConfirmation()
+                    ->modalHeading('¿Convertir esta cita en factura?') // mensaje de confirmación
+                    ->modalSubmitActionLabel('Sí, convertir')
+                    ->modalCancelActionLabel('No')
+                    ->action(function ($record) {
+                        // Aquí lógica para convertir cita a factura
+                        $order = Order::create([
+                            'type' => 'sale',
+                            'status' => 'pending',
+                            'customer_id' => 1, // si el worker es el cliente
+                            'date' => $record->date,
+                            'assigned_user_id' => $record->worker_id,
+                            'appointment_id' => $record->id,
+                        ]);
+                        if ($record->item) {
+                            OrderDetail::create([
+                                'order_id' => $order->id,
+                                'item_id' => $record->item_id,
+                                'price' => $record->item->price ?? 0,
+                                'original_price' => $record->item->price ?? 0,
+                                'taxes' => 0,
+                                'quantity' => 1,
+                            ]);
+                        }
+
+                        Notification::make()
+                            ->title('La cita se ha convertido en factura')
+                            ->success()
+                            ->send();
+                    }),
+
+                TableAction::make('viewInvoice')
+                    ->label('')
+                    ->icon('heroicon-m-eye') // ojo para "ver"
+                    ->color('tertiary') // verde
+                    ->tooltip('Ver factura asociada')
+                    ->visible(function ($record) {
+                        $currentPanelId = Filament::getCurrentPanel()?->getId();
+
+                        return $currentPanelId === 'admin'
+                            && \App\Models\Order::where('appointment_id', $record->id)->exists();
+                    })
+                    ->url(function ($record) {
+                        $order = Order::where('appointment_id', $record->id)->first();
+                        return $order
+                            ? route('filament.admin.resources.sales.edit', $order)
+                            : null;
+                    })
+                    ->openUrlInNewTab(), // opcional: abre en nueva pestaña
 
 
-                Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
-                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->visible(fn($record) => $record->status == "available"),
+
+                /*Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
+                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->visible(fn($record) => $record->status == "available"),*/
+                Tables\Actions\EditAction::make()
+                    ->label('')
+                    ->tooltip('Editar')
+                    ->visible(fn($record) => ! \App\Models\Order::where('appointment_id', $record->id)->exists()),
+
+                Tables\Actions\DeleteAction::make()
+                    ->label('')
+                    ->tooltip('Eliminar')
+                    ->visible(
+                        fn($record) =>
+                        $record->status === "available"
+                            && ! \App\Models\Order::where('appointment_id', $record->id)->exists()
+                    ),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

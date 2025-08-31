@@ -31,6 +31,13 @@ class Appointment extends Model
     {
         return !is_null($this->status) && $this->status !== 'cancelled';
     }
+    // Order.php
+
+    public function appointment()
+    {
+        return $this->belongsTo(App\Models\Appointment::class, 'appointment_id');
+    }
+
     // Template de la cita
     public function template()
     {
