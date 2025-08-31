@@ -1,21 +1,25 @@
 <div class="grid grid-cols-10 gap-4">
     @if(!empty($order->code))
-    <div class="col-span-10 flex justify-between w-full mb-3">
-            <h2 style="font-size: 24px"> Código: <b>{{$order->code}}</b></h2>
-        </div>
+    <div class="col-span-12 w-full mb-3">
+        <h2 class="text-2xl font-semibold mb-2">
+            Código: <b>{{ $order->code }}</b>
+        </h2>
+
         @if($order->appointment)
-    <div class="mb-3">
-        <strong>Datos de cita asociada:</strong>
-        <div class="flex flex-wrap gap-3 mt-1">
-            <span class="px-2 py-1 bg-gray-100 rounded shadow-sm text-sm">📅 {{ $order->appointment->date?->format('d/m/Y') ?? '-' }}</span>
-            <span class="px-2 py-1 bg-gray-100 rounded shadow-sm text-sm">⏰ {{ $order->appointment->start_time?->format('H:i') ?? '-' }} - {{ $order->appointment->end_time?->format('H:i') ?? '-' }}</span>
-            <span class="px-2 py-1 bg-gray-100 rounded shadow-sm text-sm">👤 {{ $order->appointment->requester_name ?? '-' }}</span>
-            <span class="px-2 py-1 bg-gray-100 rounded shadow-sm text-sm">✉️ {{ $order->appointment->requester_email ?? '-' }}</span>
-        </div>
+            <div class="w-full bg-gray-50 p-4 rounded shadow-sm">
+                <strong class="block mb-2 text-lg">Datos de cita asociada:</strong>
+                <div class="flex flex-wrap gap-4">
+                    <span class="px-3 py-1 bg-white rounded shadow text-sm">📅 {{ $order->appointment->date?->format('d/m/Y') ?? '-' }}</span>
+                    <span class="px-3 py-1 bg-white rounded shadow text-sm">⏰ {{ $order->appointment->start_time?->format('H:i') ?? '-' }} - {{ $order->appointment->end_time?->format('H:i') ?? '-' }}</span>
+                    <span class="px-3 py-1 bg-white rounded shadow text-sm">👤 {{ $order->appointment->requester_name ?? '-' }}</span>
+                    <span class="px-3 py-1 bg-white rounded shadow text-sm">✉️ {{ $order->appointment->requester_email ?? '-' }}</span>
+                </div>
+            </div>
+        @endif
     </div>
 @endif
 
-        @endif
+
     <div class="col-span-10 flex justify-between w-full">
 
        <div >
