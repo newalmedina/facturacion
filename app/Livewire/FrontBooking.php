@@ -48,7 +48,25 @@ class FrontBooking extends Component
         'phoneCode' => 'required',
         'form.comments' => 'nullable|string',
     ];
-
+    protected $messages = [
+        'form.item_id.required' => 'El campo servicio es obligatorio.',
+        'selectedAppointment.required' => 'Debe seleccionar una cita.',
+        'selectedAppointment.integer' => 'La cita seleccionada debe ser un número válido.',
+        'selectedAppointment.exists' => 'La cita seleccionada no existe.',
+        'form.requester_name.required' => 'El nombre es obligatorio.',
+        'form.requester_name.string' => 'El nombre debe ser texto.',
+        'form.requester_name.min' => 'El nombre debe tener al menos 3 caracteres.',
+        'form.requester_phone.required' => 'El teléfono es obligatorio.',
+        'form.requester_phone.string' => 'El teléfono debe ser texto.',
+        'form.requester_phone.min' => 'El teléfono debe tener al menos 3 caracteres.',
+        'form.requester_email.required' => 'El correo electrónico es obligatorio.',
+        'form.requester_email.email' => 'Debe ingresar un correo electrónico válido.',
+        'selectedDate.required' => 'La fecha es obligatoria.',
+        'selectedDate.date' => 'Debe ingresar una fecha válida.',
+        'selectedDate.after_or_equal' => 'La fecha no puede ser anterior a hoy.',
+        'phoneCode.required' => 'El código de teléfono es obligatorio.',
+        'form.comments.string' => 'Los comentarios deben ser texto.',
+    ];
     public function mount()
     {
         $this->appointment = new Appointment();
@@ -58,10 +76,7 @@ class FrontBooking extends Component
         $this->workerlist = User::canAppointment()->get();
         $this->showItems = Item::showBooking()->orderBy('price')->get();
         $this->showItemsOthers = Item::showBookingOthers()->orderBy('price')->get();
-        $this->countries = Country::activos()
-            ->select('id', 'name', 'phonecode')
-            ->orderBy('name')
-            ->get();
+
         $this->highlightedDates = Appointment::active()
             ->where("date", ">=", now()->format('Y-m-d'))
             ->statusAvailable()
@@ -84,6 +99,14 @@ class FrontBooking extends Component
             ->orderBy('date')
             ->orderBy('start_time')
             ->get();
+
+        // Verifica si el selectedAppointment existe en la lista
+        if (!empty($this->selectedAppointment)) {
+            if (!$this->appointmentList->contains('id', $this->selectedAppointment)) {
+
+                $this->selectedAppointment = null;
+            }
+        }
     }
 
     // ⚡️ Solo cuando cambie worker_id o fecha

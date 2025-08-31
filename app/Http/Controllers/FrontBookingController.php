@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\City;
 use App\Models\CmsContent;
+use App\Models\Country;
 use App\Models\Setting;
 use App\Models\State;
 use Illuminate\Http\Request;
@@ -47,7 +48,10 @@ class FrontBookingController extends Controller
         $gallery     = $cmsContents['gallery'] ?? null;
 
 
-
+        $countries = Country::activos()
+            ->select('id', 'name', 'phonecode')
+            ->orderBy('name')
+            ->get();
         return view('front.appointments', [
             'jumbotron'       => $jumbotron,
             'aboutUs'         => $aboutUs,
@@ -56,6 +60,7 @@ class FrontBookingController extends Controller
             'contactForm'     => $contactForm,
             'priceList'       => $priceList,
             'gallery'         => $gallery,
+            'countries'         => $countries,
             'generalSettings' => $generalSettings,
             'pageTitle'       => "Pedir cita",
         ]);

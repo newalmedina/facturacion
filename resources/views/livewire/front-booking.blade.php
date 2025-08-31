@@ -34,7 +34,8 @@
                                                 
                         </div>
                         <div class="col-12 mb-3">
-                           <div id="calendar-container" wire:ignore>
+                            <div id="calendar-container" wire:ignore.self></div>
+
                                 <!-- calendario -->
                             </div>
                         
@@ -44,7 +45,7 @@
                         <div class="col-12  mb-3 pt-5">
                             <div class="mb-3">
                                 <label class="form-label">Selecciona un trabajador</label>
-                                <select wire:model.live="worker_id" class="form-control w-100">
+                                <select wire:model.lazy="worker_id"  class="form-control w-100">
                                     <option value="">Todos</option>
                                     @foreach($workerlist as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -150,7 +151,7 @@
                             <div class="row">
                                 <div class="col-12  mb-3">
                                 <label for="item_id" class="form-label">Selecciona un Servicio</label>
-                                    <select id="item_id" wire:model.live="form.item_id" class="form-control" autocomplete="off">
+                                    <select id="item_id" wire:model.lazy="form.item_id" class="form-control" autocomplete="off">
                                         <option value="">-- Seleccionar --</option>
                                         @foreach($showItems as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }} -- {{ $item->total_price }}€</option>
@@ -220,7 +221,7 @@
         <div class="col-12 mb-3">
             <!-- Selección de otros items -->
             <label class="form-label">Otros servicios</label>
-                <select wire:model.live="other_item_id" class="form-control w-100">
+                <select wire:model.lazy="other_item_id" class="form-control w-100">
                     <option value="">-- Seleccionar --</option>
                     @foreach($showItemsOthers as $item)
                         <option value="{{ $item->id }}">{{ $item->name . ' -- ' . $item->total_price . '€' }}</option>
@@ -259,11 +260,14 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 <script>
     document.addEventListener('livewire:initialized', () => {
-        initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));
+        let selectedDate = @this.get('selectedDate');
+        let highlightedDates = @this.get('highlightedDates') || [];
+      
+        initializeCalendar(selectedDate,highlightedDates);
 
         Livewire.hook('morphed', ({ el, component }) => {
             if (el.querySelector('#calendar-container')) {
-                initializeCalendar(@this.get('selectedDate'), @this.get('highlightedDates'));
+                initializeCalendar(@this.get('selectedDate'),highlightedDates);
             }
         });
     });

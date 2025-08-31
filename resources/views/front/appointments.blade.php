@@ -16,6 +16,7 @@
                   <livewire:front-booking 
                   :general-settings="$generalSettings" 
                   :contact-form="$contactForm" 
+                  :countries="$countries"
               />  
                 </div>
             </div>
