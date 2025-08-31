@@ -4,7 +4,6 @@ namespace App\Console;
 
 use App\Console\Commands\HelloCron;
 use App\Jobs\RunBackupJob;
-use App\Jobs\SendCronTestEmailJob;
 use App\Jobs\SendTestEmailJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;

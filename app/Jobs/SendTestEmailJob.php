@@ -1,6 +1,6 @@
 <?php
 
-// app/Jobs/SendCronTestEmailJob.php
+// app/Jobs/SendTestEmailJob.php
 namespace App\Jobs;
 
 use App\Mail\CronTestEmail;
@@ -12,7 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class SendCronTestEmailJob implements ShouldQueue
+class SendTestEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

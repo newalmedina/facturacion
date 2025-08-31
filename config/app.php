@@ -174,7 +174,7 @@ return [
         App\Providers\Filament\PersonalPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\FilamentAssetServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
+        // Barryvdh\Debugbar\ServiceProvider::class,
 
     ])->toArray(),
 
@@ -192,7 +192,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
         'GeoIP' => Torann\GeoIP\Facades\GeoIP::class,
-        'Debugbar' => Barryvdh\Debugbar\Facade::class,
+        // 'Debugbar' => Barryvdh\Debugbar\Facade::class,
     ])->toArray(),
 
 ];
