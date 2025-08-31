@@ -5,7 +5,17 @@
             Código: <b>{{ $order->code }}</b>
         </h2>
 
-      
+        @if($order->appointment)
+            <div class="w-full bg-gray-50 p-4 rounded shadow-sm">
+                <strong class="block mb-2 text-lg">Datos de cita asociada:</strong>
+                <div class="flex flex-wrap gap-4">
+                    <span class="px-3 py-1 bg-white rounded shadow text-sm">📅 {{ $order->appointment->date?->format('d/m/Y') ?? '-' }}</span>
+                    <span class="px-3 py-1 bg-white rounded shadow text-sm">⏰ {{ $order->appointment->start_time?->format('H:i') ?? '-' }} - {{ $order->appointment->end_time?->format('H:i') ?? '-' }}</span>
+                    <span class="px-3 py-1 bg-white rounded shadow text-sm">👤 {{ $order->appointment->requester_name ?? '-' }}</span>
+                    <span class="px-3 py-1 bg-white rounded shadow text-sm">✉️ {{ $order->appointment->requester_email ?? '-' }}</span>
+                </div>
+            </div>
+        @endif
     </div>
 @endif
 
