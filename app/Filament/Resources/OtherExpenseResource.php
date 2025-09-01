@@ -159,7 +159,8 @@ class OtherExpenseResource extends Resource
                                 ->numeric()
                                 ->required()
                                 ->prefix('€')->reactive()
-                                ->debounce(500)
+                                //->debounce(500)
+                                ->debounce(750)
                                 ->columnSpan(2),
 
                             TextInput::make('observations')

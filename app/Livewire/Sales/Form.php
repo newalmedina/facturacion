@@ -329,7 +329,7 @@ class Form extends Component
         }
         $this->order->save();
 
-        foreach ($this->selectedProducts as $product) {
+        /* foreach ($this->selectedProducts as $product) {
 
             if (empty($product["detail_id"])) {
                 $detail = new OrderDetail();
@@ -349,7 +349,38 @@ class Form extends Component
                 $detail->original_price = $item->price;
             }
             $detail->save();
+        }*/
+        foreach ($this->selectedProducts as $product) {
+
+            if (empty($product["detail_id"])) {
+                // Buscar un detalle existente con el mismo order_id y item_id
+                $detail = OrderDetail::where('order_id', $this->order->id)
+                    ->where('item_id', $product["item_id"])
+                    ->first();
+
+                if (!$detail) {
+                    // Si no existe, crear uno nuevo
+                    $detail = new OrderDetail();
+                    $detail->order_id = $this->order->id;
+                }
+            } else {
+                // Si detail_id existe, buscarlo directamente
+                $detail = OrderDetail::find($product["detail_id"]);
+            }
+
+            $detail->product_name = empty($product["item_id"]) ? $product["item_name"] : null;
+            $detail->item_id = $product["item_id"];
+            $detail->price = $product["price_unit"];
+            $detail->taxes = $product["taxes"];
+            $detail->quantity = $product["quantity"];
+
+            $item = Item::find($product["item_id"]);
+            if ($item) {
+                $detail->original_price = $item->price;
+            }
+            $detail->save();
         }
+
 
         //eliminamo de base de datos detalles que esten quitados
         if (count($this->detail_id_delete) > 0) {

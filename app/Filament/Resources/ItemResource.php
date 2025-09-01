@@ -185,7 +185,8 @@ class ItemResource extends Resource
                                     ->hidden(fn($get) => empty($get('type')))
                                     ->prefix('€')
                                     ->reactive()
-                                    ->debounce(500)
+                                    //->debounce(500)
+                                    ->debounce(750)
                                     ->afterStateUpdated(fn($state, $get, $set) => self::updateCalculatedFields($get, $set)),
 
 
@@ -197,7 +198,8 @@ class ItemResource extends Resource
                                     ->hidden(fn($get) => empty($get('type')))
                                     ->numeric()
                                     ->reactive()
-                                    ->debounce(500)
+                                    //->debounce(500)
+                                    ->debounce(750)
                                     ->afterStateUpdated(fn($state, $get, $set) => self::updateCalculatedFields($get, $set)),
 
                                 // 🔹 Campo calculado: Monto de impuestos
@@ -207,7 +209,8 @@ class ItemResource extends Resource
                                     ->disabled()
                                     ->hidden(fn($get) => empty($get('type')))
                                     ->numeric()
-                                    ->debounce(500)
+                                    //->debounce(500)
+                                    ->debounce(750)
                                     ->default(fn($get) => round(($get('price') * $get('taxes')) / 100, 2))
                                     ->prefix('€')
                                     ->afterStateHydrated(function ($get, $set) {

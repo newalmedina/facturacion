@@ -223,7 +223,7 @@
                                    <x-filament::input.wrapper>
                                     <x-filament::input
                                         :disabled="$order->disabled_sales"
-                                        wire:model.live.debounce.500ms="selectedProducts.{{ $key }}.quantity"
+                                        wire:model.live.debounce.750ms="selectedProducts.{{ $key }}.quantity"
                                         type="number"
                                         min="1"
                                     />
@@ -400,7 +400,7 @@
                                         </x-filament-forms::field-wrapper.label>
                                         <x-filament::input.wrapper :valid="! $errors->has('manualProduct.price')">
                                             <x-filament::input type="number"
-                                                wire:model.live.debounce.500ms="manualProduct.price" min="1" />
+                                                wire:model.live.debounce.750ms="manualProduct.price" min="1" />
                                         </x-filament::input.wrapper>
                                         @error('manualProduct.price')
                                             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -412,7 +412,7 @@
                                         </x-filament-forms::field-wrapper.label>
                                         <x-filament::input.wrapper :valid="! $errors->has('manualProduct.quantity')">
                                             <x-filament::input
-                                                wire:model.live.debounce.500ms="manualProduct.quantity" type="number" min="1"   />
+                                                wire:model.live.debounce.750ms="manualProduct.quantity" type="number" min="1"   />
 
                                         </x-filament::input.wrapper>
                                         @error('manualProduct.quantity')
@@ -425,7 +425,7 @@
                                         </x-filament-forms::field-wrapper.label>
                                         <x-filament::input.wrapper :valid="! $errors->has('manualProduct.taxes')" >
                                             <x-filament::input
-                                                wire:model.live.debounce.500ms="manualProduct.taxes" type="number" min="1"  />
+                                                wire:model.live.debounce.750ms="manualProduct.taxes" type="number" min="1"  />
                                         </x-filament::input.wrapper>
                                         @error('manualProduct.taxes')
                                             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -476,7 +476,7 @@
                     <x-filament::input.wrapper >
                         <x-filament::input
                             type="text"
-                            wire:model.live.debounce.500ms="searchProduct"
+                             wire:model.live.debounce.500ms="searchProduct"
 
                             placeholder="Buscar producto"
                         />
