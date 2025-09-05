@@ -106,22 +106,22 @@ class PersonalPanelProvider extends PanelProvider
                 AuthenticateAndCheckActive::class,
             ])
             ->userMenuItems([
-                MenuItem::make('profile')
-                    ->label('Perfil')
-                    ->url(fn() => \App\Filament\Pages\Profile::getUrl(panel: 'personal'))
-                    ->icon('heroicon-o-user'),
+                // MenuItem::make('profile')
+                //     ->label('Perfil')
+                //     ->url(fn() => \App\Filament\Pages\Profile::getUrl(panel: 'personal'))
+                //     ->icon('heroicon-o-user'),
 
-                MenuItem::make('admin')
-                    ->label('Ir a Administración')
-                    ->url(url('/admin'))
-                    ->icon('heroicon-o-cog')
-                    ->visible(fn() => Auth::check() && Auth::user()->can_admin_panel), // ✅ visibilidad condicional
+                // MenuItem::make('admin')
+                //     ->label('Ir a Administración')
+                //     ->url(url('/admin'))
+                //     ->icon('heroicon-o-cog')
+                //     ->visible(fn() => Auth::check() && Auth::user()->can_admin_panel), // ✅ visibilidad condicional
 
-                MenuItem::make('home')
-                    ->label('Ir a la Home')
-                    ->url(url('/'))
-                    ->icon('heroicon-o-globe-alt')
-                    ->openUrlInNewTab(),
+                // MenuItem::make('home')
+                //     ->label('Ir a la Home')
+                //     ->url(url('/'))
+                //     ->icon('heroicon-o-globe-alt')
+                //     ->openUrlInNewTab(),
             ]);
 
 
