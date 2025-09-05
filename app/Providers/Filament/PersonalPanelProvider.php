@@ -63,10 +63,7 @@ class PersonalPanelProvider extends PanelProvider
                 'light' => '#f5f5f5',       // Gris claro de fondo
                 'dark' => '#000000',        // Negro
             ])
-            ->resources([
-                // AppointmentResource::class, // 👈 registramos tu Resource aquí
-                // AppointmentTemplateResource::class, // 👈 registramos tu Resource aquí
-            ])
+            ->resources([])
             ->defaultAvatarProvider(AutenticatedUserAvatar::class)
             ->plugins([
                 FilamentFullCalendarPlugin::make()->config([
