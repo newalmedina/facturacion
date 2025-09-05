@@ -72,120 +72,109 @@ class AppointmentResource extends Resource
 
     public static function form(Form $form): Form
     {
+        return $form->schema(static::getFormSchema());
+    }
 
-        return $form
-            ->schema([
-                // Forms\Components\TextInput::make('user_id')
-                //     ->required()
-                //     ->numeric(),
-                Select::make('worker_id')
-                    ->label('Empleado')
-                    ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- Aplica el scope
-                    ->searchable()
-                    ->preload()
-                    ->visible(fn() => Filament::getCurrentPanel()?->getId() !== 'personal')
-                    ->placeholder('Selecciona empleado'),
+    public static function getFormSchema(): array
+    {
+        return [
+            Select::make('worker_id')
+                ->label('Empleado')
+                ->relationship('worker', 'name', fn($query) => $query->canAppointment())
+                ->searchable()
+                ->preload()
+                ->visible(fn() => Filament::getCurrentPanel()?->getId() !== 'personal')
+                ->placeholder('Selecciona empleado'),
 
-                Select::make('item_id')
-                    ->label('Peinado')
-                    ->relationship(
-                        name: 'item', // relación en tu modelo
-                        titleAttribute: 'name',
-                        modifyQueryUsing: fn($query) => $query->active()
-                    )
-                    ->getOptionLabelFromRecordUsing(fn($record) => $record->name . ' -- ' . $record->total_price . ' €')
-                    ->searchable()
-                    ->preload()
-                    ->placeholder('Selecciona Servicio'),
+            Select::make('item_id')
+                ->label('Peinado')
+                ->relationship(
+                    name: 'item',
+                    titleAttribute: 'name',
+                    modifyQueryUsing: fn($query) => $query->active()
+                )
+                ->getOptionLabelFromRecordUsing(fn($record) => $record->name . ' -- ' . $record->total_price . ' €')
+                ->searchable()
+                ->preload()
+                ->placeholder('Selecciona Servicio'),
 
+            DatePicker::make('date')
+                ->label('Fecha')
+                ->required(),
 
+            TimePicker::make('start_time')
+                ->label('Hora de inicio')
+                ->required()
+                ->seconds(false)
+                ->reactive()
+                ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                    $endTime = $get('end_time');
 
-                DatePicker::make('date')
-                    ->label('Fecha')
-                    ->required(),
+                    if ($endTime && $state > $endTime) {
+                        $set('end_time', $state);
+                    }
+                }),
 
-                TimePicker::make('start_time')
-                    ->label('Hora de inicio')
-                    ->required()
-                    ->seconds(false)
-                    ->reactive()
-                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                        $endTime = $get('end_time');
+            TimePicker::make('end_time')
+                ->label('Hora de fin')
+                ->required()
+                ->seconds(false)
+                ->reactive()
+                ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                    $startTime = $get('start_time');
 
-                        if ($endTime && $state > $endTime) {
-                            // Ajustar end_time para que sea al menos igual que start_time
-                            $set('end_time', $state);
-                        }
-                    }),
+                    if ($startTime && $state < $startTime) {
+                        $set('start_time', $state);
+                    }
+                }),
 
-                TimePicker::make('end_time')
-                    ->label('Hora de fin')
-                    ->required()
-                    ->seconds(false)
-                    ->reactive()
-                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                        $startTime = $get('start_time');
+            Select::make('status')
+                ->label('Estado')
+                ->options([
+                    'available' => 'Disponible',
+                    'pending_confirmation' => 'Pendiente confirmación',
+                    'confirmed' => 'Confirmado',
+                    'cancelled' => 'Cancelada',
+                ])
+                ->required()
+                ->default("available"),
 
-                        if ($startTime && $state < $startTime) {
-                            // Ajustar start_time para que sea como mínimo igual a end_time
-                            $set('start_time', $state);
-                        }
-                    }),
+            TextInput::make('requester_name')
+                ->label('Nombre del solicitante')
+                ->maxLength(255)
+                // ->required(fn(callable $get) => filled($get('requester_email')))
+                ->reactive(),
 
-                Select::make('status')
-                    ->label('Estado')
-                    ->options([
-                        'available' => 'Disponible',
-                        'pending_confirmation' => 'Pendiente confirmación',
-                        'confirmed' => 'Confirmado',
-                        //'accepted' => 'Aceptada',
-                        'cancelled' => 'Cancelada',
-                    ])
-                    ->required()
-                    ->default("available"),
+            TextInput::make('requester_email')
+                ->label('Correo del solicitante')
+                ->email()
+                ->maxLength(255)
+                //->required(fn(callable $get) => filled($get('requester_name')))
+                ->reactive(),
 
-                TextInput::make('requester_name')
-                    ->label('Nombre del solicitante')
-                    ->maxLength(255)
-                    ->required(fn(callable $get) => filled($get('requester_email')))
-                    ->reactive(), // importante para que detecte cambios en tiempo real
+            TextInput::make('requester_phone')
+                ->label('Teléfono del solicitante')
+                ->tel()
+                ->maxLength(255)
+                ->suffixAction(function ($get) {
+                    $phone = preg_replace('/\D/', '', $get('requester_phone'));
 
-                TextInput::make('requester_email')
-                    ->label('Correo del solicitante')
-                    ->email()
-                    ->maxLength(255)
-                    ->required(fn(callable $get) => filled($get('requester_name')))
-                    ->reactive(),
+                    return Action::make('whatsapp')
+                        ->icon('heroicon-s-chat-bubble-left')
+                        ->label('')
+                        ->url('https://wa.me/' . $phone)
+                        ->openUrlInNewTab();
+                }),
 
+            Textarea::make('comments')
+                ->label('Comentarios')
+                ->columnSpanFull(),
 
-
-                /* TextInput::make('requester_phone')
-                    ->label('Teléfono del solicitante')
-                    ->tel()
-                    ->maxLength(255),
-*/
-
-                TextInput::make('requester_phone')
-                    ->label('Teléfono del solicitante')
-                    ->tel()
-                    ->maxLength(255)
-                    ->suffixAction(function ($get) {
-                        $phone = preg_replace('/\D/', '', $get('requester_phone'));
-
-                        return Action::make('whatsapp')
-                            ->icon('heroicon-s-chat-bubble-left') // icono de WhatsApp
-                            ->label('')
-                            ->url('https://wa.me/' . $phone)
-                            ->openUrlInNewTab();
-                    }),
-                Textarea::make('comments')
-                    ->label('Comentarios')
-                    ->columnSpanFull(),
-                Forms\Components\Toggle::make('active')
-                    ->inline(false)
-                    ->label("¿Activo?")
-                    ->required(),
-            ]);
+            Forms\Components\Toggle::make('active')
+                ->inline(false)
+                ->label("¿Activo?")
+                ->required(),
+        ];
     }
 
     public static function table(Table $table): Table

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,7 +18,7 @@ class Appointment extends Model
         'start_time' => 'datetime:H:i', // para que sea una instancia Carbon con formato hora
         'end_time' => 'datetime:H:i',
     ];
-
+    protected $appends = ['start_date', 'end_date'];
     // The worker assigned to the appointment
     public function worker()
     {
@@ -52,8 +53,8 @@ class Appointment extends Model
             //'accepted' => 'Aceptada',
             'pending_confirmation' => 'Pendiente Confirmación',
             'cancelled' => 'Cancelada',
-            null => 'Sin estado',
-            '' => 'Sin estado',
+            // null => 'Sin estado',
+            // '' => 'Sin estado',
         ];
 
         return $labels[$this->status] ?? ucfirst($this->status ?? 'Sin estado');
@@ -105,5 +106,30 @@ class Appointment extends Model
     public function scopeStatusConfirmed($query)
     {
         return $query->where('status', 'confirmed');
+    }
+
+
+    public function getStartDateAttribute()
+    {
+        if ($this->date && $this->start_time) {
+            // Tomamos solo la fecha de $this->date
+            $fecha = $this->date->format('Y-m-d');
+            // Tomamos solo la hora de $this->start_time
+            $hora  = $this->start_time->format('H:i:s');
+
+            return Carbon::parse($fecha . ' ' . $hora);
+        }
+        return null;
+    }
+
+    public function getEndDateAttribute()
+    {
+        if ($this->date && $this->end_time) {
+            $fecha = $this->date->format('Y-m-d');
+            $hora  = $this->end_time->format('H:i:s');
+
+            return Carbon::parse($fecha . ' ' . $hora);
+        }
+        return null;
     }
 }

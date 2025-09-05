@@ -20,6 +20,7 @@ use App\Filament\CustomWidgets\VentasMensualesChart;
 use App\Filament\CustomWidgets\VentasPorVendedorPercentPieChart;
 use App\Filament\CustomWidgets\VentasPorVendedorPieChart;
 use App\Filament\Pages\Backups;
+use App\Filament\Pages\CalendarPage;
 use App\Http\Middleware\AuthenticateAndCheckActive;
 use App\Models\Setting;
 use Filament\Http\Middleware\Authenticate;
@@ -44,6 +45,7 @@ use Filament\Support\Enums\MaxWidth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Outerweb\FilamentSettings\Filament\Plugins\FilamentSettingsPlugin;
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 
 class AdminPanelProvider extends PanelProvider
@@ -84,11 +86,23 @@ class AdminPanelProvider extends PanelProvider
                 // FilamentSpatieLaravelBackupPlugin::make()
                 FilamentSpatieLaravelBackupPlugin::make()
                     ->usingPage(Backups::class)->authorize(fn(): bool => auth()->user()->email === 'el.solitions@gmail.com'),
+                FilamentFullCalendarPlugin::make()->config([
+                    'initialView' => 'timeGridWeek', // Vista semanal con franja horaria por defecto
+                    'firstDay'    => 1,              // Semana comienza el lunes
+                    'slotMinTime' => '07:00:00',     // Opcional: hora mínima visible
+                    'slotMaxTime' => '24:00:00',     // Opcional: hora máxima visible
+                    'allDaySlot'  => false,          // Ocultar franja "todo el día" (si quieres)
+                    'headerToolbar' => [
+                        'left'   => 'dayGridMonth,timeGridWeek,timeGridDay',
+                        'center' => 'title',
+                        'right'  => 'prev,next today',
+                    ],
+                ]),
             ])
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 //Widgets\FilamentInfoWidget::class,
