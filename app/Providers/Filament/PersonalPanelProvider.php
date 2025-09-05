@@ -66,18 +66,18 @@ class PersonalPanelProvider extends PanelProvider
             ->resources([])
             ->defaultAvatarProvider(AutenticatedUserAvatar::class)
             ->plugins([
-                FilamentFullCalendarPlugin::make()->config([
-                    'initialView' => 'timeGridWeek', // Vista semanal con franja horaria por defecto
-                    'firstDay'    => 1,              // Semana comienza el lunes
-                    'slotMinTime' => '07:00:00',     // Opcional: hora mínima visible
-                    'slotMaxTime' => '24:00:00',     // Opcional: hora máxima visible
-                    'allDaySlot'  => false,          // Ocultar franja "todo el día" (si quieres)
-                    'headerToolbar' => [
-                        'left'   => 'dayGridMonth,timeGridWeek,timeGridDay',
-                        'center' => 'title',
-                        'right'  => 'prev,next today',
-                    ],
-                ]),
+                // FilamentFullCalendarPlugin::make()->config([
+                //     'initialView' => 'timeGridWeek', // Vista semanal con franja horaria por defecto
+                //     'firstDay'    => 1,              // Semana comienza el lunes
+                //     'slotMinTime' => '07:00:00',     // Opcional: hora mínima visible
+                //     'slotMaxTime' => '24:00:00',     // Opcional: hora máxima visible
+                //     'allDaySlot'  => false,          // Ocultar franja "todo el día" (si quieres)
+                //     'headerToolbar' => [
+                //         'left'   => 'dayGridMonth,timeGridWeek,timeGridDay',
+                //         'center' => 'title',
+                //         'right'  => 'prev,next today',
+                //     ],
+                // ]),
             ])
             ->pages([
                 Pages\Dashboard::class,
@@ -87,8 +87,7 @@ class PersonalPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 AppointmentStats::class,
-                AppointmentStats::class,
-                CalendarWidget::class,
+                // CalendarWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -106,22 +105,22 @@ class PersonalPanelProvider extends PanelProvider
                 AuthenticateAndCheckActive::class,
             ])
             ->userMenuItems([
-                // MenuItem::make('profile')
-                //     ->label('Perfil')
-                //     ->url(fn() => \App\Filament\Pages\Profile::getUrl(panel: 'personal'))
-                //     ->icon('heroicon-o-user'),
+                MenuItem::make('profile')
+                    ->label('Perfil')
+                    ->url(fn() => \App\Filament\Pages\Profile::getUrl(panel: 'personal'))
+                    ->icon('heroicon-o-user'),
 
-                // MenuItem::make('admin')
-                //     ->label('Ir a Administración')
-                //     ->url(url('/admin'))
-                //     ->icon('heroicon-o-cog')
-                //     ->visible(fn() => Auth::check() && Auth::user()->can_admin_panel), // ✅ visibilidad condicional
+                MenuItem::make('admin')
+                    ->label('Ir a Administración')
+                    ->url(url('/admin'))
+                    ->icon('heroicon-o-cog')
+                    ->visible(fn() => Auth::check() && Auth::user()->can_admin_panel), // ✅ visibilidad condicional
 
-                // MenuItem::make('home')
-                //     ->label('Ir a la Home')
-                //     ->url(url('/'))
-                //     ->icon('heroicon-o-globe-alt')
-                //     ->openUrlInNewTab(),
+                MenuItem::make('home')
+                    ->label('Ir a la Home')
+                    ->url(url('/'))
+                    ->icon('heroicon-o-globe-alt')
+                    ->openUrlInNewTab(),
             ]);
 
 
