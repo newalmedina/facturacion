@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 use Filament\Forms\Components\Button;
+use Illuminate\Support\Facades\Auth;
 use Saade\FilamentFullCalendar\Actions;
 
 class CalendarWidget extends FullCalendarWidget
@@ -36,11 +37,15 @@ class CalendarWidget extends FullCalendarWidget
         if (!empty($this->selectedStatus)) {
             $query->where('status', $this->selectedStatus);
         }
-
-        // Filtrar por trabajador
-        if (!empty($this->selectedWorker)) {
-            $query->where('worker_id', $this->selectedWorker);
+        if ($this->isAdminPanel()) {
+            // Filtrar por trabajador
+            if (!empty($this->selectedWorker)) {
+                $query->where('worker_id', $this->selectedWorker);
+            }
+        } else {
+            $query->where('worker_id', Auth::user()->id);
         }
+
 
         return $query->get()->map(function (Appointment $appointment) {
             $title = $appointment->worker->name;

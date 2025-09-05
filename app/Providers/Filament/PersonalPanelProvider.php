@@ -7,6 +7,7 @@ use App\Filament\AvatarProviders\AutenticatedUserAvatar;
 use App\Filament\CustomWidgets\AppointmentStats;
 use App\Filament\Resources\AppointmentResource;
 use App\Filament\Resources\AppointmentTemplateResource;
+use App\Filament\Widgets\CalendarWidget;
 use App\Http\Middleware\AuthenticateAndCheckActive;
 use App\Models\Setting;
 use Filament\Http\Middleware\Authenticate;
@@ -32,6 +33,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Outerweb\FilamentSettings\Filament\Plugins\FilamentSettingsPlugin;
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 
 class PersonalPanelProvider extends PanelProvider
@@ -62,20 +64,33 @@ class PersonalPanelProvider extends PanelProvider
                 'dark' => '#000000',        // Negro
             ])
             ->resources([
-                AppointmentResource::class, // 👈 registramos tu Resource aquí
-                AppointmentTemplateResource::class, // 👈 registramos tu Resource aquí
+                // AppointmentResource::class, // 👈 registramos tu Resource aquí
+                // AppointmentTemplateResource::class, // 👈 registramos tu Resource aquí
             ])
             ->defaultAvatarProvider(AutenticatedUserAvatar::class)
-            ->plugins([])
+            ->plugins([
+                FilamentFullCalendarPlugin::make()->config([
+                    'initialView' => 'timeGridWeek', // Vista semanal con franja horaria por defecto
+                    'firstDay'    => 1,              // Semana comienza el lunes
+                    'slotMinTime' => '07:00:00',     // Opcional: hora mínima visible
+                    'slotMaxTime' => '24:00:00',     // Opcional: hora máxima visible
+                    'allDaySlot'  => false,          // Ocultar franja "todo el día" (si quieres)
+                    'headerToolbar' => [
+                        'left'   => 'dayGridMonth,timeGridWeek,timeGridDay',
+                        'center' => 'title',
+                        'right'  => 'prev,next today',
+                    ],
+                ]),
+            ])
             ->pages([
                 Pages\Dashboard::class,
                 \App\Filament\Pages\Profile::class, // 👈 registra tu página
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-
                 AppointmentStats::class,
+                CalendarWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
