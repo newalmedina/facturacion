@@ -87,6 +87,7 @@ class PersonalPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 AppointmentStats::class,
+                AppointmentStats::class,
                 CalendarWidget::class,
             ])
             ->middleware([
