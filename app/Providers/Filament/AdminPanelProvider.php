@@ -39,12 +39,6 @@ class PersonalPanelProvider extends PanelProvider
 
     public function panel(Panel $panel): Panel
     {
-
-
-
-
-        AppointmentResource::canView(fn($user) => false);
-        AppointmentTemplateResource::canView(fn($user) => false);
         $panel
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->default()
