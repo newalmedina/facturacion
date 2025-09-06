@@ -11,6 +11,12 @@ class Country extends Model
     /**
      * Scope para filtrar solo los países activos
      */
+
+
+    protected $casts = [
+        'translations' => 'array',
+    ];
+
     public function scopeActivos($query)
     {
         return $query->where('is_active', true);

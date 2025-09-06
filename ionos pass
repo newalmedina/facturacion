@@ -1,1 +1,10 @@
 JquVN6va
+
+
+
+cuando no quiera cargar porque esta en cache
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan filament:cache-components
