@@ -32,13 +32,13 @@ class SaleDetailExport implements FromCollection, WithHeadings, WithMapping
             ucfirst($item->order->status == "pending" ? "Pendiente" : "Facturado"),
             $item->order->customer->name ?? null, // Cliente de la orden
             $item->getProductNameFormattedAttribute(), // Nombre producto formateado
-            $item->original_price,
+            // $item->original_price,
             $item->price,
-            $item->taxes,
+            // $item->taxes,
             $item->quantity,
             $item->total_base_price,    // Calculado (price * quantity)
-            $item->taxes_amount,        // Calculado
-            $item->total_with_taxes,    // Calculado
+            // $item->taxes_amount,        // Calculado
+            // $item->total_with_taxes,    // Calculado
         ];
     }
 
@@ -52,13 +52,13 @@ class SaleDetailExport implements FromCollection, WithHeadings, WithMapping
             'Estado',
             'Cliente',
             'Producto',
-            'Precio Original',
+            // 'Precio Original',
             'Precio',
-            'Impuestos %',
+            //'Impuestos %',
             'Cantidad',
             'Subtotal',
-            'Impuestos',
-            'Total con Impuestos',
+            // 'Impuestos',
+            // 'Total con Impuestos',
         ];
     }
 }

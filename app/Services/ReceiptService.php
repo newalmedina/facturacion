@@ -24,9 +24,9 @@ class ReceiptService
         $order->load('orderDetails', 'customer');
 
         // Generar PDF
-        return Pdf::loadView('pdf.ticket', [
+        return Pdf::loadView('pdf.factura', [
             'order' => $order,
             'settings' => $generalSettings
-        ])->setPaper([0, 0, 220, 800]); // ~58mm
+        ])->setPaper('A4', 'portrait');
     }
 }

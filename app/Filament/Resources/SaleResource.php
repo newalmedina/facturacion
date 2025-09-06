@@ -269,7 +269,7 @@ class SaleResource extends Resource
                     ->label('')
                     ->icon('heroicon-o-document-text')  // Ícono de recibo/factura
                     ->color('secondary')            // Azul, por ejemplo
-                    ->tooltip('Generar recibo')
+                    ->tooltip('Generar Factura')
                     ->visible(fn($record) => $record->status === 'invoiced')
                     ->action(function ($record) {
                         // Aquí va la lógica para generar la factura

@@ -40,13 +40,13 @@
                     Guardar y facturar
                 </x-filament::button>
             @else
-            <!-- 1. Generar recibo -->
+            <!-- 1. Generar Factura -->
             <x-filament::button class="mr-5 mb-3"
                 icon="heroicon-o-document-text"
                 color="secondary"
                 wire:click="generateReceipt"
             >
-                Generar recibo
+                Generar Factura
             </x-filament::button>
 
             <!-- 2. Enviar recibo por e-mail -->
@@ -172,14 +172,25 @@
 
 
     <div class="col-span-10 lg:col-span-6">
-        <x-filament::section collapsible >
-            <x-slot name="heading">
-               Productos Seleccionados
-            </x-slot>
 
-            {{-- pRODUCTOS SELECCIONADOS --}}
-             <div class="overflow-x-auto">
-                <table  class="mt-5 min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700">
+        {{-- Checkbox para habilitar edición de precios --}}
+        
+    
+        <x-filament::section collapsible>
+            <x-slot name="heading">
+                Productos Seleccionados
+            </x-slot>
+    
+            <div class="overflow-x-auto">
+                @if ( !$order->disabled_sales)
+                    <div class="mb-4 flex items-center space-x-2">
+                        <input type="checkbox" id="edit_prices" wire:model.live="editPrices" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 mr-2">
+                        <label for="edit_prices" class="text-black dark:text-white font-medium">Editar precios</label>
+                    </div>
+                    
+                @endif
+                
+                <table class="mt-5 min-w-full w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-white dark:bg-gray-800">
                         <tr>
                             <th class="px-1 py-2 text-left text-black dark:text-white"></th>
@@ -187,27 +198,27 @@
                             <th class="px-1 py-2 text-left text-black dark:text-white">Precio Unidad</th>
                             <th class="px-1 py-2 text-left text-black dark:text-white">Cantidad</th>
                             <th class="px-1 py-2 text-left text-black dark:text-white">Precio</th>
-                            <th class="px-1 py-2 text-left text-black dark:text-white">IVA%</th>
-                            <th class="px-1 py-2 text-left text-black dark:text-white">IVA €</th>
-                            <th class="px-1 py-2 text-left text-black dark:text-white">Total €</th>
+                            <th class="px-1 py-2 text-left text-black dark:text-white">Iva</th>
+                            <th class="px-1 py-2 text-left text-black dark:text-white">Total</th>
                             @if (!$order->disabled_sales)
                                 <th class="px-1 py-2 text-left text-black dark:text-white"></th>
                             @endif
                         </tr>
                     </thead>
+    
                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                         @foreach ($selectedProducts as $key => $product)
-                        {{-- @dd($product) --}}
                             <tr>
                                 <td class="px-2 py-2 text-black dark:text-white">
                                     @if ($product["image_url"])
-                                    <div class="flex items-center ">
-                                        <img src="{{ $product["image_url"] }}" alt="{{$product["item_name"]  }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
-                                    </div>
-                                        @endif
+                                        <div class="flex items-center">
+                                            <img src="{{ $product["image_url"] }}" alt="{{$product["item_name"]}}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                                        </div>
+                                    @endif
                                 </td>
+    
                                 <td class="px-2 py-2 text-black dark:text-white">
-                                    <div class="flex items-center ">
+                                    <div class="flex items-center">
                                         @if ($product["item_type"] == "service")
                                             <div class="w-4 h-4 rounded bg-yellow-400 border border-yellow-600 mr-2"></div>
                                         @elseif ($product["item_type"] == "product")
@@ -218,56 +229,69 @@
                                         <span>{{ $product["item_name"] }}</span>
                                     </div>
                                 </td>
-                                <td class="px-2 py-2 text-black dark:text-white">{{ $product["price_unit"] }}</td>
-                                <td class="px-2 py-2 text-black dark:text-white"  style="width: 120px !important;">
-                                   <x-filament::input.wrapper>
-                                    <x-filament::input
-                                        :disabled="$order->disabled_sales"
-                                        wire:model.live.debounce.750ms="selectedProducts.{{ $key }}.quantity"
-                                        type="number"
-                                        min="1"
-                                    />
-                                </x-filament::input.wrapper>
-
-
-                                </td>
-                                <td class="px-2 py-2 text-black dark:text-white">{{ $product["price"] }}</td>
-                                <td class="px-2 py-2 text-black dark:text-white">{{ $product["taxes"] }}</td>
-                                <td class="px-2 py-2 text-black dark:text-white">{{ $product["taxes_amount"] }}</td>
-                                <td class="px-2 py-2 text-black dark:text-white">{{ $product["total"] }}</td>
-                                    @if (!$order->disabled_sales)
-                                        <td class="px-2 py-2 text-black dark:text-white">
-                                            <button
-                                                :disabled="$order->disabled_sales"
-                                                wire:loading.attr="disabled"
-                                                wire:click="deleteItem('{{ $key }}')"
-                                                class="w-12 h-12 flex items-center justify-center focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-110">
-                                                <x-heroicon-s-trash class="w-6 h-6 text-red-500 hover:text-red-600" />
-                                            </button>
-                                        </td>
+    
+                                <td class="px-2 py-2 text-black dark:text-white">
+                                    
+                                    @if($editPrices && !$order->disabled_sales)
+                                        <x-filament::input.wrapper>
+                                            <x-filament::input
+                                                wire:model.live.debounce.500ms="selectedProducts.{{ $key }}.price_unit"
+                                                type="number"
+                                                min="0"
+                                            />
+                                        </x-filament::input.wrapper>
+                                    @else
+                                        {{ $product["price_unit"] }}
                                     @endif
-
+                                </td>
+    
+                                <td class="px-2 py-2 text-black dark:text-white" style="width: 120px !important;">
+                                    <x-filament::input.wrapper>
+                                        <x-filament::input
+                                            :disabled="$order->disabled_sales"
+                                            wire:model.live.debounce.750ms="selectedProducts.{{ $key }}.quantity"
+                                            type="number"
+                                            min="1"
+                                        />
+                                    </x-filament::input.wrapper>
+                                </td>
+    
+                                <td class="px-2 py-2 text-black dark:text-white">{{ $product["price"] }} €</td>
+                                <td class="px-2 py-2 text-black dark:text-white">{{ $product["taxes_amount"] }} €</td>
+                                <td class="px-2 py-2 text-black dark:text-white">{{ $product["price_with_taxes"] }} €</td>
+    
+                                @if (!$order->disabled_sales)
+                                    <td class="px-2 py-2 text-black dark:text-white">
+                                        <button
+                                            :disabled="$order->disabled_sales"
+                                            wire:loading.attr="disabled"
+                                            wire:click="deleteItem('{{ $key }}')"
+                                            class="w-12 h-12 flex items-center justify-center focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-110">
+                                            <x-heroicon-s-trash class="w-6 h-6 text-red-500 hover:text-red-600" />
+                                        </button>
+                                    </td>
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>
-                    @if($getGeneralTotals['taxes_amount']<>0)
+    
+                    {{-- Footer con totales --}}
+                 
                     <tfoot>
                         <tr>
-                            <th colspan="4"></th>
-                            <th class="px-1 py-2 text-left text-black dark:text-white"  colspan="1">{{ number_format($getGeneralTotals['subtotal'], 2)}}</th>
-                            
+                            <th colspan="3"></th>
                             <th></th>
-                            <th class="px-1 py-2 text-left text-black dark:text-white"  colspan="1">{{ number_format($getGeneralTotals['taxes_amount'], 2)}}</th>
-                            <th  class="px-1 py-2 text-left text-black dark:text-white" colspan="1">{{ number_format($getGeneralTotals['total'], 2)}}</th>
+                            <th class="px-1 py-2 text-left text-black dark:text-white">{{ number_format($getGeneralTotals['subtotal'], 2) }} €</th>
+                            <th class="px-1 py-2 text-left text-black dark:text-white">{{ number_format($getGeneralTotals['taxes_amount'], 2) }} €</th>
+                            <th class="px-1 py-2 text-left text-black dark:text-white">{{ number_format($getGeneralTotals['total'], 2) }} €</th>
                             <th colspan="1"></th>
                         </tr>
-                    </tbody>
-                    @endif
+                    </tfoot>
                 </table>
             </div>
-            {{-- pRODUCTOS SELECCIONADOS --}}
         </x-filament::section>
     </div>
+    
     <div class="col-span-10 lg:col-span-4">
         <x-filament::section collapsible   class="mb-5">
             <x-slot name="heading">
@@ -322,6 +346,21 @@
                     @error('form.customer_id')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                     @enderror
+                </div>
+                <div class="col-span-1">
+                    <x-filament-forms::field-wrapper.label>
+                        IVA%
+                    </x-filament-forms::field-wrapper.label>
+                    <x-filament::input.wrapper >
+                        <x-filament::input
+                        :disabled="$order->disabled_sales"
+                          type="number"
+                            step="0.01" 
+                            wire:model.live.debounce.750ms="form.iva"
+
+                      />
+                    </x-filament::input.wrapper>
+                   
                 </div>
                 <div class="col-span-1">
                     <x-filament-forms::field-wrapper.label>
@@ -380,7 +419,7 @@
                             <hr>
                             <div class="mb-5 mt-5" style="text-align: left !important">
                                 <div class="grid grid-cols-1 lg:grid-cols-7 gap-2">
-                                    <div class="col-span-1 lg:col-span-2">
+                                    <div class="col-span-1 lg:col-span-5">
                                         <x-filament-forms::field-wrapper.label>
                                             Nombre Producto
                                         </x-filament-forms::field-wrapper.label>
@@ -419,7 +458,7 @@
                                             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
-                                    <div class="col-span-1 lg:col-span-1">
+                                    {{-- <div class="col-span-1 lg:col-span-1">
                                         <x-filament-forms::field-wrapper.label>
                                             Iva %
                                         </x-filament-forms::field-wrapper.label>
@@ -430,8 +469,8 @@
                                         @error('manualProduct.taxes')
                                             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                                         @enderror
-                                    </div>
-                                    <div class="col-span-1 lg:col-span-1">
+                                    </div> --}}
+                                    {{-- <div class="col-span-1 lg:col-span-1">
                                         <x-filament-forms::field-wrapper.label>
                                             Iva €
                                         </x-filament-forms::field-wrapper.label>
@@ -439,8 +478,8 @@
                                             <x-filament::input style="background: #e9e9e9f"
                                                 wire:model.defer="manualProduct.taxes_amount" disabled type="number" min="1" />
                                         </x-filament::input.wrapper>
-                                    </div>
-                                    <div class="col-span-1 lg:col-span-1">
+                                    </div> --}}
+                                    {{-- <div class="col-span-1 lg:col-span-1">
                                         <x-filament-forms::field-wrapper.label>
                                             Total €
                                         </x-filament-forms::field-wrapper.label>
@@ -448,7 +487,7 @@
                                             <x-filament::input disabled style="background: #e9e9e9f"
                                                 wire:model.defer="manualProduct.total" type="number" min="1" />
                                         </x-filament::input.wrapper>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
 
@@ -515,8 +554,8 @@
                                 <th class="px-1 py-2 text-left text-black dark:text-white">Nombre</th>
                                 <th class="px-1 py-2 text-left text-black dark:text-white">Disp.</th>
                                 <th class="px-1 py-2 text-left text-black dark:text-white">Precio</th>
-                                <th class="px-1 py-2 text-left text-black dark:text-white">IVA%</th>
-                                <th class="px-1 py-2 text-left text-black dark:text-white">Total</th>
+                                {{-- <th class="px-1 py-2 text-left text-black dark:text-white">IVA%</th> --}}
+                                {{-- <th class="px-1 py-2 text-left text-black dark:text-white">Total</th> --}}
                                 <th class="px-1 py-2 text-left text-black dark:text-white">Cantidad</th>
                                 @if (!$order->disabled_sales)
                                     <th class="px-1 py-2 text-left text-black dark:text-white"></th>
@@ -549,9 +588,9 @@
                                         </div>
                                     </td>
                                     <td class="px-2 py-2 text-black dark:text-white">{{ $item->amount }}</td>
-                                    <td class="px-2 py-2 text-black dark:text-white">{{ $item->price }}</td>
-                                    <td class="px-2 py-2 text-black dark:text-white">{{ $item->taxes }}</td>
-                                    <td class="px-2 py-2 text-black dark:text-white">{{ $item->totalPrice }}</td>
+                                    <td class="px-2 py-2 text-black dark:text-white">{{ $item->price }} €</td>
+                                    {{-- <td class="px-2 py-2 text-black dark:text-white">{{ $item->taxes }}</td> --}}
+                                    {{-- <td class="px-2 py-2 text-black dark:text-white">{{ $item->totalPrice }}</td> --}}
                                     <td class="px-2 py-2 text-black dark:text-white" style="width: 120px !important;">
                                         <x-filament::input.wrapper >
                                             <x-filament::input

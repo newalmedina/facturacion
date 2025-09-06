@@ -35,6 +35,11 @@ Route::get('/home', [WelcomeController::class, 'index'])->name('welcome');
 //Route::get('/booking', [FrontBookingController::class, 'index'])->name('booking');
 Route::get('/booking', [FrontBookingController::class, 'index'])->name('booking');
 
+Route::get('/factura', function () {
+    return view('pdf.factura');
+});
+
+
 
 Route::middleware('auth')->get('/admin/backups/download/{filepath}', [BackupDownloadController::class, 'download'])
     ->where('filepath', '.*')

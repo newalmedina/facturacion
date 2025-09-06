@@ -22,6 +22,7 @@ class Form extends Component
     public string $searchType = '';
     public string $actionType = 'new';
     public int|string $perPage = 10;
+    public $editPrices = false;
 
     public  $userList = [];
     public array $inputValues = [];
@@ -33,6 +34,7 @@ class Form extends Component
     public string $recipientEmail = '';
     public array $form = [
         'date' => '',
+        'iva' => '',
         'customer_id' => '',
         'assigned_user_id' => '',
         'observations' => '',
@@ -236,7 +238,7 @@ class Form extends Component
                 'manualProduct.product_name' => ['required', 'string'],
                 'manualProduct.price' => ['required', 'numeric', 'min:0'],
                 'manualProduct.quantity' => ['required', 'integer', 'min:1'],
-                'manualProduct.taxes' => ['required', 'numeric', 'min:0'],
+                //'manualProduct.taxes' => ['required', 'numeric', 'min:0'],
             ],
             [
                 'manualProduct.product_name.required' => 'El campo es obligatorio.',
@@ -321,6 +323,7 @@ class Form extends Component
         $this->order->customer_id = $this->form["customer_id"];
         $this->order->assigned_user_id = $this->form["assigned_user_id"];
         $this->order->observations = $this->form["observations"];
+        $this->order->iva = $this->form["iva"];
         if ($action) {
             $this->order->status = "invoiced";
         }
@@ -473,7 +476,8 @@ class Form extends Component
             // ⚠️ Convertir a float antes de operar
             $quantity = (float) ($product['quantity'] ?? 0);
             $priceUnit = (float) ($product['price_unit'] ?? 0);
-            $taxRate = (float) ($product['taxes'] ?? 0); // porcentaje (ej: 21)
+            // $taxRate = (float) ($product['taxes'] ?? 0); // porcentaje (ej: 21)
+            $taxRate = (float) ($this->form['iva'] ?? 0); // porcentaje (ej: 21)
 
             $subtotal = $priceUnit * $quantity;
             $taxesAmount = $subtotal * ($taxRate / 100);
