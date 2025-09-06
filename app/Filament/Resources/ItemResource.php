@@ -192,7 +192,7 @@ class ItemResource extends Resource
 
 
                                 // Campo IVA (Solo visible cuando 'type' es 'service')
-                                Forms\Components\TextInput::make('taxes')
+                                /* Forms\Components\TextInput::make('taxes')
                                     ->label("IVA")
                                     ->prefix('%')
                                     ->hidden(fn($get) => empty($get('type')))
@@ -200,11 +200,11 @@ class ItemResource extends Resource
                                     ->reactive()
                                     //->debounce(500)
                                     ->debounce(750)
-                                    ->afterStateUpdated(fn($state, $get, $set) => self::updateCalculatedFields($get, $set)),
+                                    ->afterStateUpdated(fn($state, $get, $set) => self::updateCalculatedFields($get, $set)),*/
 
                                 // 🔹 Campo calculado: Monto de impuestos
                                 // 🔹 Campo calculado: Monto de impuestos
-                                Forms\Components\TextInput::make('taxes_amount')
+                                /*  Forms\Components\TextInput::make('taxes_amount')
                                     ->label("Monto de Impuestos")
                                     ->disabled()
                                     ->hidden(fn($get) => empty($get('type')))
@@ -217,10 +217,10 @@ class ItemResource extends Resource
                                         if ($get('price') && $get('taxes')) {
                                             $set('taxes_amount', round(($get('price') * $get('taxes')) / 100, 2));
                                         }
-                                    }),
+                                    }),*/
 
                                 // 🔹 Campo calculado: Precio total
-                                Forms\Components\TextInput::make('total_price')
+                                /*Forms\Components\TextInput::make('total_price')
                                     ->label("Precio Total")
                                     ->disabled()
                                     ->hidden(fn($get) => empty($get('type')))
@@ -254,7 +254,7 @@ class ItemResource extends Resource
                                     ->label("Suplidor")
                                     ->preload()
                                     ->reactive()
-                                    ->hidden(fn($get) => $get('type') === 'service' || empty($get('type'))), // Solo visible para 'product'
+                                    ->hidden(fn($get) => $get('type') === 'service' || empty($get('type'))), // Solo visible para 'product'*/
 
                                 // Campo Unidad de medida (Solo visible cuando 'type' es 'product')
                                 Forms\Components\Select::make('unit_of_measure_id')
@@ -308,17 +308,17 @@ class ItemResource extends Resource
                     ->formatStateUsing(fn($state) => number_format($state, 2) . '€')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('taxes')
+                /*Tables\Columns\TextColumn::make('taxes')
                     ->label("IVA %")
                     ->searchable()
                     ->numeric()
                     ->formatStateUsing(fn($state) => number_format($state, 2))
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('taxes_amount')  // Utilizando el atributo taxes_amount
+                    ->sortable(),*/
+                /*Tables\Columns\TextColumn::make('taxes_amount')  // Utilizando el atributo taxes_amount
                     ->label("Impuestos")
                     // ->searchable()
                     ->formatStateUsing(fn($state) => number_format($state, 2) . '€')  // Formateamos el valor con dos decimales
-                    ->sortable(),
+                    ->sortable(),*/
 
                 Tables\Columns\TextColumn::make('total_price')  // Utilizando el atributo total_price
                     ->label("Precio Total")
