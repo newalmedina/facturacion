@@ -40,8 +40,6 @@ class PersonalPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
 
-
-
         $panel
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->default()
@@ -76,7 +74,7 @@ class PersonalPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 AppointmentStats::class,
-                //   CalendarWidget::class,
+                CalendarWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
