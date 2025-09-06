@@ -32,9 +32,7 @@ use Filament\Support\Enums\MaxWidth;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Outerweb\FilamentSettings\Filament\Plugins\FilamentSettingsPlugin;
 use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
-use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 
 class PersonalPanelProvider extends PanelProvider
 {
@@ -66,18 +64,9 @@ class PersonalPanelProvider extends PanelProvider
             ->resources([])
             ->defaultAvatarProvider(AutenticatedUserAvatar::class)
             ->plugins([
-                // FilamentFullCalendarPlugin::make()->config([
-                //     'initialView' => 'timeGridWeek', // Vista semanal con franja horaria por defecto
-                //     'firstDay'    => 1,              // Semana comienza el lunes
-                //     'slotMinTime' => '07:00:00',     // Opcional: hora mínima visible
-                //     'slotMaxTime' => '24:00:00',     // Opcional: hora máxima visible
-                //     'allDaySlot'  => false,          // Ocultar franja "todo el día" (si quieres)
-                //     'headerToolbar' => [
-                //         'left'   => 'dayGridMonth,timeGridWeek,timeGridDay',
-                //         'center' => 'title',
-                //         'right'  => 'prev,next today',
-                //     ],
-                // ]),
+                FilamentFullCalendarPlugin::make()->config(
+                    []
+                ),
             ])
             ->pages([
                 Pages\Dashboard::class,
@@ -87,7 +76,7 @@ class PersonalPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 AppointmentStats::class,
-                // CalendarWidget::class,
+                //   CalendarWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
