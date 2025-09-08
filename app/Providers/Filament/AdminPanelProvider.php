@@ -86,9 +86,17 @@ class AdminPanelProvider extends PanelProvider
                 // FilamentSpatieLaravelBackupPlugin::make()
                 FilamentSpatieLaravelBackupPlugin::make()
                     ->usingPage(Backups::class)->authorize(fn(): bool => auth()->user()->email === 'el.solitions@gmail.com'),
-                FilamentFullCalendarPlugin::make()->config(
-                    []
-                ),
+                FilamentFullCalendarPlugin::make()->config([
+                    'initialView' => 'timeGridWeek', // 👈 Vista por defecto: semana
+                    'headerToolbar' => [
+                        'left'   => 'prev,next today',
+                        'center' => 'title',
+                        'right'  => 'dayGridMonth,timeGridWeek,timeGridDay', // 👈 Botones para cambiar vista
+                    ],
+                    'slotMinTime' => '07:00:00', // Opcional: hora de inicio
+                    'slotMaxTime' => '22:00:00', // Opcional: hora de fin
+                    'allDaySlot'  => false,      // Opcional: oculta "Todo el día"
+                ])
             ])
             ->pages([
                 Pages\Dashboard::class,
@@ -172,4 +180,3 @@ class AdminPanelProvider extends PanelProvider
         });
     }
 }
-    
