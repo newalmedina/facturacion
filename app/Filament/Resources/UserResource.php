@@ -195,7 +195,7 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('identification')
                     ->sortable()
-                    ->label("Identificacion")
+                    ->label("NIF/CIF")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('country.name')
                     ->sortable()

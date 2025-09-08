@@ -134,6 +134,23 @@ class Settings extends BaseSettings
                                         ->maxLength(255)
                                         ->label('Teléfono')
                                         ->columnSpan(2), // Ocupa 2 columnas
+
+                                    TextInput::make('general.nif')
+                                        ->maxLength(255)
+                                        ->label('NIF/CIF')
+                                        ->columnSpan(2), // Ocupa 2 columnas
+
+                                    TextInput::make('general.bank_name')
+                                        ->maxLength(255)
+                                        ->label('Entidad Bancaria')
+                                        ->helperText('Este campo se usa únicamente para generar facturas.')
+                                        ->columnSpan(2), // Ocupa 2 columnas
+
+                                    TextInput::make('general.bank_number')
+                                        ->maxLength(255)
+                                        ->label('Número cuenta de banco')
+                                        ->helperText('Este campo se usa únicamente para generar facturas.')
+                                        ->columnSpan(2), // Ocupa 2 columnas
                                     Select::make('general.country_id')
                                         ->options(fn(Get $get): Collection => Country::query()
                                             ->where('is_active', 1)

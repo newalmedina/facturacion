@@ -3,6 +3,7 @@
 use App\Http\Controllers\BackupDownloadController;
 use App\Http\Controllers\FrontBookingController;
 use App\Http\Controllers\WelcomeController;
+use App\Models\Order;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -35,9 +36,18 @@ Route::get('/home', [WelcomeController::class, 'index'])->name('welcome');
 //Route::get('/booking', [FrontBookingController::class, 'index'])->name('booking');
 Route::get('/booking', [FrontBookingController::class, 'index'])->name('booking');
 
-Route::get('/factura', function () {
-    return view('pdf.factura');
-});
+
+// Route::get('/factura', function () {
+//     $settings = Setting::first();
+//     $generalSettings = $settings?->general;
+
+
+//     $order = Order::find(3);
+//     // dd($generalSettings);
+
+//     return view('pdf.factura', compact('generalSettings', 'order'));
+// });
+
 
 
 

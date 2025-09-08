@@ -23,6 +23,11 @@ class Order extends Model
         'products', // <-- aquí lo agregas
     ];
 
+    protected $casts = [
+        'date' => 'date',
+    ];
+
+
     public function assignedUser()
     {
         return $this->belongsTo(User::class, 'assigned_user_id');

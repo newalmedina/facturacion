@@ -24,6 +24,9 @@ class SettingDataSeeder extends Seeder
             'general.address'     => 'fonollar 6, planta baja',
             'general.allow_appointment'     => true,
             'general.has_home'     => true,
+            'general.bank_name'     => "Caixa Bank",
+            'general.bank_number'     => "ES00 000 000 000 000 00",
+            'general.nif'     => "47888806T",
         ];
 
         foreach ($settings as $key => $value) {

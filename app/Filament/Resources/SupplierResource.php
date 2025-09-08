@@ -129,7 +129,7 @@ class SupplierResource extends Resource
                                             ->maxLength(255),
 
                                         Forms\Components\TextInput::make('contact_identification')
-                                            ->label("Identificación")
+                                            ->label("NIF/CIF")
                                             ->maxLength(255),
                                         Forms\Components\TextInput::make('contact_email')
                                             ->email()
@@ -167,7 +167,7 @@ class SupplierResource extends Resource
                     ->label("Nombre del contacto")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('contact_identification')
-                    ->label("Identificación del contacto")
+                    ->label("NIF/CIF del contacto")
                     ->searchable(),
                 Tables\Columns\TextColumn::make('contact_phone')
                     ->label("Teléfono de contacto")

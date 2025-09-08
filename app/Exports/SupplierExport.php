@@ -53,7 +53,7 @@ class SupplierExport implements FromCollection, WithHeadings, WithMapping
              'Dirección',
              'Código postal',
              'Nombre contacto',
-             'Identificación contacto',
+             'NIF/CIF contacto',
              'Email contacto',
              'Teléfono contacto',
              'Activo',

@@ -12,7 +12,8 @@
                 <div class="site-footer-thumb">
                     <strong class="mb-1"> {{ trim($generalSettings->brand_name, '"') }}</strong>
 
-                    <p> {{ trim($generalSettings->address, '"') }}, {{ trim($generalSettings->postal_code, '"') }}, {{ $city->name??"" }}</p>
+                    {{-- <p> {{ trim($generalSettings->address, '"') }}, {{ trim($generalSettings->postal_code, '"') }}, {{ $city->name??"" }}</p> --}}
+                    <p> {{ trim($generalSettings->full_address, '"') }}, {{ trim($generalSettings->postal_code, '"') }}, {{ $city->name??"" }}</p>
                 </div>
             </div>
 

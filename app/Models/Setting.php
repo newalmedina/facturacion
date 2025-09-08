@@ -78,11 +78,23 @@ class Setting extends Model
                 $object->image_base64 = null;
             }
             // dd($object);
+            // 👉 Agregar full_address al objeto
+            $address    = trim($object->address ?? '', '"');
+            $postalCode = trim($object->postal_code ?? '', '"');
+            $city       =
+                $country    = trim($object->country ?? '', '"');
+            $city = City::find(trim($object->city_id ?? '', '"'));
+            $state = State::find(trim($object->state_id ?? '', '"'));
+            $country = Country::find(trim($object->country_id ?? '', '"'));
+            $object->full_address = trim("{$address}, {$postalCode}, {$city->name}, {$country->name}", ', ');
+
             return $object;
         }
 
         return null;
     }
+
+
 
 
 

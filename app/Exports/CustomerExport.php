@@ -49,7 +49,7 @@ class CustomerExport implements FromCollection, WithHeadings, WithMapping
             'Email',
             'Teléfono',
             'Fecha nacimiento',
-            'Identificación',
+            'NIC',
             'Género',
             'País',
             'Estado',

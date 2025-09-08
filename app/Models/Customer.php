@@ -26,4 +26,17 @@ class Customer extends Model
     {
         return $query->where('active', true);
     }
+    public function getFullAddressAttribute()
+    {
+        $parts = [
+            $this->address,
+            $this->postal_code,
+            optional($this->city)->name,
+            optional(optional($this->city)->state)->name,
+            optional($this->country)->name,
+        ];
+
+        // Filtramos nulos/vacíos y unimos con coma
+        return implode(', ', array_filter($parts));
+    }
 }

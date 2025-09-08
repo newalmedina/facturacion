@@ -182,58 +182,59 @@
             </x-slot>
         
             <div class="overflow-x-auto grid grid-cols-1 gap-4">
-                {{-- Cliente --}}
-                <div class="grid grid-cols-3 gap-4 mt-4">
-                    <div class="col-span-1 mb-2">
-                        <x-filament-forms::field-wrapper.label>
-                            Cliente
-                        </x-filament-forms::field-wrapper.label>
-                        <x-filament::input.wrapper :valid="! $errors->has('form.customer_id')">
-                            <x-filament::input.select 
-                                :disabled="$order->disabled_sales" 
-                                wire:model.live.debounce.750ms="form.customer_id" 
-                                searchable
-                            >
-                                <option value="">Seleccione cliente</option>
-                                @foreach ($customerList as $customer)
-                                    <option value="{{$customer->id}}">{{$customer->name}}</option>
-                                @endforeach
-                            </x-filament::input.select>
-                        </x-filament::input.wrapper>
-                        @error('form.customer_id')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-            
-                 
-                </div>
+                
             
                 {{-- Checkbox copiar info --}}
                 @if (!$order->disabled_sales)
                 
                     <div class="flex items-center space-x-2">
-                        <input type="checkbox" id="edit_prices" wire:model.live="editPrices" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 mr-2">
-                        <label for="edit_prices" class="text-black dark:text-white font-medium">Copiar info cliente</label>
+                        <button
+                            :disabled="$order->disabled_sales"
+                            id="copiar_info"
+                            wire:click="copyCustomerInfo()"
+                            class="w-12 h-12 flex items-center justify-center focus:outline-none transition-all duration-300 ease-in-out transform hover:scale-110">
+                            <x-heroicon-o-clipboard-document class="w-6 h-6 text-yellow-500 hover:text-yellow-600" />
+                        </button>
+                        
+                        <label for="copiar_info" class="text-black dark:text-white font-medium">Copiar info cliente</label>
                     </div>
                 @endif
             </div>
            
-        
+          
             {{-- Dirección y CP debajo --}}
             <div class="grid grid-cols-3 gap-4 mt-4">
                 <div class="col-span-3   mb-2">
                     <x-filament-forms::field-wrapper.label>
-                        Dirección
+                        Nombre
                     </x-filament-forms::field-wrapper.label>
-                    <x-filament::input.wrapper :valid="! $errors->has('form.address')">
+                    <x-filament::input.wrapper :valid="! $errors->has('form.billing_name')">
                         <x-filament::input 
                             :disabled="$order->disabled_sales" 
                             type="text" 
-                            wire:model.live.debounce.750ms="form.address" 
-                            placeholder="Dirección del cliente"
+                            wire:model.live.debounce.750ms="form.billing_name" 
+                            placeholder="Nombre facturación"
                         />
                     </x-filament::input.wrapper>
-                    @error('form.address')
+                    @error('form.billing_name')
+                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mt-4">
+                <div class="col-span-3   mb-2">
+                    <x-filament-forms::field-wrapper.label>
+                        NIF/CIF
+                    </x-filament-forms::field-wrapper.label>
+                    <x-filament::input.wrapper :valid="! $errors->has('form.billing_nif')">
+                        <x-filament::input 
+                            :disabled="$order->disabled_sales" 
+                            type="text" 
+                            wire:model.live.debounce.750ms="form.billing_nif" 
+                            placeholder="Nombre facturación"
+                        />
+                    </x-filament::input.wrapper>
+                    @error('form.billing_nif')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
@@ -241,72 +242,56 @@
             <div class="grid grid-cols-4 gap-4 mt-4">
                 <div class="col-span-2 mb-2">
                     <x-filament-forms::field-wrapper.label>
-                        Dirección
+                        Email
                     </x-filament-forms::field-wrapper.label>
-                    <x-filament::input.wrapper :valid="! $errors->has('form.address')">
+                    <x-filament::input.wrapper :valid="! $errors->has('form.billing_email')">
                         <x-filament::input 
                             :disabled="$order->disabled_sales" 
                             type="text" 
-                            wire:model.live.debounce.750ms="form.address" 
-                            placeholder="Dirección del cliente"
+                            wire:model.live.debounce.750ms="form.billing_email" 
+                            placeholder="Correo de faturación"
                         />
                     </x-filament::input.wrapper>
-                    @error('form.address')
+                    @error('form.billing_email')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
         
                 <div class="col-span-2 mb-2">
                     <x-filament-forms::field-wrapper.label>
-                        Código Postal
+                       Teléfono
                     </x-filament-forms::field-wrapper.label>
-                    <x-filament::input.wrapper :valid="! $errors->has('form.zip')">
+                    <x-filament::input.wrapper :valid="! $errors->has('form.billing_phone')">
                         <x-filament::input 
                             :disabled="$order->disabled_sales" 
                             type="text" 
-                            wire:model.live.debounce.750ms="form.zip" 
-                            placeholder="CP"
+                            wire:model.live.debounce.750ms="form.billing_phone" 
+                            placeholder="Teléfono facturación"
                         />
                     </x-filament::input.wrapper>
-                    @error('form.zip')
+                    @error('form.billing_phone')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
             <div class="grid grid-cols-4 gap-4 mt-4">
-                <div class="col-span-2 mb-2">
+                <div class="col-span-4 mb-2">
                     <x-filament-forms::field-wrapper.label>
                         Dirección
                     </x-filament-forms::field-wrapper.label>
-                    <x-filament::input.wrapper :valid="! $errors->has('form.address')">
+                    <x-filament::input.wrapper :valid="! $errors->has('form.billing_address')">
                         <x-filament::input 
                             :disabled="$order->disabled_sales" 
                             type="text" 
-                            wire:model.live.debounce.750ms="form.address" 
-                            placeholder="Dirección del cliente"
+                            wire:model.live.debounce.750ms="form.billing_address" 
+                            placeholder="Dirección facturación"
                         />
                     </x-filament::input.wrapper>
-                    @error('form.address')
+                    @error('form.billing_address')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
         
-                <div class="col-span-2 mb-2">
-                    <x-filament-forms::field-wrapper.label>
-                        Código Postal
-                    </x-filament-forms::field-wrapper.label>
-                    <x-filament::input.wrapper :valid="! $errors->has('form.zip')">
-                        <x-filament::input 
-                            :disabled="$order->disabled_sales" 
-                            type="text" 
-                            wire:model.live.debounce.750ms="form.zip" 
-                            placeholder="CP"
-                        />
-                    </x-filament::input.wrapper>
-                    @error('form.zip')
-                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
             </div>
         </x-filament::section>
             
@@ -461,11 +446,32 @@
                             @endforeach
                         </x-filament::input.select>
                     </x-filament::input.wrapper>
+                    @error('form.assigned_user_id')
+                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+               {{-- Cliente --}}    
+                <div class="col-span-1">
+                    <x-filament-forms::field-wrapper.label>
+                        Cliente
+                    </x-filament-forms::field-wrapper.label>
+                    <x-filament::input.wrapper :valid="! $errors->has('form.customer_id')">
+                        <x-filament::input.select 
+                            :disabled="$order->disabled_sales" 
+                            wire:model.live.debounce.750ms="form.customer_id" 
+                            searchable
+                        >
+                            <option value="">Seleccione cliente</option>
+                            @foreach ($customerList as $customer)
+                                <option value="{{$customer->id}}">{{$customer->name}}</option>
+                            @endforeach
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
                     @error('form.customer_id')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
-               
+                
                 <div class="col-span-1">
                     <x-filament-forms::field-wrapper.label>
                         IVA%
@@ -480,6 +486,28 @@
                       />
                     </x-filament::input.wrapper>
                    
+                </div>
+                <div class="col-span-1">
+                    <x-filament-forms::field-wrapper.label>
+                        Método de pago
+                    </x-filament-forms::field-wrapper.label>
+                    <x-filament::input.wrapper :valid="! $errors->has('form.payment_method')">
+                        <x-filament::input.select 
+                            :disabled="$order->disabled_sales" 
+                            wire:model.live.debounce.750ms="form.payment_method"
+                            searchable
+                        >
+                        <option value="">Seleccione método de pago</option>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                            <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                            <option value="Bizum">Bizum</option>
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
+                    
+                    @error('form.payment_method')
+                    <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div class="col-span-1">
                     <x-filament-forms::field-wrapper.label>

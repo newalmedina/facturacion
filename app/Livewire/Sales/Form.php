@@ -38,6 +38,12 @@ class Form extends Component
         'customer_id' => '',
         'assigned_user_id' => '',
         'observations' => '',
+        'billing_name' => "",
+        'billing_nif' => "",
+        'billing_email' => "",
+        'billing_phone' => "",
+        'billing_address' => "",
+        'payment_method' => "",
     ];
 
     public function mount($order = null): void
@@ -324,6 +330,12 @@ class Form extends Component
         $this->order->assigned_user_id = $this->form["assigned_user_id"];
         $this->order->observations = $this->form["observations"];
         $this->order->iva = $this->form["iva"];
+        $this->order->billing_name = $this->form["billing_name"];
+        $this->order->billing_nif = $this->form["billing_nif"];
+        $this->order->billing_email = $this->form["billing_email"];
+        $this->order->billing_phone = $this->form["billing_phone"];
+        $this->order->billing_address = $this->form["billing_address"];
+        $this->order->payment_method = $this->form["payment_method"];
         if ($action) {
             $this->order->status = "invoiced";
         }
@@ -412,6 +424,33 @@ class Form extends Component
         $this->notify(
             '',
             'Acción realizada correctamente',
+            'success'
+        );
+    }
+    public function copyCustomerInfo()
+    {
+
+        $customer = Customer::find($this->form["customer_id"]);
+
+        // dd($this->form["customer_id"]);
+        if (! $customer) {
+
+            $this->notify(
+                '',
+                'No tienes ningún cliente seleccionado',
+                'warning'
+            );
+            return false;
+        }
+
+        $this->form['billing_name'] = $customer->name;
+        $this->form['billing_nif'] = $customer->identification;
+        $this->form['billing_email'] = $customer->email;
+        $this->form['billing_phone'] = $customer->phone;
+        $this->form['billing_address'] = $customer->full_address;
+        $this->notify(
+            '',
+            'Datos cargados correctamente',
             'success'
         );
     }

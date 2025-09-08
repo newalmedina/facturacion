@@ -109,6 +109,7 @@ export default {
         'text-2xl',
 
         // Colores
+        'text-yellow-500', 'hover:text-yellow-600',
         'text-red-600',
         'text-red-500',
         'hover:text-red-600',

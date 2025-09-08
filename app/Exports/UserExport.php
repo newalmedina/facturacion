@@ -26,18 +26,18 @@ class UserExport implements FromCollection, WithHeadings, WithMapping
     public function map($item): array
     {
         return [
-            $item->name,  
-            $item->email,  
-            $item->identification,  
-            $item->phone,  
-            $item->birth_date,  
-            $item->gender,  
-            $item->country?->name,  
-            $item->state?->name,  
-            $item->city?->name,  
-            $item->postal_code,  
-            $item->address,  
-            $item->active,  
+            $item->name,
+            $item->email,
+            $item->identification,
+            $item->phone,
+            $item->birth_date,
+            $item->gender,
+            $item->country?->name,
+            $item->state?->name,
+            $item->city?->name,
+            $item->postal_code,
+            $item->address,
+            $item->active,
         ];
     }
 
@@ -47,7 +47,7 @@ class UserExport implements FromCollection, WithHeadings, WithMapping
         return [
             'Nombre',
             'Email',
-            'Identificación',
+            'NIF/CIF',
             'Teléfono',
             'Fecha nacimiento',
             'Género',
@@ -60,5 +60,3 @@ class UserExport implements FromCollection, WithHeadings, WithMapping
         ];
     }
 }
-
-

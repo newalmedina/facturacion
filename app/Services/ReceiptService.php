@@ -11,14 +11,8 @@ class ReceiptService
     public function generate(Order $order)
     {
         // Obtener settings y mapearlos a array plano
-        $settings = Setting::pluck('value', 'key')->map(function ($value) {
-            return is_array($value) ? $value : json_decode($value, true);
-        });
-        $generalSettings = collect($settings)->filter(function ($_, $key) {
-            return str_starts_with($key, 'general.');
-        })->mapWithKeys(function ($value, $key) {
-            return [str_replace('general.', '', $key) => $value];
-        })->toArray();
+        $settings = Setting::first();
+        $generalSettings = $settings?->general;
 
         // Cargar relaciones
         $order->load('orderDetails', 'customer');
@@ -26,7 +20,7 @@ class ReceiptService
         // Generar PDF
         return Pdf::loadView('pdf.factura', [
             'order' => $order,
-            'settings' => $generalSettings
+            'generalSettings' => $generalSettings
         ])->setPaper('A4', 'portrait');
     }
 }
