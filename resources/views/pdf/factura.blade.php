@@ -67,18 +67,18 @@
       <td style="width: 50%; vertical-align: top; border-right: 2px solid #b462e2; padding-right: 20px;">
         <strong>Datos del Cliente</strong><br>
         Nombre: <b>{{ $order->billing_name ?? '-' }} </b><br>
-          Email:<b>{{$order->billing_email ?? '-' }}  </b><br>
+          Email: <b>{{$order->billing_email ?? '-' }}  </b><br>
           Teléfono: <b>{{ $order->billing_phone ?? '-' }} </b><br>
-          Dirección:<b>{{ $order->billing_address ?? 'Dirección' }} </b><br>
+          Dirección: <b>{{ $order->billing_address ?? 'Dirección' }} </b><br>
       </td>
       <td style="width: 50%; vertical-align: top; padding-left: 20px;">
        
         <strong>Datos de la Empresa</strong><br>
           Nombre: <b>{{ $generalSettings->brand_name ?? 'Nombre Marca' }} </b><br>
           NIF/CIF: <b>{{ $generalSettings->nif ?? 'Nombre Marca' }} </b><br>
-          Email:<b>{{$generalSettings->email ?? '-' }}  </b><br>
+          Email: <b>{{$generalSettings->email ?? '-' }}  </b><br>
           Teléfono: <b>{{ $generalSettings->phone ?? '-' }} </b><br>
-          Dirección:<b>{{ $generalSettings->full_address ?? 'Dirección' }} </b><br>
+          Dirección: <b>{{ $generalSettings->full_address ?? 'Dirección' }} </b><br>
       </td>
     </tr>
   </table>
@@ -162,13 +162,14 @@
   </table>
 
   <!-- Información de pago -->
-  <div style="width:40%; border: 2px solid #b462e2; border-radius: 12px; padding: 15px; width: fit-content; background-color: #f8e6fc; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 30px;">
+  <div style="width:45%; border: 2px solid #b462e2; border-radius: 12px; padding: 15px; width: fit-content; background-color: #f8e6fc; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 30px;">
     <strong>Información de Pago</strong><br>
-    {{ $order->payment_method }}<br>
+    Método de pago: <b>{{ $order->payment_method }}</b><br>
 
     @if(in_array($order->payment_method, ['Transferencia Bancaria', 'Bizum']))
-        {{ $generalSettings->bank_name }}<br>
-        Número de cuenta: {{ $generalSettings->bank_number }}
+        {{-- {{ $generalSettings->bank_name }}<br> --}}
+        Entidad bancaria: <b>{{ $generalSettings->bank_name }}</b> <br>
+        Número de cuenta: <b>{{ $generalSettings->bank_number }}</b>
     @endif
   </div>
 
