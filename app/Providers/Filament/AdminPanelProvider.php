@@ -93,8 +93,8 @@ class AdminPanelProvider extends PanelProvider
                         'center' => 'title',
                         'right'  => 'dayGridMonth,timeGridWeek,timeGridDay', // 👈 Botones para cambiar vista
                     ],
-                    'slotMinTime' => '07:00:00', // Opcional: hora de inicio
-                    'slotMaxTime' => '22:00:00', // Opcional: hora de fin
+                    'slotMinTime' => '00:00:00', // Opcional: hora de inicio
+                    'slotMaxTime' => '23:59:59', // Opcional: hora de fin
                     'allDaySlot'  => false,      // Opcional: oculta "Todo el día"
                 ])
             ])
