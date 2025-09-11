@@ -329,7 +329,12 @@ class Form extends Component
         $this->order->customer_id = $this->form["customer_id"];
         $this->order->assigned_user_id = $this->form["assigned_user_id"];
         $this->order->observations = $this->form["observations"];
-        $this->order->iva = $this->form["iva"];
+        // $this->order->iva = $this->form["iva"];
+        $this->order->iva = is_numeric($this->form['iva']) ? (float) $this->form['iva'] : 0;
+
+        if ($this->order->iva == 0) {
+            (float) $this->form['iva'] = $this->order->iva;
+        }
         $this->order->billing_name = $this->form["billing_name"];
         $this->order->billing_nif = $this->form["billing_nif"];
         $this->order->billing_email = $this->form["billing_email"];
