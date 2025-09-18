@@ -28,7 +28,10 @@ class PriceCatalogForm
                     TextInput::make('subtitle')
                         ->label('Subtítulo')
                         ->maxLength(100)
-                        ->columnSpan(3), // ocupa todo el anch2
+                        ->columnSpan([
+                            'default' => 12, // móvil
+                            'md' => 3,       // escritorio
+                        ]), // ocupa todo el anch2
                     FileUpload::make('image_path')
                         ->label('Imagen')
                         ->helperText('Resolución recomendada: 600 × 400 píxeles')

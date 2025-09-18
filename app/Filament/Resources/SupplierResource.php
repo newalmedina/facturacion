@@ -55,7 +55,10 @@ class SupplierResource extends Resource
                 Grid::make(12) // Definimos un Grid con 12 columnas en total
                     ->schema([
                         Section::make()
-                            ->columnSpan(3) // Ocupa 2 columnas de las 12 disponibles
+                            ->columnSpan([
+                                'default' => 12, // móvil
+                                'md' => 3,       // escritorio
+                            ]) // Ocupa 2 columnas de las 12 disponibles
                             ->schema([
                                 FileUpload::make('image')
                                     ->image()
@@ -66,7 +69,10 @@ class SupplierResource extends Resource
                             ]),
 
                         Grid::make(9)
-                            ->columnSpan(9)
+                            ->columnSpan([
+                                'default' => 12, // móvil
+                                'md' => 9,       // escritorio
+                            ])
                             ->schema([
                                 Section::make('Información general')
                                     ->columns(2)

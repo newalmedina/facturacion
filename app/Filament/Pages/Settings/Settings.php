@@ -60,7 +60,10 @@ class Settings extends BaseSettings
                 ->schema([
                     // Columna 1: FileUpload, ocupa 3 columnas
                     Section::make()
-                        ->columnSpan(3) // Ocupa 3 columnas de las 12 disponibles
+                        ->columnSpan([
+                            'default' => 12, // móvil
+                            'md' => 3,       // escritorio
+                        ]) // Ocupa 3 columnas de las 12 disponibles
                         ->schema([
                             FileUpload::make('general.image') // Suponiendo que el campo de archivo se llama 'file'
                                 ->label('Imagen')
@@ -70,7 +73,10 @@ class Settings extends BaseSettings
 
                     // Columna 2: Tabs, ocupa 9 columnas
                     Tabs::make('Settings')
-                        ->columnSpan(9)
+                        ->columnSpan([
+                            'default' => 12, // móvil
+                            'md' => 9,       // escritorio
+                        ])
                         ->schema([
                             Tabs\Tab::make('General')
                                 ->schema([

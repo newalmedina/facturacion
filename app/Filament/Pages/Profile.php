@@ -54,7 +54,10 @@ class Profile extends Page
             Grid::make(12)
                 ->schema([
                     Section::make()
-                        ->columnSpan(3)
+                        ->columnSpan([
+                            'default' => 12, // móvil
+                            'md' => 3,       // escritorio
+                        ])
                         ->schema([
                             FileUpload::make('image')
                                 ->image()
@@ -63,7 +66,10 @@ class Profile extends Page
                                 ->label('Imagen'),
                         ]),
                     Grid::make(9)
-                        ->columnSpan(9)
+                        ->columnSpan([
+                            'default' => 12, // móvil
+                            'md' => 9,       // escritorio
+                        ])
                         ->schema([
                             Section::make('Información de acceso')
                                 ->columns(2)

@@ -48,7 +48,10 @@ class ItemResource extends Resource
                 Grid::make(12) // Definimos un Grid con 12 columnas en total
                     ->schema([
                         Section::make()
-                            ->columnSpan(3) // Ocupa 2 columnas de las 12 disponibles
+                            ->columnSpan([
+                                'default' => 12, // móvil
+                                'md' => 3,       // escritorio
+                            ]) // Ocupa 2 columnas de las 12 disponibles
                             ->schema([
                                 // FileUpload::make('image')
                                 //     ->image()
@@ -70,7 +73,10 @@ class ItemResource extends Resource
                             ]),
 
                         Section::make('Información general')
-                            ->columnSpan(9) // Ocupa 10 columnas de las 12 disponibles
+                            ->columnSpan([
+                                'default' => 12, // móvil
+                                'md' => 9,       // escritorio
+                            ]) // Ocupa 10 columnas de las 12 disponibles
                             ->schema([
                                 // Campo Tipo
                                 Forms\Components\Select::make('type')

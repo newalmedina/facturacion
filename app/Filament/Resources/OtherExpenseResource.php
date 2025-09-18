@@ -152,7 +152,10 @@ class OtherExpenseResource extends Resource
                                 ->options(fn() => OtherExpenseItem::active()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required()
-                                ->columnSpan(10),
+                                ->columnSpan([
+                                    'default' => 12, // móvil
+                                    'md' => 10,       // escritorio
+                                ]),
 
                             TextInput::make('price')
                                 ->label("Precio")
@@ -161,7 +164,10 @@ class OtherExpenseResource extends Resource
                                 ->prefix('€')->reactive()
                                 //->debounce(500)
                                 ->debounce(750)
-                                ->columnSpan(2),
+                                ->columnSpan([
+                                    'default' => 12, // móvil
+                                    'md' => 2,       // escritorio
+                                ]),
 
                             TextInput::make('observations')
                                 ->label("Observaciones")

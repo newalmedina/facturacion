@@ -58,7 +58,10 @@ class UserResource extends Resource
                 Grid::make(12) // Definimos un Grid con 12 columnas en total
                     ->schema([
                         Section::make()
-                            ->columnSpan(3) // Ocupa 2 columnas de las 12 disponibles
+                            ->columnSpan([
+                                'default' => 12, // móvil
+                                'md' => 3,       // escritorio
+                            ]) // Ocupa 2 columnas de las 12 disponibles
                             ->schema([
                                 FileUpload::make('image')
                                     ->image()
@@ -72,7 +75,10 @@ class UserResource extends Resource
 
                             ->schema([
                                 Section::make('Información de acceso')
-                                    ->columnSpan(9)
+                                    ->columnSpan([
+                                        'default' => 12, // móvil
+                                        'md' => 9,       // escritorio
+                                    ])
                                     ->columns([
                                         'sm' => 1,  // Pantalla pequeña: 1 columna (inputs a 100%)
                                         'md' => 2,  // Pantalla mediana o superior: 2 columnas (inputs en 2 columnas)
@@ -116,7 +122,10 @@ class UserResource extends Resource
 
                                     ]),
                                 Section::make('Información personal')
-                                    ->columnSpan(9)  // Ocupa todo el grid principal
+                                    ->columnSpan([
+                                        'default' => 12, // móvil
+                                        'md' => 9,       // escritorio
+                                    ])  // Ocupa todo el grid principal
                                     ->columns([
                                         'sm' => 1,  // Pantalla pequeña: inputs ocupan 100%
                                         'md' => 2,  // Pantalla mediana o superior: 2 columnas

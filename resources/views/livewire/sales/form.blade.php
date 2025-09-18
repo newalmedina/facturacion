@@ -349,7 +349,7 @@
                                     </div>
                                 </td>
     
-                                <td class="px-2 py-2 text-black dark:text-white">
+                                <td class="px-2 py-2 text-black dark:text-white min-w-[160px]">
                                     
                                     @if($editPrices && !$order->disabled_sales)
                                         <x-filament::input.wrapper>
@@ -364,7 +364,7 @@
                                     @endif
                                 </td>
     
-                                <td class="px-2 py-2 text-black dark:text-white" style="width: 120px !important;">
+                                <td class="px-2 py-2 text-black dark:text-white min-w-[160px]" style="width: 120px !important;">
                                     <x-filament::input.wrapper>
                                         <x-filament::input
                                             :disabled="$order->disabled_sales"
@@ -738,7 +738,7 @@
                                     <td class="px-2 py-2 text-black dark:text-white">{{ $item->price }} €</td>
                                     {{-- <td class="px-2 py-2 text-black dark:text-white">{{ $item->taxes }}</td> --}}
                                     {{-- <td class="px-2 py-2 text-black dark:text-white">{{ $item->totalPrice }}</td> --}}
-                                    <td class="px-2 py-2 text-black dark:text-white" style="width: 120px !important;">
+                                    <td class="px-2 py-2 text-black dark:text-white min-w-[160px]" style="width: 120px !important;">
                                         <x-filament::input.wrapper >
                                             <x-filament::input
                                               :disabled="$order->disabled_sales"

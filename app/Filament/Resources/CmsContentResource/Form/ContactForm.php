@@ -29,7 +29,10 @@ class ContactForm
                         ->label('Subtítulo')
                         // ->required()
                         ->maxLength(100)
-                        ->columnSpan(3), // ocupa la mitad del row
+                        ->columnSpan([
+                            'default' => 12, // móvil
+                            'md' => 3,       // escritorio
+                        ]), // ocupa la mitad del row
                     TextInput::make('secondary_text')
                         ->label('Texto secundario')
                         // ->required()
