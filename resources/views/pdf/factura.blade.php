@@ -68,7 +68,7 @@
         <strong>Datos del Cliente</strong><br>
         Nombre: <b>{{ $order->billing_name ?? '-' }} </b><br>
           Email: <b>{{$order->billing_nif ?? '-' }}  </b><br>
-          Email: <b>{{$order->billing_email ?? '-' }}  </b><br>
+          NIF/CIF: <b>{{$order->billing_email ?? '-' }}  </b><br>
           Teléfono: <b>{{ $order->billing_phone ?? '-' }} </b><br>
           Dirección: <b>{{ $order->billing_address ?? 'Dirección' }} </b><br>
       </td>
