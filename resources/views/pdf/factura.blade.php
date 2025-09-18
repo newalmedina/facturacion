@@ -67,6 +67,7 @@
       <td style="width: 50%; vertical-align: top; border-right: 2px solid #b462e2; padding-right: 20px;">
         <strong>Datos del Cliente</strong><br>
         Nombre: <b>{{ $order->billing_name ?? '-' }} </b><br>
+          Email: <b>{{$order->billing_nif ?? '-' }}  </b><br>
           Email: <b>{{$order->billing_email ?? '-' }}  </b><br>
           Teléfono: <b>{{ $order->billing_phone ?? '-' }} </b><br>
           Dirección: <b>{{ $order->billing_address ?? 'Dirección' }} </b><br>
