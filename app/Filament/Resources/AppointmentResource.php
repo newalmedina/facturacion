@@ -33,6 +33,7 @@ use Filament\Tables\Actions\Action as TableAction;
 use Filament\Actions\Action as ModalAction;
 use Illuminate\Support\Facades\Auth;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Grid;
 
 class AppointmentResource extends Resource
 {
@@ -78,102 +79,201 @@ class AppointmentResource extends Resource
     public static function getFormSchema(): array
     {
         return [
-            Select::make('worker_id')
-                ->label('Empleado')
-                ->relationship('worker', 'name', fn($query) => $query->canAppointment())
-                ->searchable()
-                ->preload()
-                ->visible(fn() => Filament::getCurrentPanel()?->getId() !== 'personal')
-                ->placeholder('Selecciona empleado'),
+            Grid::make(12)
+                ->schema([
 
-            Select::make('item_id')
-                ->label('Peinado')
-                ->relationship(
-                    name: 'item',
-                    titleAttribute: 'name',
-                    modifyQueryUsing: fn($query) => $query->active()
-                )
-                ->getOptionLabelFromRecordUsing(fn($record) => $record->name . ' -- ' . $record->total_price . ' €')
-                ->searchable()
-                ->preload()
-                ->placeholder('Selecciona Servicio'),
+                    Select::make('worker_id')
+                        ->label('Empleado')
+                        ->relationship('worker', 'name', fn($query) => $query->canAppointment())
+                        ->searchable()
+                        ->preload()
+                        ->visible(fn() => Filament::getCurrentPanel()?->getId() !== 'personal')
+                        ->placeholder('Selecciona empleado')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
 
-            DatePicker::make('date')
-                ->label('Fecha')
-                ->required(),
+                    Select::make('item_id')
+                        ->label('Peinado')
+                        ->relationship(
+                            name: 'item',
+                            titleAttribute: 'name',
+                            modifyQueryUsing: fn($query) => $query->active()
+                        )
+                        ->getOptionLabelFromRecordUsing(fn($record) => $record->name . ' -- ' . $record->total_price . ' €')
+                        ->searchable()
+                        ->preload()
+                        ->placeholder('Selecciona Servicio')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
 
-            TimePicker::make('start_time')
-                ->label('Hora de inicio')
-                ->required()
-                ->seconds(false)
-                ->reactive()
-                ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                    $endTime = $get('end_time');
+                    DatePicker::make('date')
+                        ->label('Fecha')
+                        ->required()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
 
-                    if ($endTime && $state > $endTime) {
-                        $set('end_time', $state);
-                    }
-                }),
+                    TimePicker::make('start_time')
+                        ->label('Hora de inicio')
+                        ->required()
+                        ->seconds(false)
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                            $endTime = $get('end_time');
+                            if ($endTime && $state > $endTime) {
+                                $set('end_time', $state);
+                            }
+                        })
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
 
-            TimePicker::make('end_time')
-                ->label('Hora de fin')
-                ->required()
-                ->seconds(false)
-                ->reactive()
-                ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                    $startTime = $get('start_time');
+                    TimePicker::make('end_time')
+                        ->label('Hora de fin')
+                        ->required()
+                        ->seconds(false)
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                            $startTime = $get('start_time');
+                            if ($startTime && $state < $startTime) {
+                                $set('start_time', $state);
+                            }
+                        })
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
 
-                    if ($startTime && $state < $startTime) {
-                        $set('start_time', $state);
-                    }
-                }),
+                    Select::make('status')
+                        ->label('Estado')
+                        ->options([
+                            'available' => 'Disponible',
+                            'pending_confirmation' => 'Pendiente confirmación',
+                            'confirmed' => 'Confirmado',
+                            'cancelled' => 'Cancelada',
+                        ])
+                        ->required()
+                        ->default("available")->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
 
-            Select::make('status')
-                ->label('Estado')
-                ->options([
-                    'available' => 'Disponible',
-                    'pending_confirmation' => 'Pendiente confirmación',
-                    'confirmed' => 'Confirmado',
-                    'cancelled' => 'Cancelada',
+
+
+                    // Toggle para seleccionar si es cliente del sistema
+                    Forms\Components\Toggle::make('is_system_customer')
+                        ->label('Cliente del sistema')
+                        ->inline(false)
+                        ->default(false)
+                        ->reactive()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
+
+                    // Select de clientes si es cliente del sistema
+
+
+                    Select::make('customer_id')
+                        ->label('Cliente')
+                        ->relationship(
+                            name: 'customer',
+                            titleAttribute: 'name',
+                            modifyQueryUsing: fn($query) => $query->active() // Solo clientes activos
+                        )
+                        ->searchable()
+                        ->preload()
+                        ->visible(fn($get) => $get('is_system_customer'))
+                        ->required(fn($get) => $get('is_system_customer'))
+                        ->suffixAction(function ($get, $set) {
+                            return Action::make('addCustomer')
+                                ->label('')                          // Sin texto
+                                ->icon('heroicon-o-plus')           // Icono de “+”
+                                ->tooltip('Añadir nuevo cliente')   // Tooltip
+                                ->modalHeading('Nuevo Cliente')
+                                ->modalWidth('7xl')                 // Modal ancho
+                                ->form(CustomerResource::customerFormSchema()) // Formulario reutilizado
+                                ->action(function (array $data) use ($set) {
+                                    // Crear cliente
+                                    $customer = \App\Models\Customer::create($data);
+
+                                    // Asignar el nuevo cliente al Select
+                                    $set('customer_id', $customer->id);
+
+                                    // Notificación de éxito
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Cliente creado')
+                                        ->success()
+                                        ->send();
+                                });
+                        })
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
+                    // Campos de solicitante si no es cliente del sistema
+                    TextInput::make('requester_name')
+                        ->label('Nombre del solicitante')
+                        ->maxLength(255)
+                        ->reactive()
+                        ->visible(fn($get) => !$get('is_system_customer'))
+                        ->required(fn($get) => !$get('is_system_customer'))->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
+
+                    TextInput::make('requester_email')
+                        ->label('Correo del solicitante')
+                        ->email()
+                        ->maxLength(255)
+                        ->reactive()
+                        ->visible(fn($get) => !$get('is_system_customer'))
+                        ->required(fn($get) => !$get('is_system_customer'))->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
+
+                    TextInput::make('requester_phone')
+                        ->label('Teléfono del solicitante')
+                        ->tel()
+                        ->maxLength(255)
+                        ->reactive()
+                        ->visible(fn($get) => !$get('is_system_customer'))
+                        ->suffixAction(function ($get) {
+                            $phone = preg_replace('/\D/', '', $get('requester_phone'));
+                            return Action::make('whatsapp')
+                                ->icon('heroicon-s-chat-bubble-left')
+                                ->label('')
+                                ->url('https://wa.me/' . $phone)
+                                ->openUrlInNewTab();
+                        })->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ]),
+
+                    Textarea::make('comments')
+                        ->label('Comentarios')
+                        ->columnSpanFull()
+                        ->columnSpan([
+                            'default' => 12,
+                        ]),
+
+                    Forms\Components\Toggle::make('active')
+                        ->inline(false)
+                        ->label("¿Activo?")
+                        ->required()
+                        ->default(true)
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 6,
+                        ])
                 ])
-                ->required()
-                ->default("available"),
-
-            TextInput::make('requester_name')
-                ->label('Nombre del solicitante')
-                ->maxLength(255)
-                // ->required(fn(callable $get) => filled($get('requester_email')))
-                ->reactive(),
-
-            TextInput::make('requester_email')
-                ->label('Correo del solicitante')
-                ->email()
-                ->maxLength(255)
-                //->required(fn(callable $get) => filled($get('requester_name')))
-                ->reactive(),
-
-            TextInput::make('requester_phone')
-                ->label('Teléfono del solicitante')
-                ->tel()
-                ->maxLength(255)
-                ->suffixAction(function ($get) {
-                    $phone = preg_replace('/\D/', '', $get('requester_phone'));
-
-                    return Action::make('whatsapp')
-                        ->icon('heroicon-s-chat-bubble-left')
-                        ->label('')
-                        ->url('https://wa.me/' . $phone)
-                        ->openUrlInNewTab();
-                }),
-
-            Textarea::make('comments')
-                ->label('Comentarios')
-                ->columnSpanFull(),
-
-            Forms\Components\Toggle::make('active')
-                ->inline(false)
-                ->label("¿Activo?")
-                ->required(),
         ];
     }
 
@@ -245,6 +345,12 @@ class AppointmentResource extends Resource
                     ->searchable()
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('customer.name')
+                    ->numeric()
+                    ->label('Cliente')   // Etiqueta de la columna
+                    ->searchable()        // Se puede buscar en esta columna
+
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('requester_name')->label("Nombre solicitante")
                     ->searchable(),   // Buscable
                 Tables\Columns\TextColumn::make('requester_email')->label("Correo solicitante")
@@ -534,14 +640,16 @@ class AppointmentResource extends Resource
                     ->modalCancelActionLabel('No')
                     ->action(function ($record) {
                         // Aquí lógica para convertir cita a factura
-                        $order = Order::create([
-                            'type' => 'sale',
-                            'status' => 'pending',
-                            'customer_id' => 1, // si el worker es el cliente
-                            'date' => $record->date,
-                            'assigned_user_id' => $record->worker_id,
-                            'appointment_id' => $record->id,
-                        ]);
+
+                        $cliente =
+                            $order = Order::create([
+                                'type' => 'sale',
+                                'status' => 'pending',
+                                'customer_id' => $record->customer_id ?? 1, // si el worker es el cliente
+                                'date' => $record->date,
+                                'assigned_user_id' => $record->worker_id,
+                                'appointment_id' => $record->id,
+                            ]);
                         if ($record->item) {
                             OrderDetail::create([
                                 'order_id' => $order->id,

@@ -19,6 +19,7 @@ class Appointment extends Model
         'end_time' => 'datetime:H:i',
     ];
     protected $appends = ['start_date', 'end_date'];
+
     // The worker assigned to the appointment
     public function worker()
     {
@@ -44,7 +45,10 @@ class Appointment extends Model
     {
         return $this->belongsTo(AppointmentTemplate::class, 'template_id');
     }
-
+    public function customer()
+    {
+        return $this->belongsTo(\App\Models\Customer::class);
+    }
     public function getStatusNameFormattedAttribute(): string
     {
         $labels = [
@@ -74,25 +78,38 @@ class Appointment extends Model
     }
     protected static function booted()
     {
+        // Generar slug automáticamente al crear
         static::creating(function ($appointment) {
             if (empty($appointment->slug)) {
                 $appointment->slug = \Illuminate\Support\Str::uuid()->toString();
             }
         });
+
+        // Ajustes antes de guardar
         static::saving(function ($appointment) {
-            // Si alguno es null o vacío, duration en 0
+
+            // --- 1️⃣ Ajustar duration_minutes ---
             if (empty($appointment->start_time) || empty($appointment->end_time)) {
                 $appointment->duration_minutes = 0;
             } else {
-                // start_time y end_time son casted a Carbon (datetime)
                 $start = $appointment->start_time;
                 $end = $appointment->end_time;
-
-                // Calcular diferencia en minutos
                 $appointment->duration_minutes = $end->diffInMinutes($start);
+            }
+
+            // --- 2️⃣ Ajustar campos según is_system_customer ---
+            if ($appointment->is_system_customer) {
+                // Cliente del sistema → requester_* a null
+                $appointment->requester_name = null;
+                $appointment->requester_email = null;
+                $appointment->requester_phone = null;
+            } else {
+                // Cliente externo → customer_id a null
+                $appointment->customer_id = null;
             }
         });
     }
+
     public function scopeActive($query)
     {
         return $query->where('active', true);

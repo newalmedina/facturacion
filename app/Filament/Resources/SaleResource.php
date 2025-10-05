@@ -78,7 +78,7 @@ class SaleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->searchPlaceholder('Buscar código, cliente, vendedor,observaciones')
+            ->defaultSort('date', 'desc') // Orden descendente por defecto            ->searchPlaceholder('Buscar código, cliente, vendedor,observaciones')
             ->query(fn() => \App\Models\Order::query()->withCalculatedTotals()->sales())
 
             ->columns([

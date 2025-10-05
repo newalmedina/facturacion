@@ -10,9 +10,14 @@ use App\Models\Customer;
 use App\Models\State;
 use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Illuminate\Support\Collection;
 use Filament\Forms\Get;
@@ -47,157 +52,121 @@ class CustomerResource extends Resource
 
     public static function form(Form $form): Form
     {
+        // Llamamos al método separado
+        return $form->schema(static::customerFormSchema());
+    }
 
-        return $form
-            ->schema([
-                Grid::make(12) // Definimos un Grid con 12 columnas en total
-                    ->schema([
-                        Section::make()
-                            ->columnSpan([
-                                'default' => 12, // móvil
-                                'md' => 3,       // escritorio
-                            ]) // Ocupa 2 columnas de las 12 disponibles
-                            ->schema([
-                                FileUpload::make('image')
-                                    ->image()
-                                    ->directory('customers')
-                                    ->visibility('public')
-                                    ->label('Imagen'),
-                                // Placeholder::make('created_at')
-                                //     ->label('Fecha de Creación')
-                                //     ->content(fn($get) => Carbon::parse($get('created_at'))->format('d-m-Y H:i')) // Formatea la fecha
-                                //     ->hidden(fn($get) => !$get('id')), // Solo mostrar en edición
+    public static function customerFormSchema(): array
+    {
+        return [
+            Grid::make(12)
+                ->schema([
+                    // Columna de imagen
+                    Section::make()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 3,
+                        ])
+                        ->schema([
+                            FileUpload::make('image')
+                                ->image()
+                                ->directory('customers')
+                                ->visibility('public')
+                                ->label('Imagen'),
+                        ]),
 
-                            ]),
-                        Section::make('Información general')
-                            ->columnSpan([
-                                'default' => 12, // móvil
-                                'md' => 9,       // escritorio
-                            ])
-                            ->columns([
-                                'default' => 1,
-                                'md' => 4,
-                            ])
-                            ->schema([
-                                Forms\Components\TextInput::make('name')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->label('Nombre')
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
+                    // Información general
+                    Section::make('Información general')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 9,
+                        ])
+                        ->columns([
+                            'default' => 1,
+                            'md' => 4,
+                        ])
+                        ->schema([
+                            TextInput::make('name')
+                                ->required()
+                                ->maxLength(255)
+                                ->label('Nombre')
+                                ->columnSpan(['default' => 1, 'md' => 2]),
 
-                                Forms\Components\TextInput::make('email')
-                                    ->email()
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
+                            TextInput::make('email')
+                                ->email()
+                                ->required()
+                                ->unique()
+                                ->maxLength(255)
+                                ->columnSpan(['default' => 1, 'md' => 2]),
 
-                                Forms\Components\TextInput::make('phone')
-                                    ->maxLength(255)
-                                    ->label('Teléfono')
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
+                            TextInput::make('phone')
+                                ->maxLength(255)
+                                ->label('Teléfono')
+                                ->columnSpan(['default' => 1, 'md' => 2]),
 
-                                Forms\Components\DatePicker::make('birth_date')
-                                    ->label('Fecha nacimiento')
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
+                            DatePicker::make('birth_date')
+                                ->label('Fecha nacimiento')
+                                ->columnSpan(['default' => 1, 'md' => 2]),
 
-                                Forms\Components\TextInput::make('identification')
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
+                            TextInput::make('identification')
+                                ->columnSpan(['default' => 1, 'md' => 2]),
 
-                                Forms\Components\Radio::make('gender')
-                                    ->label('Género')
-                                    ->options([
-                                        'masc' => 'Masculino',
-                                        'fem' => 'Femenino',
-                                    ])
-                                    ->inline()
-                                    ->inlineLabel(false)
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
+                            Radio::make('gender')
+                                ->label('Género')
+                                ->options([
+                                    'masc' => 'Masculino',
+                                    'fem' => 'Femenino',
+                                ])
+                                ->inline()
+                                ->inlineLabel(false)
+                                ->columnSpan(['default' => 1, 'md' => 2]),
 
-                                Forms\Components\Select::make('country_id')
-                                    ->relationship('country', 'name', fn($query) => $query->where('is_active', true))
-                                    ->searchable()
-                                    ->label("País")
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set) {
-                                        $set('state_id', null);
-                                        $set('city_id', null);
-                                    })
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
+                            Select::make('country_id')
+                                ->relationship('country', 'name', fn($query) => $query->where('is_active', true))
+                                ->searchable()
+                                ->label('País')
+                                ->preload()
+                                ->live()
+                                ->afterStateUpdated(fn(Set $set) => [$set('state_id', null), $set('city_id', null)])
+                                ->columnSpan(['default' => 1, 'md' => 2]),
 
-                                Forms\Components\Select::make('state_id')
-                                    ->options(fn(Get $get): Collection => State::query()
-                                        ->where('country_id', $get('country_id'))
-                                        ->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->label("Estado")
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(fn(Set $set) => $set('city_id', null))
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
+                            Select::make('state_id')
+                                ->options(fn(Get $get): Collection => State::query()
+                                    ->where('country_id', $get('country_id'))
+                                    ->pluck('name', 'id'))
+                                ->searchable()
+                                ->label('Estado')
+                                ->preload()
+                                ->live()
+                                ->afterStateUpdated(fn(Set $set) => $set('city_id', null))
+                                ->columnSpan(['default' => 1, 'md' => 2]),
 
-                                Forms\Components\Select::make('city_id')
-                                    ->options(fn(Get $get): Collection => City::query()
-                                        ->where('state_id', $get('state_id'))
-                                        ->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->label("Ciudad")
-                                    ->preload()
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
+                            Select::make('city_id')
+                                ->options(fn(Get $get): Collection => City::query()
+                                    ->where('state_id', $get('state_id'))
+                                    ->pluck('name', 'id'))
+                                ->searchable()
+                                ->label('Ciudad')
+                                ->preload()
+                                ->columnSpan(['default' => 1, 'md' => 2]),
 
-                                Forms\Components\TextInput::make('postal_code')
-                                    ->label("Código postal")
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
+                            TextInput::make('postal_code')
+                                ->label('Código postal')
+                                ->columnSpan(['default' => 1, 'md' => 2]),
 
-                                Forms\Components\TextInput::make('address')
-                                    ->label("Dirección")
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 4,  // Ocupa toda la fila en pantallas grandes también
-                                    ]),
+                            TextInput::make('address')
+                                ->label('Dirección')
+                                ->columnSpan(['default' => 1, 'md' => 4]),
 
-                                Forms\Components\Toggle::make('active')
-                                    ->label("¿Activo?")
-                                    ->inline(false)
-                                    ->required()
-                                    ->columnSpan([
-                                        'default' => 1,
-                                        'md' => 2,
-                                    ]),
-                            ])
-
-                    ]),
-            ]);
+                            Toggle::make('active')
+                                ->label('¿Activo?')
+                                ->inline(false)
+                                ->required()
+                                ->default(true)
+                                ->columnSpan(['default' => 1, 'md' => 2]),
+                        ]),
+                ]),
+        ];
     }
 
     public static function table(Table $table): Table
