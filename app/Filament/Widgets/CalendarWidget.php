@@ -182,9 +182,9 @@ class CalendarWidget extends FullCalendarWidget
 
     protected function modalActions(): array
     {
-        if (! $this->isAdminPanel()) {
-            return [];
-        }
+        // if (! $this->isAdminPanel()) {
+        //     return [];
+        // }
 
         return [
             Actions\EditAction::make()
