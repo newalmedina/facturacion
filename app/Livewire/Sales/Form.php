@@ -11,6 +11,7 @@ use Livewire\WithPagination;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Mail;
 
 class Form extends Component
@@ -32,6 +33,7 @@ class Form extends Component
     public array $detail_id_delete = [];
     public string $recipientType = 'same';
     public string $recipientEmail = '';
+    public  $currentPanelId;
     public array $form = [
         'date' => '',
         'iva' => '',
@@ -49,6 +51,8 @@ class Form extends Component
     public function mount($order = null): void
     {
 
+        $this->currentPanelId = Filament::getCurrentPanel()?->getId();
+        // dd($currentPanelId);
         $this->userList = User::all();
 
         if (!$order) {

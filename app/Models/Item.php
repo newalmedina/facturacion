@@ -13,6 +13,13 @@ class Item extends Model
     protected $guarded = [];  // Guarded to allow mass assignment
 
     // Relationship with Category
+    public function appointments()
+    {
+        return $this->belongsToMany(Appointment::class, 'appointment_items')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);  // An item belongs to one category

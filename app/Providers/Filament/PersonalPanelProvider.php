@@ -7,6 +7,7 @@ use App\Filament\AvatarProviders\AutenticatedUserAvatar;
 use App\Filament\CustomWidgets\AppointmentStats;
 use App\Filament\Resources\AppointmentResource;
 use App\Filament\Resources\AppointmentTemplateResource;
+use App\Filament\Resources\SaleResource;
 use App\Filament\Widgets\CalendarWidget;
 use App\Http\Middleware\AuthenticateAndCheckActive;
 use App\Models\Setting;
@@ -59,7 +60,9 @@ class PersonalPanelProvider extends PanelProvider
                 'light' => '#f5f5f5',       // Gris claro de fondo
                 'dark' => '#000000',        // Negro
             ])
-            ->resources([])
+            ->resources([
+                SaleResource::class,
+            ])
             ->defaultAvatarProvider(AutenticatedUserAvatar::class)
             ->plugins([
                 FilamentFullCalendarPlugin::make()->config([

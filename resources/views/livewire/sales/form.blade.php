@@ -131,10 +131,13 @@
                 Enviar recibo por WhatsApp
             </x-filament::button>
             --}}
+                @if($currentPanelId=="admin")
+                    <x-filament::button color="warning"   class="mr-5 mb-3"  icon="heroicon-o-arrow-uturn-left" wire:click="revertStatus(0)">
+                        Revertir a pendiente
+                    </x-filament::button>
+                    
+                @endif
 
-                <x-filament::button color="warning"   class="mr-5 mb-3"  icon="heroicon-o-arrow-uturn-left" wire:click="revertStatus(0)">
-                    Revertir a pendiente
-                </x-filament::button>
             @endif
        </div>
        <div>

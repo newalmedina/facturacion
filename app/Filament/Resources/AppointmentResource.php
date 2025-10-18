@@ -33,6 +33,7 @@ use Filament\Tables\Actions\Action as TableAction;
 use Filament\Actions\Action as ModalAction;
 use Illuminate\Support\Facades\Auth;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Grid;
 
 class AppointmentResource extends Resource
@@ -79,6 +80,73 @@ class AppointmentResource extends Resource
     public static function getFormSchema(): array
     {
         return [
+            Actions::make([
+                Actions\Action::make('generateInvoice')
+                    ->label('Generar factura')
+                    ->icon('heroicon-o-document-text')
+                    ->color('success')
+                    ->visible(fn($record) => $record && $record->exists && in_array($record->status, ['confirmed'])) // solo al editar
+                    ->requiresConfirmation()
+                    ->modalHeading('Generar factura')
+                    ->modalDescription('¿Deseas generar una factura a partir de esta cita?')
+                    ->action(function ($record) {
+
+                        // 🧾 Crear la factura
+                        $order = Order::create([
+                            'type' => 'sale',
+                            'status' => 'pending',
+                            'customer_id' => $record->customer_id ?? 1,
+                            'date' => $record->date,
+                            'assigned_user_id' => $record->worker_id,
+                            'appointment_id' => $record->id,
+                        ]);
+
+                        // 🔁 Añadir detalles
+                        foreach ($record->items as $item) {
+                            OrderDetail::create([
+                                'order_id' => $order->id,
+                                'item_id' => $item->id,
+                                'price' => $item->price ?? 0,
+                                'original_price' => $item->price ?? 0,
+                                'taxes' => 0,
+                                'quantity' => $item->pivot->quantity ?? 1,
+                            ]);
+                        }
+
+                        // (Opcional) actualizar el estado
+                        $record->update(['status' => 'confirmed']);
+
+                        Notification::make()
+                            ->title('Factura generada correctamente')
+                            ->success()
+                            ->send();
+                    })->visible(function ($record) {
+                        if (! $record) {
+                            return false;
+                        }
+
+                        return $record->status === 'confirmed'
+                            && !\App\Models\Order::where('appointment_id', $record->id)->exists();
+                    }),
+                // 🔹 Visualizar factura
+                Actions\Action::make('viewInvoice')
+                    ->label('Visualizar factura')
+                    ->icon('heroicon-o-eye')
+                    ->color('info')
+                    ->visible(fn($record) => $record && \App\Models\Order::where('appointment_id', $record->id)->exists())
+                    ->url(function ($record) {
+                        if (Filament::getCurrentPanel()?->getId() == 'admin') {
+                            $route = 'filament.admin.resources.sales.edit';
+                        } else {
+                            $route = 'filament.personal.resources.sales.edit';
+                        }
+
+                        $order = \App\Models\Order::where('appointment_id', $record->id)->first();
+                        return $order ? route($route, $order->id) : null;
+                    })
+                    ->openUrlInNewTab(),
+            ])->columnSpanFull(),
+
             Grid::make(12)
                 ->schema([
 
@@ -94,22 +162,40 @@ class AppointmentResource extends Resource
                             'md' => 6,
                         ]),
 
-                    Select::make('item_id')
-                        ->label('Peinado')
+                    // Select::make('item_id')
+                    //     ->label('Peinado')
+                    //     ->relationship(
+                    //         name: 'item',
+                    //         titleAttribute: 'name',
+                    //         modifyQueryUsing: fn($query) => $query->active()
+                    //     )
+                    //     ->getOptionLabelFromRecordUsing(fn($record) => $record->name . ' -- ' . $record->total_price . ' €')
+                    //     ->searchable()
+                    //     ->preload()
+                    //     ->placeholder('Selecciona Servicio')
+                    //     ->columnSpan([
+                    //         'default' => 12,
+                    //         'md' => 6,
+                    //     ]),
+
+                    Select::make('items')
+                        ->label('Servicios / Peinados')
+                        ->multiple() // 👈 Permite seleccionar varios
                         ->relationship(
-                            name: 'item',
+                            name: 'items',
                             titleAttribute: 'name',
                             modifyQueryUsing: fn($query) => $query->active()
                         )
-                        ->getOptionLabelFromRecordUsing(fn($record) => $record->name . ' -- ' . $record->total_price . ' €')
-                        ->searchable()
+                        ->getOptionLabelFromRecordUsing(
+                            fn($record) => $record->name . ' — ' . $record->total_price . ' €'
+                        )
                         ->preload()
-                        ->placeholder('Selecciona Servicio')
+                        ->searchable()
+                        ->placeholder('Selecciona uno o varios servicios')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 6,
                         ]),
-
                     DatePicker::make('date')
                         ->label('Fecha')
                         ->required()
@@ -640,24 +726,26 @@ class AppointmentResource extends Resource
                     ->modalCancelActionLabel('No')
                     ->action(function ($record) {
                         // Aquí lógica para convertir cita a factura
+                        $cliente = $record->customer_id ?? 1;
 
-                        $cliente =
-                            $order = Order::create([
-                                'type' => 'sale',
-                                'status' => 'pending',
-                                'customer_id' => $record->customer_id ?? 1, // si el worker es el cliente
-                                'date' => $record->date,
-                                'assigned_user_id' => $record->worker_id,
-                                'appointment_id' => $record->id,
-                            ]);
-                        if ($record->item) {
+                        $order = Order::create([
+                            'type' => 'sale',
+                            'status' => 'pending',
+                            'customer_id' => $cliente,
+                            'date' => $record->date,
+                            'assigned_user_id' => $record->worker_id,
+                            'appointment_id' => $record->id,
+                        ]);
+
+                        // 🔁 Recorremos todos los items asociados al appointment
+                        foreach ($record->items as $item) {
                             OrderDetail::create([
                                 'order_id' => $order->id,
-                                'item_id' => $record->item_id,
-                                'price' => $record->item->price ?? 0,
-                                'original_price' => $record->item->price ?? 0,
+                                'item_id' => $item->id,
+                                'price' => $item->price ?? 0,
+                                'original_price' => $item->price ?? 0,
                                 'taxes' => 0,
-                                'quantity' => 1,
+                                'quantity' => $item->pivot->quantity ?? 1, // usa la cantidad del pivote si existe
                             ]);
                         }
 
@@ -665,6 +753,31 @@ class AppointmentResource extends Resource
                             ->title('La cita se ha convertido en factura')
                             ->success()
                             ->send();
+
+                        // $cliente =
+                        //     $order = Order::create([
+                        //         'type' => 'sale',
+                        //         'status' => 'pending',
+                        //         'customer_id' => $record->customer_id ?? 1, // si el worker es el cliente
+                        //         'date' => $record->date,
+                        //         'assigned_user_id' => $record->worker_id,
+                        //         'appointment_id' => $record->id,
+                        //     ]);
+                        // if ($record->item) {
+                        //     OrderDetail::create([
+                        //         'order_id' => $order->id,
+                        //         'item_id' => $record->item_id,
+                        //         'price' => $record->item->price ?? 0,
+                        //         'original_price' => $record->item->price ?? 0,
+                        //         'taxes' => 0,
+                        //         'quantity' => 1,
+                        //     ]);
+                        // }
+
+                        // Notification::make()
+                        //     ->title('La cita se ha convertido en factura')
+                        //     ->success()
+                        //     ->send();
                     }),
 
                 TableAction::make('viewInvoice')

@@ -20,6 +20,17 @@ class Appointment extends Model
     ];
     protected $appends = ['start_date', 'end_date'];
 
+    public function items()
+    {
+        return $this->belongsToMany(Item::class, 'appointment_items')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
+
+    public function order()
+    {
+        return $this->hasOne(\App\Models\Order::class, 'appointment_id');
+    }
     // The worker assigned to the appointment
     public function worker()
     {

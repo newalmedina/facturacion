@@ -16,6 +16,7 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Services\ReceiptService;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -30,6 +31,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -68,18 +70,34 @@ class SaleResource extends Resource
             ]);
     }
 
+    // public static function getEloquentQuery(): Builder
+    // {
+
+    //     // dd(12);
+    //     return parent::getEloquentQuery()->sales();
+    // }
+
     public static function getEloquentQuery(): Builder
     {
+        $query = parent::getEloquentQuery()->sales();
 
-        return parent::getEloquentQuery()->sales();
+        // Filtrar según el panel o el usuario actual
+        $user = Auth::user();
+        $currentPanelId = Filament::getCurrentPanel()?->getId(); // Filament 3
+
+        if ($currentPanelId === 'personal' && $user) {
+            $query->where('assigned_user_id', $user->id);
+        }
+
+        return $query;
     }
-
 
     public static function table(Table $table): Table
     {
         return $table
             ->defaultSort('date', 'desc') // Orden descendente por defecto            ->searchPlaceholder('Buscar código, cliente, vendedor,observaciones')
-            ->query(fn() => \App\Models\Order::query()->withCalculatedTotals()->sales())
+            // ->query(fn() => \App\Models\Order::query()->withCalculatedTotals()->sales())
+            ->query(fn() => static::getEloquentQuery()->withCalculatedTotals())
 
             ->columns([
                 Tables\Columns\TextColumn::make('code')
@@ -269,7 +287,7 @@ class SaleResource extends Resource
                     ->label('')
                     ->icon('heroicon-o-document-text')  // Ícono de recibo/factura
                     ->color('secondary')            // Azul, por ejemplo
-                    ->tooltip('Generar Factura')
+                    ->tooltip('Descargar Factura')
                     ->visible(fn($record) => $record->status === 'invoiced')
                     ->action(function ($record) {
                         // Aquí va la lógica para generar la factura
@@ -335,7 +353,7 @@ class SaleResource extends Resource
 
 
                         Notification::make()
-                            ->title('Recibo enviado por email')
+                            ->title('Factura enviado por email')
                             ->success()
                             ->send();
                     }),
@@ -361,13 +379,19 @@ class SaleResource extends Resource
                             ->send();
                     }),
 
+
+
                 // 4. Revertir facturación
                 Tables\Actions\Action::make('revertInvoice')
                     ->label('')
                     ->icon('heroicon-o-arrow-uturn-left')
                     ->color('danger') // rojo
                     ->tooltip('Revertir la facturación')
-                    ->visible(fn($record) => $record->status === 'invoiced')
+                    ->visible(function ($record) {
+                        $currentPanelId = \Filament\Facades\Filament::getCurrentPanel()?->getId();
+                        // Solo se ve si está facturado y NO es el panel personal
+                        return $record->status === 'invoiced' && $currentPanelId !== 'personal';
+                    })
                     ->requiresConfirmation()
                     ->modalHeading('Confirmar reversión de facturación')
                     ->action(function ($record) {

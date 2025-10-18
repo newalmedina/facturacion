@@ -2,6 +2,7 @@
     'livewire' => null,
 ])
 
+
 <!DOCTYPE html>
 <html
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
@@ -142,4 +143,10 @@
 
         {{ \Filament\Support\Facades\FilamentView::renderHook(\Filament\View\PanelsRenderHook::BODY_END, scopes: $livewire->getRenderHookScopes()) }}
     </body>
+    <script>
+    window.addEventListener('open-new-tab', event => {
+        window.open(event.detail.url, '_blank');
+    });
+</script>
+    
 </html>
