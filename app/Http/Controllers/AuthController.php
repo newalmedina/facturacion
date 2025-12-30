@@ -21,7 +21,7 @@ class AuthController extends Controller
                 return response()->json([
                     'code' => 401,
                     'message' => 'Credenciales incorrectas'
-                ], 401);
+                ]);
             }
 
             $user = Auth::user();
@@ -37,12 +37,12 @@ class AuthController extends Controller
             return response()->json([
                 'code' => 422,
                 'message' => $e->errors()
-            ], 422);
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'code' => 500,
-                'message' => 'Ocurrió un error en el servidor'
-            ], 500);
+                'message' => e->errors()
+            ]);
         }
     }
 
