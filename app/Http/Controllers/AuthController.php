@@ -28,9 +28,10 @@ class AuthController extends Controller
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
+                'code' => 200,
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'user' => $user
+                'user' => $user,
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
