@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
+
     // LOGIN
     public function login(Request $request)
     {
