@@ -22,6 +22,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ItemResource extends Resource
@@ -41,6 +42,18 @@ class ItemResource extends Resource
         return 'Items';
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+        // Obtener el ID del panel actual
+
+        $query->where('center_id', $user->center?->id ?? -1);
+
+        return $query;
+    }
     public static function form(Form $form): Form
     {
         return $form

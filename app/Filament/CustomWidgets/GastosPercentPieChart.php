@@ -23,7 +23,7 @@ class GastosPercentPieChart extends ChartWidget
 
     protected function getData(): array
     {
-        $gastos = OtherExpense::with('details.item')->get();
+        $gastos = OtherExpense::with('details.item')->myCenter()->get();
 
         $data = [];
 

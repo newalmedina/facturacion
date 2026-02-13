@@ -1,11 +1,19 @@
 @php
-    use App\Models\Setting;
+    use Illuminate\Support\Facades\Auth;
 
-    $settings = Setting::first();
-    $generalSettings = $settings?->general;
+    $user = Auth::user();
 
-    $brandName = $generalSettings?->brand_name ?? config('app.name', 'Mi Empresa');
+    if($user){
+        $center = $user?->center;
+        $generalSettings = $center ;
+
+    }
+
+    $brandName = $generalSettings->name;
+
     $brandLogoBase64 = $generalSettings?->image_base64 ?? null;
+
+
 @endphp
 
 <!DOCTYPE html>
@@ -78,7 +86,7 @@
                 <table class="container" cellpadding="0" cellspacing="0" role="presentation">
                     <!-- Cabecera -->
                     <tr>
-                        <td style="background-color:#581177; padding:20px;">
+                       <td style="background-color:{{  $generalSettings->primary_color??'#581177' }}; padding:20px;">
                             <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                                 <tr>
                                    {{-- @if($brandLogoBase64)
@@ -101,28 +109,28 @@
                     <!-- Contenido dinámico -->
                     @yield('content')
                     <tr>
-                        <td style="padding: 30px 40px; color: #FFC107; font-size: 16px; line-height: 1.5;">
+                        <td style="padding: 30px 40px; color: {{ $generalSettings->primary_color_soft }}; font-size: 16px; line-height: 1.5;">
                             @php
                                 $contactForm = \App\Models\CmsContent::findBySlug('contact-form');
-                                $whatsappNumber = preg_replace('/\D/', '', $contactForm->whatsapp_url);
+                                $whatsappNumber = $generalSettings->phone;
                             @endphp
                             <p>
-                                Si necesitas más información, no dudes en contactarnos a través de 
-                                <a 
-                                    id="floating-whatsapp-btn" 
-                                    target="_blank" 
-                                    href="https://wa.me/{{ $whatsappNumber }}" 
+                                Si necesitas más información, no dudes en contactarnos a través de
+                                <a
+                                    id="floating-whatsapp-btn"
+                                    target="_blank"
+                                    href="https://wa.me/{{ $whatsappNumber }}"
                                     title="Chatear por WhatsApp"
                                     style="">
-                                    {{ $contactForm->whatsapp_url }}
+                                    {{$whatsappNumber }}
                                 </a>. ¡Estaremos encantados de ayudarte!
                             </p>
                         </td>
                     </tr>
-                    
-                    
+
+
                     <!-- Pie de página -->
-                  
+
                     <tr>
                         <td class="footer">
                             &copy; {{ date('Y') }} {{ $brandName ?? 'Mi Empresa' }}. Todos los derechos reservados.

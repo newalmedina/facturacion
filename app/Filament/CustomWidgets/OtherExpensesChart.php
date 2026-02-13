@@ -26,7 +26,7 @@ class OtherExpensesChart extends ChartWidget
 
     private function getMonthlyExpensesByYear(): array
     {
-        $expenses = OtherExpense::query()
+        $expenses = OtherExpense::query()->myCenter()
             ->whereYear('date', '>=', now()->year - 2)  // últimos 3 años (puedes ajustar)
             ->get()
             ->groupBy(fn($expense) => Carbon::parse($expense->date)->year)

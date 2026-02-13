@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class OtherExpenseItemResource extends Resource
 {
@@ -28,6 +29,19 @@ class OtherExpenseItemResource extends Resource
     protected static ?string $navigationGroup = 'Tablas de sistemas';
     protected static ?int $navigationSort = 8;
 
+
+    public static function getEloquentQuery(): Builder
+    {
+
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+        // Obtener el ID del panel actual
+
+        $query->where('center_id', $user->center?->id ?? -1);
+
+        return $query;
+    }
     public static function form(Forms\Form $form): Forms\Form
     {
         return $form->schema([

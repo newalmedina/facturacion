@@ -27,7 +27,7 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Collection;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -49,7 +49,20 @@ class UserResource extends Resource
         return 'Usuarios';
     }
 
+    public static function getEloquentQuery(): Builder
+    {
 
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+        // Obtener el ID del panel actual
+
+        if (!$user->super_admin) {
+            $query->where('center_id', $user->center?->id ?? -1);
+        }
+
+        return $query;
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -118,7 +131,14 @@ class UserResource extends Resource
                                             ->inline(false)
                                             ->label("¿Permir Ingresar administración?")
                                             ->required(),
-
+                                        Forms\Components\Select::make('center_id')
+                                            ->relationship('center', 'name', function ($query) {
+                                                $query->where('active', true);  // Filtro para que solo se muestren países activos
+                                            })
+                                            ->searchable()
+                                            ->label("Centro")
+                                            ->visible(fn() => auth()->check() && auth()->user()?->super_admin == true)
+                                            ->preload(),
 
                                     ]),
                                 Section::make('Información personal')
@@ -202,6 +222,10 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->label("Email")
                     ->searchable(),
+                Tables\Columns\TextColumn::make('center.name')
+                    ->sortable()
+                    ->label("Centro")
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('identification')
                     ->sortable()
                     ->label("NIF/CIF")
@@ -268,6 +292,7 @@ class UserResource extends Resource
                         '0' => 'No',
                     ]),
 
+
                 SelectFilter::make('country_id')
                     ->relationship(name: 'country', titleAttribute: 'name')
                     ->searchable()
@@ -275,25 +300,11 @@ class UserResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                /*  Tables\Actions\EditAction::make()->label('')->tooltip('Editar'),
-                Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')*/
                 Tables\Actions\EditAction::make()
                     ->label('')
                     ->tooltip('Editar')
                     ->visible(function ($record) {
-                        $currentEmail = auth()->user()->email;
-
-                        if ($currentEmail == 'el.solitions@gmail.com' && $record->email == 'el.solitions@gmail.com') {
-                            // Solo visible si el registro es del mismo email
-                            return true;
-                        }
-                        if ($record->email != 'el.solitions@gmail.com') {
-
-                            return true;
-                        }
-
-                        // Para todos los demás usuarios, siempre visible
-                        return false;
+                        return true;
                     }),
 
                 Tables\Actions\DeleteAction::make()
@@ -323,27 +334,18 @@ class UserResource extends Resource
                         return false;
                     }),
 
-                /*Tables\Actions\DeleteAction::make()->label('')->tooltip('Eliminar')->successNotificationTitle('Registro eliminado correctamente')
-                    ->modalHeading('Eliminar registro')
-                    ->modalDescription('¿Estás seguro de que deseas eliminar este registro?')
-                    ->modalSubmitActionLabel('Si, eliminar')
-                    ->modalCancelActionLabel('Cancelar') */
+
 
                 Impersonate::make()
-                /*->visible(function ($record) {
-                    if ($record->assignedOrders()->count() > 0) {
-                        return false;
-                    }
-                    $currentEmail = auth()->user()->email;
+                    ->visible(function ($record) {
+                        $user = auth()->user();
 
-                    if ($currentEmail == 'el.solitions@gmail.com') {
-                        // Solo visible si el registro es del mismo email
-                        return true;
-                    }
+                        return
+                            $user->super_admin &&           // solo super admin
+                            $user->id !== $record->id;      // no a sí mismo
+                        // && $user->center_id === $record->center_id; // opcional
+                    }),
 
-                    // Para todos los demás usuarios, siempre invisible
-                    return false;
-                })*/,
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

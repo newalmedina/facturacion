@@ -23,7 +23,7 @@ class GananciasStats extends BaseWidget
         $endOfLastMonth = $startOfMonth->copy()->subDay();
 
         // Función para obtener ventas entre fechas
-        $getVentas = fn($start, $end = null) => Order::sales()
+        $getVentas = fn($start, $end = null) => Order::sales()->myCenter()
             ->invoiced()
             ->when($end, fn($q) => $q->whereBetween('date', [$start, $end]))
             ->when(!$end, fn($q) => $q->whereDate('date', $start))
@@ -31,7 +31,7 @@ class GananciasStats extends BaseWidget
             ->sum(fn($order) => $order->total);
 
         // Función para obtener gastos entre fechas
-        $getExpenses = fn($start, $end = null) => OtherExpense::query()
+        $getExpenses = fn($start, $end = null) => OtherExpense::query()->myCenter()
             ->when($end, fn($q) => $q->whereBetween('date', [$start, $end]))
             ->when(!$end, fn($q) => $q->whereDate('date', $start))
             ->get()
@@ -83,13 +83,13 @@ class GananciasStats extends BaseWidget
         while ($currentDate->lte($endDate)) {
             $dateString = $currentDate->format('Y-m-d');
 
-            $ventas = Order::sales()
+            $ventas = Order::sales()->myCenter()
                 ->invoiced()
                 ->whereDate('date', $dateString)
                 ->get()
                 ->sum(fn($order) => $order->total);
 
-            $gastos = OtherExpense::whereDate('date', $dateString)
+            $gastos = OtherExpense::whereDate('date', $dateString)->myCenter()
                 ->get()
                 ->sum(fn($expense) => $expense->total);
 

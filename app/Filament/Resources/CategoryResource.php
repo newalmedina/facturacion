@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Exports\CategoryExport;
 use Filament\Tables\Actions\BulkAction;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 
@@ -34,6 +35,19 @@ class CategoryResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'Categorías';
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+        // Obtener el ID del panel actual
+
+        $query->where('center_id', $user->center?->id ?? -1);
+
+        return $query;
     }
     public static function form(Form $form): Form
     {

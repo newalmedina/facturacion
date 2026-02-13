@@ -19,7 +19,7 @@ class ProductosMenosVendidoPorcentaje extends ChartWidget
     }
     protected function getData(): array
     {
-        $ventasPorVendedor = Order::sales()
+        $ventasPorVendedor = Order::sales()->myCenter()
             ->invoiced()
             ->with('assignedUser')
             ->get();

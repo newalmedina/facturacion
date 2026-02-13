@@ -33,6 +33,10 @@ class CountryResource extends Resource
     {
         return 'Paises';
     }
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->super_admin;
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -227,8 +231,8 @@ class CountryResource extends Resource
     {
         return [
             'index' => Pages\ListCountries::route('/'),
-            'create' => Pages\CreateCountry::route('/create'),
-            'edit' => Pages\EditCountry::route('/{record}/edit'),
+            // 'create' => Pages\CreateCountry::route('/create'),
+            // 'edit' => Pages\EditCountry::route('/{record}/edit'),
         ];
     }
 }

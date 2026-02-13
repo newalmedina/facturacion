@@ -24,7 +24,7 @@ Route::get('/contador', function () {
 })->name('contador');
 Route::get('/', function () {
 
-    return redirect('/home');
+    return redirect('/admin');
 
     // return view('welcome');
 });
@@ -32,9 +32,9 @@ Route::get('/', function () {
 
 //     return view('welcome');
 // });
-Route::get('/home', [WelcomeController::class, 'index'])->name('welcome');
+// Route::get('/home', [WelcomeController::class, 'index'])->name('welcome');
 //Route::get('/booking', [FrontBookingController::class, 'index'])->name('booking');
-Route::get('/booking', [FrontBookingController::class, 'index'])->name('booking');
+// Route::get('/booking', [FrontBookingController::class, 'index'])->name('booking');
 
 
 // Route::get('/factura', function () {

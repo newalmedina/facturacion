@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 class Order extends Model
 {
     use SoftDeletes;
+
 
     protected $guarded = [];
     protected $appends = [
@@ -62,6 +64,10 @@ class Order extends Model
     public function getDisabledSalesAttribute(): bool
     {
         return $this->status == 'invoiced';
+    }
+    public function scopeMyCenter($query)
+    {
+        return $query->where('orders.center_id', Auth::user()->center_id);
     }
     private static function generateCode($order)
     {
@@ -113,6 +119,7 @@ class Order extends Model
             if (Auth::check()) {
                 $order->created_by = Auth::id();
                 $order->code = self::generateCode($order);
+                $order->center_id = Auth::user()->center_id;
             }
         });
 

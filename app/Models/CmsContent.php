@@ -2,8 +2,10 @@
 // app/Models/CmsContent.php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class CmsContent extends Model
 {
@@ -12,6 +14,11 @@ class CmsContent extends Model
     protected $table = 'cms_contents';
 
     protected $guarded = [];
+
+    public function scopeSelectedCenter(Builder $query,): Builder
+    {
+        return $query->where('center_id', Auth::user()->center_id);
+    }
 
     public function images()
     {

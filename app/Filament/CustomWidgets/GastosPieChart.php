@@ -28,7 +28,7 @@ class GastosPieChart extends ChartWidget
 
     protected function getData(): array
     {
-        $gastos = OtherExpense::all();
+        $gastos = OtherExpense::myCenter()->get();
 
         $data = [];
         foreach ($gastos as $gasto) {

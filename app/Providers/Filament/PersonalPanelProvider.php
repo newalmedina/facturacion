@@ -61,7 +61,7 @@ class PersonalPanelProvider extends PanelProvider
                 'dark' => '#000000',        // Negro
             ])
             ->resources([
-                SaleResource::class,
+                // SaleResource::class,
             ])
             ->defaultAvatarProvider(AutenticatedUserAvatar::class)
             ->plugins([
@@ -114,11 +114,11 @@ class PersonalPanelProvider extends PanelProvider
                     ->icon('heroicon-o-cog')
                     ->visible(fn() => Auth::check() && Auth::user()->can_admin_panel), // ✅ visibilidad condicional
 
-                MenuItem::make('home')
-                    ->label('Ir a la Home')
-                    ->url(url('/'))
-                    ->icon('heroicon-o-globe-alt')
-                    ->openUrlInNewTab(),
+                // MenuItem::make('home')
+                //     ->label('Ir a la Home')
+                //     ->url(url('/'))
+                //     ->icon('heroicon-o-globe-alt')
+                //     ->openUrlInNewTab(),
             ]);
 
 
@@ -149,11 +149,11 @@ class PersonalPanelProvider extends PanelProvider
                     ->label('Perfil')
                     ->url(route('filament.admin.pages.profile')) // Aquí también agregamos la URL
                     ->icon('heroicon-o-user'),
-                'home' => MenuItem::make()
-                    ->label('Ir a la Home')
-                    ->url(url('/')) // tu landing page
-                    ->icon('heroicon-o-globe-alt') // ícono globo terrestre
-                    ->openUrlInNewTab(), // opcional: abre en nueva pestaña
+                // 'home' => MenuItem::make()
+                //     ->label('Ir a la Home')
+                //     ->url(url('/')) // tu landing page
+                //     ->icon('heroicon-o-globe-alt') // ícono globo terrestre
+                //     ->openUrlInNewTab(), // opcional: abre en nueva pestaña
             ]);
         });
     }

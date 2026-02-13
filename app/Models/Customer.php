@@ -2,14 +2,29 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Customer extends Model
 {
     use HasFactory;
 
+
     protected $guarded = [];
+
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $model->center_id = Auth::user()->center_id;
+        });
+    }
+
+    public function scopeMyCenter($query)
+    {
+        return $query->where('customers.center_id', Auth::user()->center_id);
+    }
     public function country()
     {
         return $this->belongsTo(Country::class);
@@ -22,10 +37,12 @@ class Customer extends Model
     {
         return $this->belongsTo(City::class);
     }
+
     public function scopeActive($query)
     {
         return $query->where('active', true);
     }
+
     public function getFullAddressAttribute()
     {
         $parts = [

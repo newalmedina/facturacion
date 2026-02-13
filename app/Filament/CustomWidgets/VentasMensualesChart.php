@@ -28,7 +28,7 @@ class VentasMensualesChart extends ChartWidget
 
     private function getMonthlySalesByYear(): array
     {
-        $orders = Order::sales()
+        $orders = Order::sales()->myCenter()
             ->invoiced()
             ->whereYear('date', '>=', now()->year - 2)
             ->get()

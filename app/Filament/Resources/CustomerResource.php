@@ -29,6 +29,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class CustomerResource extends Resource
@@ -40,6 +41,18 @@ class CustomerResource extends Resource
     protected static ?string $navigationGroup = 'Tablas de sistemas';
     protected static ?int $navigationSort = 9;
 
+    public static function getEloquentQuery(): Builder
+    {
+
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+        // Obtener el ID del panel actual
+
+        $query->where('center_id', $user->center?->id ?? -1);
+
+        return $query;
+    }
     public static function getModelLabel(): string
     {
         return 'Cliente';

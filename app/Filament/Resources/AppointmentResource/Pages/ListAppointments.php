@@ -58,7 +58,7 @@ class ListAppointments extends ListRecords
                         $fields[] = Select::make('template_id')
                             ->label('Plantilla')
                             ->options(
-                                \App\Models\AppointmentTemplate::where('active', true)
+                                \App\Models\AppointmentTemplate::where('active', true)->myCenter()
                                     ->where(function ($q) {
                                         $q->where('worker_id', Auth::id())
                                             ->orWhere('is_general', 1);
@@ -73,7 +73,7 @@ class ListAppointments extends ListRecords
                         $fields[] = Select::make('template_id')
                             ->label('Plantilla')
                             ->options(
-                                \App\Models\AppointmentTemplate::where('active', true)
+                                \App\Models\AppointmentTemplate::where('active', true)->myCenter()
                                     ->pluck('name', 'id')
                             )
                             ->searchable()
@@ -82,7 +82,7 @@ class ListAppointments extends ListRecords
 
                         $fields[] = Select::make('worker_id')
                             ->label('Empleado')
-                            ->relationship('worker', 'name', fn($query) => $query->canAppointment())
+                            ->relationship('worker', 'name', fn($query) => $query->myCenter()->canAppointment())
                             ->searchable()
                             ->preload()
                             ->required()

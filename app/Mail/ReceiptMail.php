@@ -13,6 +13,7 @@ class ReceiptMail extends Mailable
 
     public $pdf;
     public $order;
+    public $factura;
 
     /**
      * Create a new message instance.
@@ -20,17 +21,24 @@ class ReceiptMail extends Mailable
      * @param PDF $pdf
      * @param $order
      */
-    public function __construct(PDF $pdf, $order)
+    public function __construct(PDF $pdf, $order, $factura = 1)
     {
         $this->pdf = $pdf;
         $this->order = $order;
+        $this->factura = $factura;
     }
 
     public function build()
     {
-        return $this->subject("Recibo para la orden {$this->order->code}")
+        $nombre = "Factura  - {$this->order->code}";
+
+        if (!$this->factura) {
+            $nombre = "Presupuesto";
+        }
+
+        return $this->subject($nombre)
             ->view('emails.receipt') // Puedes crear esta vista o usar texto plano
-            ->attachData($this->pdf->output(), "{$this->order->code}.pdf", [
+            ->attachData($this->pdf->output(), "{$nombre}.pdf", [
                 'mime' => 'application/pdf',
             ]);
     }

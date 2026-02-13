@@ -30,7 +30,7 @@ class AppointmentStats extends BaseWidget
 
         // Función para obtener número de citas (con filtro según panel)
         $getAppointments = function ($start, $end = null) use ($currentPanelId, $user) {
-            $query = Appointment::query();
+            $query = Appointment::query()->myCenter();
 
             if ($currentPanelId === 'personal' && $user) {
                 $query->where('worker_id', $user->id);
@@ -90,7 +90,7 @@ class AppointmentStats extends BaseWidget
         while ($currentDate->lte($endDate)) {
             $dateString = $currentDate->format('Y-m-d');
 
-            $query = Appointment::query()->statusConfirmed()
+            $query = Appointment::query()->statusConfirmed()->myCenter()
                 ->whereDate('date', $dateString);
 
             if ($currentPanelId === 'personal' && $user) {

@@ -26,7 +26,7 @@ class GananciasMensualesChart extends ChartWidget
     // Muestra el select con los años disponibles
     protected function getFilters(): ?array
     {
-        $years = Order::sales()
+        $years = Order::sales()->myCenter()
             ->invoiced()
             ->selectRaw('YEAR(date) as year')
             ->distinct()
@@ -49,7 +49,7 @@ class GananciasMensualesChart extends ChartWidget
         $year = $this->filter ?? now()->year;
 
 
-        $ventasPorMes = Order::sales()
+        $ventasPorMes = Order::sales()->myCenter()
             ->invoiced()
             ->whereYear('date', $year)
             ->get()
@@ -62,7 +62,7 @@ class GananciasMensualesChart extends ChartWidget
             $dataVenta[] = round($ventasPorMes->get($monthKey, 0), 2);
         }
 
-        $gastosPorMes = OtherExpense::query()
+        $gastosPorMes = OtherExpense::query()->myCenter()
             ->whereYear('date', $year)
             ->get()
             ->groupBy(fn($expense) => Carbon::parse($expense->date)->format('m'))

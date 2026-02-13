@@ -38,6 +38,10 @@ class StateResource extends Resource
         return 'Estados';
     }
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->super_admin;
+    }
     public static function form(Form $form): Form
     {
         return $form

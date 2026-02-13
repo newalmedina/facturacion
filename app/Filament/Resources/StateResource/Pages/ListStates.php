@@ -10,6 +10,13 @@ class ListStates extends ListRecords
 {
     protected static string $resource = StateResource::class;
     protected static ?string $title = 'Estados';
+    public function mount(): void
+    {
+        parent::mount();
+
+        // Bloquear acceso si no es super admin
+        abort_unless(auth()->check() && auth()->user()->super_admin, 403);
+    }
     protected function getHeaderActions(): array
     {
         return [

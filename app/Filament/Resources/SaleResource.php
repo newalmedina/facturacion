@@ -54,6 +54,8 @@ class SaleResource extends Resource
     }
 
 
+
+
     public static function form(Form $form): Form
     {
         return $form
@@ -88,6 +90,9 @@ class SaleResource extends Resource
         if ($currentPanelId === 'personal' && $user) {
             $query->where('assigned_user_id', $user->id);
         }
+
+        $query->where('center_id', $user->center?->id ?? -1);
+
 
         return $query;
     }
@@ -181,7 +186,7 @@ class SaleResource extends Resource
                         Select::make('assigned_user_ids')
                             ->label('Vendedores')
                             ->options(
-                                User::all()->pluck('name', 'id')
+                                User::myCenter()->pluck('name', 'id')
                             )
                             ->searchable()
                             ->preload()
@@ -191,7 +196,7 @@ class SaleResource extends Resource
                         Select::make('customer_ids')
                             ->label('Clientes')
                             ->options(
-                                Customer::active()->pluck('name', 'id')
+                                Customer::active()->myCenter()->pluck('name', 'id')
                             )
                             ->searchable()
                             ->preload()
@@ -409,16 +414,16 @@ class SaleResource extends Resource
                     ->visible(fn($record) => !$record->disabled_sales)
                     ->after(function ($record) {
                         // Enviar el correo
-                        $settings = Setting::first();
-                        if ($settings && $settings->general) {
-                            $generalSettings = $settings->general;
+                        // $settings = Setting::first();
+                        // if ($settings && $settings->general) {
+                        //     $generalSettings = $settings->general;
 
-                            if (!empty($generalSettings->email)) {
-                                $email = str_replace('"', '', $generalSettings->email);
+                        //     if (!empty($generalSettings->email)) {
+                        //         $email = str_replace('"', '', $generalSettings->email);
 
-                                Mail::to($email)->send(new OrderDeletedMail($record));
-                            }
-                        }
+                        //         Mail::to($email)->send(new OrderDeletedMail($record));
+                        //     }
+                        // }
                     }),
             ])
             ->bulkActions([

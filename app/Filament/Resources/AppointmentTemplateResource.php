@@ -54,6 +54,7 @@ class AppointmentTemplateResource extends Resource
             });
         }
 
+        $query->where('center_id', $user->center?->id ?? -1);
         return $query;
     }
 
@@ -96,7 +97,7 @@ class AppointmentTemplateResource extends Resource
                             if ($currentPanelId !== 'personal') {
                                 $fields[] = Select::make('duplicate_worker_id')
                                     ->label('Empleado')
-                                    ->relationship('worker', 'name', fn($query) => $query->canAppointment())
+                                    ->relationship('worker', 'name', fn($query) => $query->canAppointment()->myCenter())
                                     ->searchable()
                                     ->preload()
                                     ->visible(fn(callable $get) => $get('duplicate_general') === false)
@@ -180,7 +181,7 @@ class AppointmentTemplateResource extends Resource
                             ->reactive(), // para que se actualice dinámicamente,*/
                         Select::make('worker_id')
                             ->label('Trabajador')
-                            ->relationship('worker', 'name', fn($query) => $query->canAppointment())
+                            ->relationship('worker', 'name', fn($query) => $query->canAppointment()->myCenter())
                             ->searchable()
                             ->preload()
                             ->visible($currentPanelId !== 'personal') // 👈 no mostrar en panel personal
@@ -302,7 +303,7 @@ class AppointmentTemplateResource extends Resource
                             ->reactive(),*/
                         Select::make('worker_id')
                             ->label('Empleado')
-                            ->relationship('worker', 'name', fn($query) => $query->canAppointment()) // <--- aplica tu scope
+                            ->relationship('worker', 'name', fn($query) => $query->canAppointment()->myCenter()) // <--- aplica tu scope
                             ->searchable()
                             ->preload()
                             ->placeholder('Selecciona un empleado')

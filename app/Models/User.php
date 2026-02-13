@@ -4,12 +4,14 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+
 use Filament\Panel\Concerns\HasAvatars;
 use Filament\Panel;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
@@ -62,6 +64,17 @@ class User extends Authenticatable implements FilamentUser
         'password' => 'hashed',
     ];
 
+
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $model->center_id = Auth::user()->center_id;
+        });
+    }
+    public function scopeMyCenter($query)
+    {
+        return $query->where('users.center_id', Auth::user()->center_id);
+    }
     public function country()
     {
         return $this->belongsTo(Country::class);
@@ -95,7 +108,11 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(Order::class, 'assigned_user_id');
     }
-
+    // Relación con Center
+    public function center()
+    {
+        return $this->belongsTo(Center::class);
+    }
 
     // app/Models/User.php
 

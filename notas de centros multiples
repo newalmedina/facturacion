@@ -1,0 +1,50 @@
+INSERT INTO centers (
+    name,
+    email,
+    phone,
+    image,
+    country_id,
+    state_id,
+    city_id,
+    postal_code,
+    address,
+    allow_appointment,
+    has_home,
+    bank_name,
+    bank_number,
+    nif,
+    mail_enable_integration,
+    primary_color,
+    primary_color_soft,
+    secondary_color,
+    active,
+    created_at,
+    updated_at
+) VALUES (
+    'By Estrella Trenceria',
+    'estrellamsierra21@gmail.com',
+    '632234529 / 936277173',
+    'settings/01K28EPVJE562XKZBQRCHXERXR.png',
+    207,
+    1203,
+    34846,
+    '08028',
+    'Carrer del Regent Mendieta, nº 2-4 local 1',
+    0,
+    1,
+    'Sabadell',
+    'ES66 0081 2803 1500 0892 3105',
+    '47909062Q',
+    0,
+    '#2D3748',
+    '#b8b8b8',
+    NULL,
+    1,
+    NOW(),
+    NOW()
+);
+
+
+UPDATE cms_contents
+SET center_id = 1
+WHERE center_id IS NULL;

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class Item extends Model
@@ -12,6 +14,12 @@ class Item extends Model
 
     protected $guarded = [];  // Guarded to allow mass assignment
 
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $model->center_id = Auth::user()->center_id;
+        });
+    }
     // Relationship with Category
     public function appointments()
     {
@@ -79,6 +87,10 @@ class Item extends Model
     public function scopeActive($query)
     {
         return $query->where('active', true);
+    }
+    public function scopeMyCenter($query)
+    {
+        return $query->where('items.center_id', Auth::user()->center_id);
     }
     // Scope para show_booking = true
     public function scopeShowBooking($query)

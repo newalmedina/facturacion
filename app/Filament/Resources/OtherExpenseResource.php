@@ -29,6 +29,8 @@ use Filament\Tables\Table;
 use Filament\Tables\Filters\DateFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -48,6 +50,19 @@ class OtherExpenseResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return 'Otros gastos';
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+        // Obtener el ID del panel actual
+
+        $query->where('center_id', $user->center?->id ?? -1);
+
+        return $query;
     }
 
     public static function form(Form $form): Form
@@ -149,7 +164,7 @@ class OtherExpenseResource extends Resource
                                 ->columnSpan(10),*/
                             Select::make('other_expense_item_id')
                                 ->label('Items')
-                                ->options(fn() => OtherExpenseItem::active()->pluck('name', 'id'))
+                                ->options(fn() => OtherExpenseItem::active()->myCenter()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required()
                                 ->columnSpan([
@@ -184,9 +199,15 @@ class OtherExpenseResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $user = Auth::user();
+        // Obtener el ID del panel actual
+
+
+
         return $table
             ->query(
                 OtherExpense::query()
+                    ->where('center_id', $user->center?->id ?? -1)
                     // Usamos 'withSum' para calcular la suma de los precios en los detalles relacionados
                     ->withSum('details', 'price')  // 'details' es la relación, 'price' es el campo a sumar
             )
@@ -244,7 +265,7 @@ class OtherExpenseResource extends Resource
                             ->label('Items')
                             ->multiple()
                             ->searchable()
-                            ->options(OtherExpenseItem::all()->pluck('name', 'name')) // Aquí obtienes las opciones del modelo
+                            ->options(OtherExpenseItem::myCenter()->pluck('name', 'name')) // Aquí obtienes las opciones del modelo
                             ->preload(),
                     ])
                     ->indicateUsing(function (array $data): array {

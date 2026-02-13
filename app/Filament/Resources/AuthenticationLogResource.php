@@ -14,6 +14,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Auth\Access\Response;
 
 class AuthenticationLogResource extends Resource
 {
@@ -32,6 +34,23 @@ class AuthenticationLogResource extends Resource
     {
         return 'Logs autenticación';
     }
+
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return auth()->check() && auth()->user()->super_admin;
+    }
+
+    public static function authorize(string $action, ?Model $record = null): ?Response
+    {
+
+        dd();
+        // Solo super admin puede acceder
+        return (auth()->check() && auth()->user()->super_admin)
+            ? Response::allow()
+            : Response::deny('No tienes permisos para acceder a este recurso.');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -115,6 +134,8 @@ class AuthenticationLogResource extends Resource
 
     public static function getPages(): array
     {
+
+
         return [
             'index' => Pages\ListAuthenticationLogs::route('/'),
             // 'create' => Pages\CreateAuthenticationLog::route('/create'),

@@ -69,6 +69,7 @@ class AppointmentResource extends Resource
             $query->where('worker_id', $user->id);
         }
 
+        $query->where('center_id', $user->center?->id ?? -1);
         return $query;
     }
 
@@ -152,7 +153,7 @@ class AppointmentResource extends Resource
 
                     Select::make('worker_id')
                         ->label('Empleado')
-                        ->relationship('worker', 'name', fn($query) => $query->canAppointment())
+                        ->relationship('worker', 'name', fn($query) => $query->myCenter()->canAppointment())
                         ->searchable()
                         ->preload()
                         ->visible(fn() => Filament::getCurrentPanel()?->getId() !== 'personal')
@@ -184,7 +185,7 @@ class AppointmentResource extends Resource
                         ->relationship(
                             name: 'items',
                             titleAttribute: 'name',
-                            modifyQueryUsing: fn($query) => $query->active()
+                            modifyQueryUsing: fn($query) => $query->myCenter()->active()
                         )
                         ->getOptionLabelFromRecordUsing(
                             fn($record) => $record->name . ' — ' . $record->total_price . ' €'
@@ -271,7 +272,7 @@ class AppointmentResource extends Resource
                         ->relationship(
                             name: 'customer',
                             titleAttribute: 'name',
-                            modifyQueryUsing: fn($query) => $query->active() // Solo clientes activos
+                            modifyQueryUsing: fn($query) => $query->myCenter()->active() // Solo clientes activos
                         )
                         ->searchable()
                         ->preload()

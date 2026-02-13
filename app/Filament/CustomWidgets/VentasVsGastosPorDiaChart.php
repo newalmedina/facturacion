@@ -81,14 +81,14 @@ class VentasVsGastosPorDiaChart extends ChartWidget
         while ($days <= $end) {
             $labels[] = $days->format('d-m-Y');
 
-            $ventasData[] = Order::withCalculatedTotals()
+            $ventasData[] = Order::withCalculatedTotals()->myCenter()
                 ->sales()
                 ->invoiced()
                 ->whereDate('date', $days->toDateString())
                 ->get()
                 ->sum('total');
 
-            $gastosData[] = OtherExpense::with('details')
+            $gastosData[] = OtherExpense::with('details')->myCenter()
                 ->whereDate('date', $days->toDateString())
                 ->get()
                 ->sum(fn($expense) => $expense->total);

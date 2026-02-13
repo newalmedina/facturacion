@@ -31,7 +31,7 @@ class CalendarWidget extends FullCalendarWidget
         $fechaInicio = Carbon::parse($fetchInfo['start'])->format("Y-m-d");
         $fechaFin = Carbon::parse($fetchInfo['end'])->format("Y-m-d");
 
-        $query = Appointment::whereBetween('date', [$fechaInicio, $fechaFin]);
+        $query = Appointment::mycenter()->whereBetween('date', [$fechaInicio, $fechaFin]);
 
         // Filtrar por estado
         if (!empty($this->selectedStatus)) {

@@ -26,7 +26,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Mail;
 use Outerweb\FilamentSettings\Filament\Pages\Settings as BaseSettings;
 
-class Settings extends BaseSettings
+class SettingsOld extends BaseSettings
 {
 
     protected static ?string $navigationGroup = 'Configuraciones';

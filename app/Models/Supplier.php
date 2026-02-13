@@ -2,15 +2,24 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Supplier extends Model
 {
     use HasFactory;
 
+
     // Use guarded to prevent mass-assignment for all fields except for the ones you explicitly want
     protected $guarded = [];
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $model->center_id = Auth::user()->center_id;
+        });
+    }
 
     public function country()
     {

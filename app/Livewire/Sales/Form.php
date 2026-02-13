@@ -53,7 +53,7 @@ class Form extends Component
 
         $this->currentPanelId = Filament::getCurrentPanel()?->getId();
         // dd($currentPanelId);
-        $this->userList = User::all();
+        $this->userList = User::myCenter()->get();
 
         if (!$order) {
             $order = new Order();
@@ -119,7 +119,7 @@ class Form extends Component
         }
     }
 
-    public function sendInvoiceEmail()
+    public function sendInvoiceEmail($factura = 1)
     {
         $this->validate([
             'recipientEmail' => 'required|email',
@@ -129,29 +129,38 @@ class Form extends Component
         ]);
 
         $receiptService = new ReceiptService();
-        $pdf = $receiptService->generate($this->order);
+        $pdf = $receiptService->generate($this->order, $factura);
 
         // Enviar correo a la dirección del cliente
         Mail::to($this->recipientEmail)
-            ->send(new ReceiptMail($pdf, $this->order));
+            ->send(new ReceiptMail($pdf, $this->order, $factura));
 
         /*  Mail::to($this->order->customer->email)
             ->send(new ReceiptMail($pdf, $this->order));*/
 
+        $message = "Recibo enviado";
 
+        if (!$factura) {
+            $message = "Presupuesto enviado";
+        }
         // Aquí se envía el correo (ejemplo genérico)
         // Mail::to($this->recipientEmail)->send(new InvoiceMail($this->order));
-        $this->notify('Recibo enviado a ' . $this->recipientEmail, 'Recibo enviado',  'success');
+        $this->notify("$message a " . $this->recipientEmail, $message,  'success');
         $this->dispatch('close-modal', id: 'send-invoiced-modal');
     }
-    public function generateReceipt()
+    public function generateReceipt($factura = 1)
     {
         $receiptService = new ReceiptService();
-        $pdf = $receiptService->generate($this->order);
+        $pdf = $receiptService->generate($this->order, $factura);
+        $nombre = $this->order->code;
+
+        if (!$factura) {
+            $nombre = 'cotizacion_' . Str::random(10);
+        }
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
-        }, $this->order->code . '.pdf');
+        }, $nombre . '.pdf');
     }
 
     public function updated($propertyName): void
@@ -569,7 +578,7 @@ class Form extends Component
 
     public function getConsultaItemsProperty()
     {
-        return Item::active()
+        return Item::active()->myCenter()
             ->when($this->searchProduct, fn($q) => $q->where('name', 'like', "%{$this->searchProduct}%"))
             ->when($this->searchType, fn($q) => $q->where('type', $this->searchType));
     }
@@ -603,7 +612,7 @@ class Form extends Component
 
         return view('livewire.sales.form', [
             'items' => $this->consultaItems->paginate($this->perPage),
-            'customerList' => Customer::active()->get(),
+            'customerList' => Customer::active()->myCenter()->get(),
         ]);
     }
 }

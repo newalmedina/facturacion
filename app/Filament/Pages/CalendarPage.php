@@ -27,7 +27,7 @@ class CalendarPage extends Page
         ])->toArray();
 
         // Trabajadores
-        $this->workerList = User::canAppointment()->pluck('name', 'id')->toArray();
+        $this->workerList = User::canAppointment()->myCenter()->pluck('name', 'id')->toArray();
 
         $this->selectedStatus = '';
         $this->selectedWorker = null;

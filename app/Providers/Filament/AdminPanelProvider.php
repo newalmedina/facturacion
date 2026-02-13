@@ -42,6 +42,7 @@ use Filament\Facades\Filament;
 use Filament\Navigation\MenuItem;
 use Filament\Pages\Auth\PasswordReset\RequestPasswordReset;
 use Filament\Support\Enums\MaxWidth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Outerweb\FilamentSettings\Filament\Plugins\FilamentSettingsPlugin;
@@ -78,14 +79,15 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->plugins([
-                FilamentSettingsPlugin::make()
-                    ->pages([
-                        Settings::class,
-                    ]),
+                // FilamentSettingsPlugin::make()
+                //     ->pages([
+                //         // Settings::class,
+                //         // \App\Filament\Pages\Configuration::class,
+                //     ]),
                 FilamentAuthenticationLogPlugin::make(),
                 // FilamentSpatieLaravelBackupPlugin::make()
                 FilamentSpatieLaravelBackupPlugin::make()
-                    ->usingPage(Backups::class)->authorize(fn(): bool => auth()->user()->email === 'el.solitions@gmail.com'),
+                    ->usingPage(Backups::class)->authorize(fn(): bool => auth()->user()->super_admin),
                 FilamentFullCalendarPlugin::make()->config([
                     'initialView' => 'timeGridWeek', // 👈 Vista por defecto: semana
                     'headerToolbar' => [
@@ -100,6 +102,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->pages([
                 Pages\Dashboard::class,
+                \App\Filament\Pages\Configuration::class,
             ])
             // ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -137,19 +140,20 @@ class AdminPanelProvider extends PanelProvider
             ]);
 
 
-        if (Schema::hasTable('settings')) {
-            $settings = Setting::first();
+        // $settings = Setting::first();
+        // $settings = Auth::user()->center;
+        // dd($settings);
 
-            if ($settings && $settings->general) {
-                $generalSettings = $settings->general;
-                if (!empty($generalSettings->image) && $generalSettings->image != "[]") {
-                    $panel->brandLogo(Storage::url(str_replace('"', '', $generalSettings->image)))
-                        ->brandLogoHeight('3rem');
-                } elseif (!empty($generalSettings->brand_name)) {
-                    return $panel->brandName(str_replace('"', '', $generalSettings->brand_name));
-                }
-            }
-        }
+        // if ($settings && $settings->general) {
+        //     $generalSettings = $settings->general;
+        //     if (!empty($generalSettings->image) && $generalSettings->image != "[]") {
+        //         $panel->brandLogo(Storage::url(str_replace('"', '', $generalSettings->image)))
+        //             ->brandLogoHeight('3rem');
+        //     } elseif (!empty($generalSettings->brand_name)) {
+        //         return $panel->brandName(str_replace('"', '', $generalSettings->brand_name));
+        //     }
+        // }
+
 
 
 
@@ -170,13 +174,31 @@ class AdminPanelProvider extends PanelProvider
                     ->url(url('/personal')) // tu landing page
                     ->icon('heroicon-o-briefcase'), // ícono opcional
                 // ->openUrlInNewTab(), // opcional: abre en nueva pestaña
-                'home' => MenuItem::make()
-                    ->label('Ir a la Home')
-                    ->url(url('/')) // tu landing page
-                    ->icon('heroicon-o-globe-alt') // ícono globo terrestre
-                    ->openUrlInNewTab(), // opcional: abre en nueva pestaña
+                // 'home' => MenuItem::make()
+                //     ->label('Ir a la Home')
+                //     ->url(url('/')) // tu landing page
+                //     ->icon('heroicon-o-globe-alt') // ícono globo terrestre
+                //     ->openUrlInNewTab(), // opcional: abre en nueva pestaña
 
             ]);
+            $user = auth()->user();
+
+
+            if ($user && $user->center) {
+
+                $center = $user->center;
+
+                if (!empty($center->image)) {
+                    Filament::getCurrentPanel()
+                        ->brandLogo(\Storage::url($center->image))
+                        ->brandLogoHeight('3rem');
+                } elseif (!empty($center->name)) {
+                    Filament::getCurrentPanel()
+                        ->brandName($center->name);
+                    // Título dinámico de la página
+
+                }
+            }
         });
     }
 }

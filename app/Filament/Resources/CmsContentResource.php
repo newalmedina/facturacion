@@ -18,6 +18,8 @@ use App\Filament\Resources\CmsContentResource\Form\DiscountsForm;
 use App\Filament\Resources\CmsContentResource\Form\GalleryForm;
 use App\Filament\Resources\CmsContentResource\Form\ServicesForm;
 use App\Filament\Resources\CmsContentResource\Form\PriceCatalogForm;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class CmsContentResource extends Resource
 {
@@ -29,6 +31,20 @@ class CmsContentResource extends Resource
 
 
     protected static ?string $navigationLabel = 'Gestión CMS';
+
+
+    public static function getEloquentQuery(): Builder
+    {
+
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+        // Obtener el ID del panel actual
+
+        $query->where('center_id', $user->center?->id ?? -1);
+
+        return $query;
+    }
 
     // protected static ?int $navigationSort = 90;
     public static function form(Form $form): Form

@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Appointment extends Model
 {
     use HasFactory;
+
 
     // Guarding fields from mass-assignment
     protected $guarded = [];
@@ -19,6 +22,8 @@ class Appointment extends Model
         'end_time' => 'datetime:H:i',
     ];
     protected $appends = ['start_date', 'end_date'];
+
+
 
     public function items()
     {
@@ -87,6 +92,10 @@ class Appointment extends Model
         ];
         return $colors[$this->status] ?? '#6c757d'; // gris por defecto
     }
+    public function scopeMyCenter($query)
+    {
+        return $query->where('appointments.center_id', Auth::user()->center_id);
+    }
     protected static function booted()
     {
         // Generar slug automáticamente al crear
@@ -94,6 +103,7 @@ class Appointment extends Model
             if (empty($appointment->slug)) {
                 $appointment->slug = \Illuminate\Support\Str::uuid()->toString();
             }
+            $appointment->center_id = Auth::user()->center_id;
         });
 
         // Ajustes antes de guardar
