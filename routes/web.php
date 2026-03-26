@@ -25,6 +25,7 @@ Route::get('/contador', function () {
 Route::get('/landing', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/', function () {
 
+
     return redirect('/admin');
     return view('welcome');
 });
