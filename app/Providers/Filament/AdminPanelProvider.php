@@ -155,6 +155,8 @@ class AdminPanelProvider extends PanelProvider
         // }
 
 
+        $panel->brandLogo(asset('logos/logo.png'))
+            ->brandLogoHeight('3rem');
 
 
         return $panel;

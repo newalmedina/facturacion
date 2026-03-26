@@ -1,10 +1,24 @@
+217.154.6.159 OLD
+
 JquVN6va
 
+by-estrella.el-solitions.es
+nginx.el-solitions.es
+
+nuevo
+87.106.22.201
+8CxR8V9wvPlzigwI
 
 
-cuando no quiera cargar porque esta en cache
+docker exec -it by-estrella-belleza-apache bash
+
 php artisan cache:clear
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 php artisan filament:cache-components
+php artisan filament:clear-cached-component
+
+
+
+

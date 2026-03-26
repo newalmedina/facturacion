@@ -121,20 +121,21 @@ class PersonalPanelProvider extends PanelProvider
                 //     ->openUrlInNewTab(),
             ]);
 
+        $panel->brandLogo(asset('logos/logo.png'))
+            ->brandLogoHeight('3rem');
+        // if (Schema::hasTable('settings')) {
+        //     $settings = Setting::first();
 
-        if (Schema::hasTable('settings')) {
-            $settings = Setting::first();
-
-            if ($settings && $settings->general) {
-                $generalSettings = $settings->general;
-                if (!empty($generalSettings->image) && $generalSettings->image != "[]") {
-                    $panel->brandLogo(Storage::url(str_replace('"', '', $generalSettings->image)))
-                        ->brandLogoHeight('3rem');
-                } elseif (!empty($generalSettings->brand_name)) {
-                    return $panel->brandName(str_replace('"', '', $generalSettings->brand_name));
-                }
-            }
-        }
+        //     if ($settings && $settings->general) {
+        //         $generalSettings = $settings->general;
+        //         if (!empty($generalSettings->image) && $generalSettings->image != "[]") {
+        //             $panel->brandLogo(asset('logos/logo.png'))
+        //                 ->brandLogoHeight('10rem');
+        //         } elseif (!empty($generalSettings->brand_name)) {
+        //             return $panel->brandName(str_replace('"', '', $generalSettings->brand_name));
+        //         }
+        //     }
+        // }
 
         return $panel;
     }
