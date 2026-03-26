@@ -22,12 +22,12 @@ use Illuminate\Support\Facades\Storage;
 Route::get('/contador', function () {
     return view('contador'); // 👈 una vista blade donde llamamos al componente
 })->name('contador');
-Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
-// Route::get('/', function () {
+Route::get('/landing', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/', function () {
 
-//     return redirect('/admin');
-//     return view('welcome');
-// });
+    return redirect('/admin');
+    return view('welcome');
+});
 // Route::get('/landing', function () {
 
 //     return view('welcome');

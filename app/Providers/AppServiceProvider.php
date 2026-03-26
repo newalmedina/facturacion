@@ -34,36 +34,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Forzar HTTPS en producción
+
         if (config('app.env') === 'production') {
             URL::forceScheme('https');
         }
-
-        // Detectar host y ajustar URL raíz dinámicamente
-        $host = request()->getHost();
-
-        if ($host === 'by-estrella.el-solitions.es') {
-            // Landing pública
-            URL::forceRootUrl('https://by-estrella.el-solitions.es');
-        } else {
-            // Facturación principal
-            URL::forceRootUrl(config('app.url'));
-        }
-
-        // Observers
         User::observe(UserObserver::class);
         Brand::observe(BrandObserver::class);
         Supplier::observe(SupplierObserver::class);
         Customer::observe(CustomerObserver::class);
         Item::observe(ItemObserver::class);
-
-        // if (config('app.env') === 'production') {
-        //     URL::forceScheme('https');
-        // }
-        // User::observe(UserObserver::class);
-        // Brand::observe(BrandObserver::class);
-        // Supplier::observe(SupplierObserver::class);
-        // Customer::observe(CustomerObserver::class);
-        // Item::observe(ItemObserver::class);
     }
 }
