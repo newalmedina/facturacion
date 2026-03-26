@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Center;
 use App\Models\City;
 use App\Models\CmsContent;
 use App\Models\Setting;
@@ -13,8 +14,11 @@ class WelcomeController extends Controller
     public function index()
     {
 
-        $settings = Setting::first();
-        $generalSettings = $settings?->general;
+
+        // $settings = Setting::first();
+        // $generalSettings = $settings?->general;
+        $generalSettings = Center::find(1);
+        // dd($generalSettings);
 
         if (!$generalSettings->has_home) {
             abort(404);

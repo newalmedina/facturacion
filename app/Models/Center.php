@@ -13,7 +13,13 @@ class Center extends Model
      * Campos protegidos contra asignación masiva.
      */
     protected $guarded = ['id', 'created_at', 'updated_at'];
+    protected $appends = ['brand_name'];
 
+    // Accessor para brand_name
+    public function getBrandNameAttribute()
+    {
+        return $this->name;
+    }
     // Relaciones
     public function country()
     {
